@@ -15,14 +15,15 @@ public class MessageReceived extends ListenerAdapter {
 
         String[] words = event.getMessage().getContentRaw().split(" ");
 
-        if (words[0].startsWith("!s")) {
-            event.getChannel().sendTyping().queue();
-            String command = words[0].replaceFirst("!s", "");
+        if (words[0].startsWith("!1")) {
+            String command = words[0].replaceFirst("!1", "");
             String[] args = new String[words.length - 1];
-            System.arraycopy(words, 1, args, 0, words.length - 1);
+            for (int i = 1; i < words.length; i++) {
+                args[i - 1] = words[i];
+            }
             for (Command c : Command.commands) {
                 if (c.getCommand().equalsIgnoreCase(command) || c.isAlias(command)) {
-                    System.out.println("["+new Date()+"] " +  event.getAuthor().getName() + " executed " + event.getMessage().getContentRaw());
+                    System.out.println("[" + new Date() + "] " + event.getAuthor().getName() + " executed " + event.getMessage().getContentRaw());
                     c.handle(event, args);
                     event.getMessage().delete().queue();
                     return;
@@ -30,7 +31,7 @@ public class MessageReceived extends ListenerAdapter {
             }
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(MessageColor.RED.getColor());
-            eb.setDescription("The given command does not exist!");
+            eb.setDescription("The given command does not exist");
             event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }

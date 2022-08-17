@@ -3,6 +3,7 @@ package de.Skippero.LOA;
 import de.Skippero.LOA.commands.HelpCommand;
 import de.Skippero.LOA.commands.PingCommand;
 import de.Skippero.LOA.commands.UpdateCommand;
+import de.Skippero.LOA.events.MessageReceived;
 import de.Skippero.LOA.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -26,6 +27,8 @@ public class LOABot {
 
     public static void main(String[] args) throws LoginException, InterruptedException {
 
+        args = new String[]{"MTAwOTM4MTU4MTc4NzUwNDcyNg.GpvHeg.cq_85OXUqA00ZK7Z0RVUbd28ewEeTrBaRa9E9U"};
+
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
@@ -38,6 +41,7 @@ public class LOABot {
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
         builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
+        builder.addEventListeners(new MessageReceived());
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
 
         JDA jda = builder.build();

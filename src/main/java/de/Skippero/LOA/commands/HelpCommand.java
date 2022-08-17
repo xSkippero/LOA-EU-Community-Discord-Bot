@@ -24,7 +24,7 @@ public class HelpCommand extends Command {
 
         for (int i = 0; i < Command.commands.size(); i++) {
             Command cmd = Command.commands.get(i);
-            sb.append("``").append("!s").append(cmd.getCommand());
+            sb.append("``").append("!1").append(cmd.getCommand());
             if (!cmd.syntax.equals("no syntax set")) {
                 sb.append(" ").append(cmd.syntax);
             }

@@ -19,6 +19,11 @@ public class UpdateCommand extends Command {
 
     @Override
     public void handle(MessageReceivedEvent e, String[] args) {
+
+        if(e.getAuthor().getIdLong() != 397006908424454147L) {
+            return;
+        }
+
         if (timer.containsKey(e.getAuthor().getId()) && timer.get(e.getAuthor().getId()) >= System.currentTimeMillis()) {
             timer.put(e.getAuthor().getId(), System.currentTimeMillis() + 3000);
             EmbedBuilder eb = new EmbedBuilder();
