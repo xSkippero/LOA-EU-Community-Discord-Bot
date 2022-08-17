@@ -21,6 +21,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         } else if (event.getName().equals("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
+                System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " tried to execute " + "/update");
             } else {
                 String id = event.getUser().getId();
                 if (timer.containsKey(id) && timer.get(id) >= System.currentTimeMillis()) {
@@ -36,6 +37,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equals("about")) {
             event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.1\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
+            System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " executed " + "/about");
         }
     }
 
