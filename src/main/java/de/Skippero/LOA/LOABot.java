@@ -27,8 +27,6 @@ public class LOABot {
 
     public static void main(String[] args) throws LoginException, InterruptedException {
 
-        args = new String[]{"MTAwOTM4MTU4MTc4NzUwNDcyNg.GpvHeg.cq_85OXUqA00ZK7Z0RVUbd28ewEeTrBaRa9E9U"};
-
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
@@ -97,7 +95,7 @@ public class LOABot {
         switch (newState) {
             case GOOD:
                 eb.setColor(MessageColor.GREEN.getColor());
-                eb.setDescription(server + " is now Online");
+                eb.setDescription(server + " is now online");
                 break;
             case BUSY:
                 eb.setColor(MessageColor.ORANGE.getColor());
@@ -112,9 +110,10 @@ public class LOABot {
                 eb.setDescription(server + " is now in maintenance");
                 break;
         }
-        SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm");
+        SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        dt.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
-        eb.setTitle("Status Update " + dt.format(date));
+        eb.setTitle(getEmoteForState(newState) +  " Status Update " + dt.format(date));
         pushChannel.sendMessageEmbeds(eb.build()).queue();
     }
 

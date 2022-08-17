@@ -39,9 +39,9 @@ public class ServerManager
                     servers.add(server);
                     updateStateAmountForServers(server);
                     if(!lastStates.containsKey(server.getName())) {
-                        lastStates.put(server.getStateName(),server.getState());
+                        lastStates.put(server.getName(),server.getState());
                     }else{
-                        State lastState = lastStates.get(server.getStateName());
+                        State lastState = lastStates.get(server.getName());
                         if(lastState != server.getState()) {
                             LOABot.pushStateUpdateNotify(server.getName(),server.getState());
                             lastStates.put(server.getName(),server.getState());
