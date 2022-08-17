@@ -1,9 +1,6 @@
 package de.Skippero.LOA;
 
-import de.Skippero.LOA.commands.HelpCommand;
-import de.Skippero.LOA.commands.PingCommand;
-import de.Skippero.LOA.commands.UpdateCommand;
-import de.Skippero.LOA.events.MessageReceived;
+import de.Skippero.LOA.events.OnSlashCommandInteraction;
 import de.Skippero.LOA.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -39,11 +36,14 @@ public class LOABot {
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
         builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
-        builder.addEventListeners(new MessageReceived());
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
+        builder.addEventListeners(new OnSlashCommandInteraction());
 
         JDA jda = builder.build();
         jda.awaitReady();
+        jda.upsertCommand("ping", "Calculate ping of the bot").queue();
+        jda.upsertCommand("update", "Start the update-script").queue();
+        jda.upsertCommand("about", "Prints out information about the bot").queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
@@ -51,8 +51,6 @@ public class LOABot {
             System.out.println("- " + guild.getName());
         });
         System.out.println(" ");
-
-        initCommands();
 
         List<TextChannel> stateChannels = jda.getTextChannelsByName("loa-euw-status", true);
         List<TextChannel> pushChannels = jda.getTextChannelsByName("loa-euw-notify", true);
@@ -153,13 +151,6 @@ public class LOABot {
             return;
         }
         ServerManager.loadServers();
-    }
-
-    private static void initCommands() {
-        System.out.println("Loading Commands");
-        new HelpCommand();
-        new PingCommand();
-        new UpdateCommand();
     }
 
 }
