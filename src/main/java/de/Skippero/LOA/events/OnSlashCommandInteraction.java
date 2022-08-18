@@ -37,7 +37,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 }
             }
         }else if(event.getName().equalsIgnoreCase("about")) {
-            event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.1\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
+            event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.2\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
             System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " executed " + "/about");
         }else if(event.getName().equalsIgnoreCase("config")) {
             if(event.isFromGuild()) {
