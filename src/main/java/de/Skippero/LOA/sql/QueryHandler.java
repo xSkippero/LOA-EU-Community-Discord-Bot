@@ -51,11 +51,6 @@ public class QueryHandler {
     }
 
     public Connection getConnection() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
         String address = "jdbc:mysql://" + host + ":" + port + "/" + database;
         try {
             return DriverManager.getConnection(address, user, password);
