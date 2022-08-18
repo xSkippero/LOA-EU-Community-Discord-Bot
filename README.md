@@ -8,7 +8,7 @@ Required default Textchannels (Can be changed):
 
 Commands:
 
-/ping - Test the Bot response
-/update - You need to have a Script for this (Only Dev has Permission for this)
-/config - Update the Channel Names or deactivate Push Notifications (Server Owner has permission)
-/about - Get Information about the Bot
+- /ping - Test the Bot response
+- /update - You need to have a Script for this (Only Dev has Permission for this)
+- /config - Update the Channel Names or deactivate Push Notifications (Server Owner has permission)
+- /about - Get Information about the Bot
