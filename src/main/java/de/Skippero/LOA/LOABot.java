@@ -99,7 +99,7 @@ public class LOABot {
         timer.schedule(task, 5*1000,period);
 
         Timer timer2 = new Timer("Configtimer");
-        long period2 = 10 * 1000L;
+        long period2 = 2 * 60 * 60 * 1000L;
         TimerTask task2 = new TimerTask() {
             public void run() {
                 reloadConfig(jda);
@@ -145,8 +145,11 @@ public class LOABot {
         }
 
         updateNotify.forEach((user, s) -> {
-            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration-update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
+            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
         });
+        if(!updateNotify.isEmpty()) {
+            System.out.println("["+new Date().toGMTString()+"]" + " updated Confiurations on " + updateNotify.size() + " servers");
+        }
         updateNotify.clear();
     }
 
