@@ -148,7 +148,7 @@ public class LOABot {
             user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
         });
         if(!updateNotify.isEmpty()) {
-            System.out.println("["+new Date().toGMTString()+"]" + " updated Confiurations on " + updateNotify.size() + " servers");
+            System.out.println("["+new Date().toGMTString()+"]" + " Updated Configurations on " + updateNotify.size() + " servers");
         }
         updateNotify.clear();
     }
