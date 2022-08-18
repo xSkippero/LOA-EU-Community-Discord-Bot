@@ -26,7 +26,7 @@ public class ConfigManager {
     }
 
     private void createDefaultConfig() {
-        File dataFile = new File("data.json");
+        File dataFile = new File("config.json");
         if(!dataFile.exists()) {
             setData("mysql.host", "localhost");
             setData("mysql.port", "3006");
@@ -53,7 +53,7 @@ public class ConfigManager {
     }
 
     private void loadConfig() {
-        File dataFile = new File("data.json");
+        File dataFile = new File("config.json");
         StringBuilder jsonString = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
             String line;
