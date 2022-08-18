@@ -49,6 +49,16 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     }else if(event.getOptions().size() == 2) {
                         String property = event.getOption("property").getAsString();
                         String value = event.getOption("value").getAsString();
+                        if(!property.equals("pushNotifications") && !property.equals("pushChannelName") && !property.equals("statusChannelName")) {
+                            event.reply("Please provide a Property from the List").setEphemeral(true).queue();
+                            return;
+                        }
+                        if(property.equals("pushNotifications")) {
+                            if(!value.equals("true") && !value.equals("false")) {
+                                event.reply("Please provide true or false").setEphemeral(true).queue();
+                                return;
+                            }
+                        }
                         LOABot.getQueryHandler().updateProperty(event.getGuild().getName(),property,value);
                         System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " updated " + property + " to " + value + " on " + event.getGuild().getName());
                     }
