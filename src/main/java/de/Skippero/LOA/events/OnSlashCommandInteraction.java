@@ -61,6 +61,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         }
                         LOABot.getQueryHandler().updateProperty(event.getGuild().getName(),property,value);
                         event.reply("You updated the setting, the changes will take effect when the Config-Reload happens (every 2 hours)").setEphemeral(true).queue();
+                        LOABot.updateNotify.put(event.getUser(),event.getGuild().getName());
                         System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " updated " + property + " to " + value + " on " + event.getGuild().getName());
                     }
                 }else{

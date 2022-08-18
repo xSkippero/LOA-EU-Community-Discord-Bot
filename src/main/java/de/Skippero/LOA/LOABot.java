@@ -27,6 +27,8 @@ public class LOABot {
     private static List<TextChannel> statusChannels;
     private static List<TextChannel> pushNotificationChannels;
 
+    public static Map<User,String> updateNotify;
+
     public static void main(String[] args) throws LoginException, InterruptedException {
 
         if (args.length < 1) {
@@ -69,6 +71,7 @@ public class LOABot {
 
         pushNotificationChannels = new ArrayList<>();
         statusChannels = new ArrayList<>();
+        updateNotify = new HashMap<>();
 
         startTimers(jda);
     }
@@ -96,7 +99,7 @@ public class LOABot {
         timer.schedule(task, 5*1000,period);
 
         Timer timer2 = new Timer("Configtimer");
-        long period2 = 2 * 60 * 60 * 1000L;
+        long period2 = 10 * 1000L;
         TimerTask task2 = new TimerTask() {
             public void run() {
                 reloadConfig(jda);
@@ -139,8 +142,12 @@ public class LOABot {
             if(!_statusChannels.isEmpty()) {
                 statusChannels.add(_statusChannels.get(0));
             }
-
         }
+
+        updateNotify.forEach((user, s) -> {
+            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration-update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
+        });
+        updateNotify.clear();
     }
 
     private static String getEmoteForState(State state) {
