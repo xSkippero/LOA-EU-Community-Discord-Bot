@@ -29,7 +29,7 @@ public class ConfigManager {
         File dataFile = new File("config.json");
         if(!dataFile.exists()) {
             setData("mysql.host", "localhost");
-            setData("mysql.port", "3006");
+            setData("mysql.port", "3306");
             setData("mysql.database", "loabot");
             setData("mysql.user", "loa");
             setData("mysql.password", "password");
