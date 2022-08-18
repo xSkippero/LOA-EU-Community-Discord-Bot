@@ -50,12 +50,15 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         String property = event.getOption("Property").getAsString();
                         String value = event.getOption("Value").getAsString();
                         LOABot.getQueryHandler().updateProperty(event.getGuild().getName(),property,value);
+                        System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " updated " + property + " to " + value + " on " + event.getGuild().getName());
                     }
                 }else{
                     event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
+                    System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " tried to execute " + "/config");
                 }
             }else{
                 event.reply("Please use this command only on a Server").setEphemeral(true).queue();
+                System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " tried to execute " + "/config via PM");
             }
             
         }
