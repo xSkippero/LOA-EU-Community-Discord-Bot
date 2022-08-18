@@ -70,6 +70,47 @@ public class LOABot {
         pushNotificationChannels = new ArrayList<>();
         statusChannels = new ArrayList<>();
 
+        startTimers(jda);
+    }
+
+    private static boolean serverExistsInDB(String name) {
+        return configurations.containsKey(name);
+    }
+
+    public static ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public static QueryHandler getQueryHandler() {
+        return queryHandler;
+    }
+
+    private static void startTimers(JDA jda) {
+        Timer timer = new Timer("Statustimer");
+        long period = 60 * 1000L;
+        TimerTask task = new TimerTask() {
+            public void run() {
+                checkServerStatusAndPrintResults();
+            }
+        };
+        timer.schedule(task, 5*1000,period);
+
+        Timer timer2 = new Timer("Configtimer");
+        long period2 = 2 * 60 * 60 * 1000L;
+        TimerTask task2 = new TimerTask() {
+            public void run() {
+                reloadConfig(jda);
+            }
+        };
+        timer2.schedule(task2, 5*1000,period2);
+    }
+
+    private static void reloadConfig(JDA jda) {
+
+        pushNotificationChannels.clear();
+        statusChannels.clear();
+        configurations = queryHandler.loadConfiguration(configurations);
+
         for (Guild guild : jda.getGuilds()) {
             String guildName = guild.getName();
             boolean pushNotifications = false;
@@ -100,31 +141,6 @@ public class LOABot {
             }
 
         }
-
-        startTimers();
-    }
-
-    private static boolean serverExistsInDB(String name) {
-        return configurations.containsKey(name);
-    }
-
-    public static ConfigManager getConfigManager() {
-        return configManager;
-    }
-
-    public static QueryHandler getQueryHandler() {
-        return queryHandler;
-    }
-
-    private static void startTimers() {
-        Timer timer = new Timer("Statustimer");
-        long period = 60 * 1000L;
-        TimerTask task = new TimerTask() {
-            public void run() {
-                checkServerStatusAndPrintResults();
-            }
-        };
-        timer.schedule(task, 5*1000,period);
     }
 
     private static String getEmoteForState(State state) {
