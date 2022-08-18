@@ -47,8 +47,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     }else if(event.getOptions().size() == 1){
                         event.reply("You are missing on Argument").setEphemeral(true).queue();
                     }else if(event.getOptions().size() == 2) {
-                        String property = event.getOption("Property").getAsString();
-                        String value = event.getOption("Value").getAsString();
+                        String property = event.getOption("property").getAsString();
+                        String value = event.getOption("value").getAsString();
                         LOABot.getQueryHandler().updateProperty(event.getGuild().getName(),property,value);
                         System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " updated " + property + " to " + value + " on " + event.getGuild().getName());
                     }

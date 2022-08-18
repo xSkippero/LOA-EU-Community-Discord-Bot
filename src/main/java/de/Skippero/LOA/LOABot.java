@@ -55,7 +55,7 @@ public class LOABot {
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("update", "Start the update-script").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
-        jda.upsertCommand("config", "Configure the Bot").addOption(OptionType.STRING,"Property","The Field you want to change",false).addOption(OptionType.STRING,"Value","The value for the Field you want to change",false).queue();
+        jda.upsertCommand("config", "Configure the Bot").addOption(OptionType.STRING,"property","The field you want to change",false).addOption(OptionType.STRING,"value","The value for the field you want to change",false).queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
