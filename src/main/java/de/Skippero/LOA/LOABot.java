@@ -1,15 +1,17 @@
 package de.Skippero.LOA;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import de.Skippero.LOA.config.ConfigManager;
 import de.Skippero.LOA.events.OnSlashCommandInteraction;
+import de.Skippero.LOA.sql.QueryHandler;
 import de.Skippero.LOA.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
@@ -19,8 +21,11 @@ import java.util.*;
 
 public class LOABot {
 
-    private static TextChannel statusChannel;
-    private static TextChannel pushChannel;
+    private static ConfigManager configManager;
+    private static QueryHandler queryHandler;
+    private static Multimap<String, String[]> configurations;
+    private static List<TextChannel> statusChannels;
+    private static List<TextChannel> pushNotificationChannels;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
 
@@ -30,6 +35,12 @@ public class LOABot {
         }
 
         System.out.println("Starting LOA-EUW-Status-Bot by Skippero");
+
+        configManager = new ConfigManager();
+        queryHandler = new QueryHandler();
+        configurations = ArrayListMultimap.create();
+
+        configurations = queryHandler.loadConfiguration(configurations);
 
         JDABuilder builder = JDABuilder.createDefault(args[0]);
         builder.setStatus(OnlineStatus.ONLINE);
@@ -44,28 +55,70 @@ public class LOABot {
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("update", "Start the update-script").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
+        jda.upsertCommand("config", "Configure the Bot").addOption(OptionType.STRING,"Property","The Field you want to change",false).addOption(OptionType.STRING,"Value","The value for the Field you want to change",false).queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
             System.out.println("- " + guild.getName());
+            if(!serverExistsInDB(guild.getName())) {
+                queryHandler.createDefaultDataBaseConfiguration(guild.getName());
+            }
         });
         System.out.println(" ");
 
-        List<TextChannel> stateChannels = jda.getTextChannelsByName("loa-euw-status", true);
-        List<TextChannel> pushChannels = jda.getTextChannelsByName("loa-euw-notify", true);
-        if(!stateChannels.isEmpty()) {
-            statusChannel = stateChannels.get(0);
-            if(!pushChannels.isEmpty()) {
-                pushChannel = pushChannels.get(0);
-                startTimers();
+        pushNotificationChannels = new ArrayList<>();
+        statusChannels = new ArrayList<>();
+
+        for (Guild guild : jda.getGuilds()) {
+            String guildName = guild.getName();
+            boolean pushNotifications = false;
+            String pushNotificationChannelName = "loa-euw-notify";
+            String statusChannelName = "loa-euw-status";
+            for (String[] strings : configurations.get(guildName)) {
+                switch (strings[0]) {
+                    case "pushNotifications":
+                        pushNotifications = Boolean.parseBoolean(strings[1]);
+                        break;
+                    case "pushChannelName":
+                        pushNotificationChannelName = strings[1];
+                        break;
+                    case "statusChannelName":
+                        statusChannelName = strings[1];
+                        break;
+                }
             }
+            if(pushNotifications) {
+                List<TextChannel> _pushChannels = jda.getTextChannelsByName(pushNotificationChannelName, true);
+                if(!_pushChannels.isEmpty()) {
+                    pushNotificationChannels.add(_pushChannels.get(0));
+                }
+            }
+            List<TextChannel> _statusChannels = jda.getTextChannelsByName(statusChannelName, true);
+            if(!_statusChannels.isEmpty()) {
+                statusChannels.add(_statusChannels.get(0));
+            }
+
         }
+
+        startTimers();
+    }
+
+    private static boolean serverExistsInDB(String name) {
+        return configurations.containsKey(name);
+    }
+
+    public static ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public static QueryHandler getQueryHandler() {
+        return queryHandler;
     }
 
     private static void startTimers() {
         Timer timer = new Timer("Statustimer");
-        long period = 30 * 1000L;
+        long period = 60 * 1000L;
         TimerTask task = new TimerTask() {
             public void run() {
                 checkServerStatusAndPrintResults();
@@ -112,7 +165,7 @@ public class LOABot {
         dt.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
         eb.setTitle(getEmoteForState(newState) +  " Status Update " + dt.format(date));
-        pushChannel.sendMessageEmbeds(eb.build()).queue();
+        pushNotificationChannels.forEach(textChannel -> textChannel.sendMessageEmbeds(eb.build()).queue());
     }
 
     private static void checkServerStatusAndPrintResults() {
@@ -129,20 +182,22 @@ public class LOABot {
             builder.append("All Servers are Offline");
         }
         eb.setDescription(builder.toString());
-        try {
-            MessageHistory history = new MessageHistory(statusChannel);
-            List<Message> messageList = history.retrievePast(20).complete();
-            if(!messageList.isEmpty()) {
-                for (Message message : messageList) {
-                    if(message.getAuthor().getIdLong() == 1009381581787504726L) {
-                        statusChannel.deleteMessageById(message.getId()).queue();
+        statusChannels.forEach(textChannel -> {
+            try {
+                MessageHistory history = new MessageHistory(textChannel);
+                List<Message> messageList = history.retrievePast(20).complete();
+                if(!messageList.isEmpty()) {
+                    for (Message message : messageList) {
+                        if(message.getAuthor().getIdLong() == 1009381581787504726L) {
+                            textChannel.deleteMessageById(message.getId()).queue();
+                        }
                     }
                 }
+                textChannel.sendMessageEmbeds(eb.build()).queue();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            statusChannel.sendMessageEmbeds(eb.build()).queue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private static void getStatus() {

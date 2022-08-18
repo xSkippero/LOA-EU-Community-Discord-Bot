@@ -1,5 +1,6 @@
 package de.Skippero.LOA.events;
 
+import de.Skippero.LOA.LOABot;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -14,11 +15,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (event.getName().equals("ping")) {
+        if (event.getName().equalsIgnoreCase("ping")) {
             long time = System.currentTimeMillis();
             event.reply("Pong!").setEphemeral(true).flatMap(v -> event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time)).queue();
             System.out.println("["+new Date().toGMTString()+"]" + " " + event.getUser().getName() + " executed " + "/ping");
-        } else if (event.getName().equals("update")) {
+        } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
             } else {
@@ -34,8 +35,26 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     sendConfirm(event);
                 }
             }
-        }else if(event.getName().equals("about")) {
+        }else if(event.getName().equalsIgnoreCase("about")) {
             event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.1\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
+        }else if(event.getName().equalsIgnoreCase("config")) {
+            if(event.isFromGuild()) {
+                if(event.getMember() != null && event.getMember().isOwner()) {
+                    if(event.getOptions().isEmpty()) {
+                        event.reply("You entered the Configuration Menu\n" + "Usage:\n" + "/config <Property> <Value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>").setEphemeral(true).queue();
+                    }else if(event.getOptions().size() == 1){
+                        event.reply("You are missing on Argument").setEphemeral(true).queue();
+                    }else if(event.getOptions().size() == 2) {
+                        String property = event.getOption("Property").getAsString();
+                        String value = event.getOption("Value").getAsString();
+                        LOABot.getQueryHandler().updateProperty(event.getGuild().getName(),property,value);
+                    }
+                }else{
+                    event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
+                }
+            }else{
+                event.reply("Please use this command only on a Server").setEphemeral(true).queue();
+            }
         }
     }
 
