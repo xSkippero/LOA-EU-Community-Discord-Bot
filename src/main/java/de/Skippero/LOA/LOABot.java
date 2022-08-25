@@ -27,6 +27,7 @@ public class LOABot {
     private static List<TextChannel> statusChannels;
     private static List<TextChannel> pushNotificationChannels;
 
+    public static long nextUpdateTimestamp;
     public static Map<User,String> updateNotify;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
@@ -110,6 +111,8 @@ public class LOABot {
 
     private static void reloadConfig(JDA jda) {
 
+        nextUpdateTimestamp = System.currentTimeMillis()+2*60*60*1000;
+
         pushNotificationChannels.clear();
         statusChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
@@ -148,7 +151,7 @@ public class LOABot {
             user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
         });
         if(!updateNotify.isEmpty()) {
-            System.out.println("["+new Date().toGMTString()+"]" + " Updated Configurations on " + updateNotify.size() + " servers");
+            System.out.println("["+new Date().toGMTString()+"]" + " Updated configurations on " + updateNotify.size() + " servers");
         }
         updateNotify.clear();
     }
