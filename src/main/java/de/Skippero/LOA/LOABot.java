@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -113,6 +114,8 @@ public class LOABot {
 
         nextUpdateTimestamp = System.currentTimeMillis()+2*60*60*1000;
 
+        errorCount = 0;
+
         pushNotificationChannels.clear();
         statusChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
@@ -208,7 +211,7 @@ public class LOABot {
             builder.append(server.getName()).append(" ⮕ ").append(getEmoteForState(server.getState())).append(" (").append(server.getStateName()).append(")").append("\n");
         }
         if(ServerManager.servers.isEmpty()) {
-            builder.append("All Servers are Offline");
+            builder.append("All servers are offline");
         }
         eb.setDescription(builder.toString());
         statusChannels.forEach(textChannel -> {
@@ -223,11 +226,27 @@ public class LOABot {
                     }
                 }
                 textChannel.sendMessageEmbeds(eb.build()).queue();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignored) {
+                System.out.println("["+new Date().toGMTString()+"]" + " Discord was not responding (x"+errorCount+")");
+                errorCount++;
+                if(errorCount >= 10) {
+                    System.out.println("["+new Date().toGMTString()+"]" + " Discord error-count was too high, restarting now");
+                    restartBot();
+                }
             }
         });
     }
+
+    private static void restartBot() {
+        try {
+            System.out.println("["+new Date().toGMTString()+"]" + " Restarting Bot...");
+            Runtime.getRuntime().exec("./restart.sh");
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    private static int errorCount = 0;
 
     private static void getStatus() {
         Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
