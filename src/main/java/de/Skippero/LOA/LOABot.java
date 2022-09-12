@@ -227,8 +227,8 @@ public class LOABot {
                 }
                 textChannel.sendMessageEmbeds(eb.build()).queue();
             } catch (Exception ignored) {
-                System.out.println("["+new Date().toGMTString()+"]" + " Discord was not responding (x"+errorCount+")");
                 errorCount++;
+                System.out.println("["+new Date().toGMTString()+"]" + " Discord was not responding (x"+errorCount+")");
                 if(errorCount >= 10) {
                     System.out.println("["+new Date().toGMTString()+"]" + " Discord error-count was too high, restarting now");
                     restartBot();
