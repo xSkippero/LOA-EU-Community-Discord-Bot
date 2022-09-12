@@ -31,6 +31,8 @@ public class LOABot {
     public static long nextUpdateTimestamp;
     public static Map<User,String> updateNotify;
 
+    private static JDA jda;
+
     public static void main(String[] args) throws LoginException, InterruptedException {
 
         if (args.length < 1) {
@@ -54,11 +56,12 @@ public class LOABot {
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
         builder.addEventListeners(new OnSlashCommandInteraction());
 
-        JDA jda = builder.build();
+        jda = builder.build();
         jda.awaitReady();
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("update", "Start the update-script").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
+        jda.upsertCommand("reload","Reload all server-configurations").queue();
         jda.upsertCommand("config", "Configure the Bot").addOption(OptionType.STRING,"property","The field you want to change",false).addOption(OptionType.STRING,"value","The value for the field you want to change",false).queue();
 
         System.out.println(" ");
@@ -262,5 +265,8 @@ public class LOABot {
         ServerManager.loadServers();
     }
 
+    public static void manualReload() {
+        reloadConfig(jda);
+    }
 }
 
