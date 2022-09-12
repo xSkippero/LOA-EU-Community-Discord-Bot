@@ -25,8 +25,8 @@ public class LOABot {
     private static ConfigManager configManager;
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
-    private static List<TextChannel> statusChannels;
-    private static List<TextChannel> pushNotificationChannels;
+    private static Map<String,TextChannel> statusChannels;
+    private static Map<String,TextChannel> pushNotificationChannels;
 
     public static long nextUpdateTimestamp;
     public static Map<User,String> updateNotify;
@@ -71,8 +71,8 @@ public class LOABot {
         });
         System.out.println(" ");
 
-        pushNotificationChannels = new ArrayList<>();
-        statusChannels = new ArrayList<>();
+        pushNotificationChannels = new HashMap<>();
+        statusChannels = new HashMap<>();
         updateNotify = new HashMap<>();
 
         startTimers(jda);
@@ -139,14 +139,14 @@ public class LOABot {
                 }
             }
             if(pushNotifications) {
-                List<TextChannel> _pushChannels = jda.getTextChannelsByName(pushNotificationChannelName, true);
+                List<TextChannel> _pushChannels = guild.getTextChannelsByName(pushNotificationChannelName,true);
                 if(!_pushChannels.isEmpty()) {
-                    pushNotificationChannels.add(_pushChannels.get(0));
+                    pushNotificationChannels.put(guildName, _pushChannels.get(0));
                 }
             }
-            List<TextChannel> _statusChannels = jda.getTextChannelsByName(statusChannelName, true);
+            List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName,true);
             if(!_statusChannels.isEmpty()) {
-                statusChannels.add(_statusChannels.get(0));
+                statusChannels.put(guildName,_statusChannels.get(0));
             }
         }
 
@@ -197,7 +197,11 @@ public class LOABot {
         dt.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
         eb.setTitle(getEmoteForState(newState) +  " Status Update " + dt.format(date));
-        pushNotificationChannels.forEach(textChannel -> textChannel.sendMessageEmbeds(eb.build()).queue());
+        pushNotificationChannels.forEach((s, textChannel) -> {
+            if(textChannel.getGuild().getName().equals(s)) {
+                textChannel.sendMessageEmbeds(eb.build()).queue();
+            }
+        });
     }
 
     private static void checkServerStatusAndPrintResults() {
@@ -214,18 +218,20 @@ public class LOABot {
             builder.append("All servers are offline");
         }
         eb.setDescription(builder.toString());
-        statusChannels.forEach(textChannel -> {
+        statusChannels.forEach((s, textChannel) -> {
             try {
-                MessageHistory history = new MessageHistory(textChannel);
-                List<Message> messageList = history.retrievePast(20).complete();
-                if(!messageList.isEmpty()) {
-                    for (Message message : messageList) {
-                        if(message.getAuthor().getIdLong() == 1009381581787504726L) {
-                            textChannel.deleteMessageById(message.getId()).queue();
+                if(textChannel.getGuild().getName().equals(s)) {
+                    MessageHistory history = new MessageHistory(textChannel);
+                    List<Message> messageList = history.retrievePast(20).complete();
+                    if (!messageList.isEmpty()) {
+                        for (Message message : messageList) {
+                            if (message.getAuthor().getIdLong() == 1009381581787504726L) {
+                                textChannel.deleteMessageById(message.getId()).queue();
+                            }
                         }
                     }
+                    textChannel.sendMessageEmbeds(eb.build()).queue();
                 }
-                textChannel.sendMessageEmbeds(eb.build()).queue();
             } catch (Exception ignored) {
                 errorCount++;
                 System.out.println("["+new Date().toGMTString()+"]" + " Discord was not responding (x"+errorCount+")");
