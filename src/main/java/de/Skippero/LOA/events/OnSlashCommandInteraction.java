@@ -106,13 +106,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         } else if (event.getName().equalsIgnoreCase("permissions")) {
             if (event.isFromGuild()) {
                 String guildName = event.getGuild().getName();
-
-                if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
-                    event.reply("Missing arguments").setEphemeral(true).queue();
-                    return;
-                }
-
                 if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.permissions", guildName)) {
+                    if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
+                        event.reply("Missing arguments").setEphemeral(true).queue();
+                        return;
+                    }
                     String action = event.getOption("action").getAsString();
                     Member user = event.getOption("user").getAsMember();
                     if (event.getOptions().size() == 2) {
@@ -152,11 +150,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     }
                 } else {
                     event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
-                    System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/config");
+                    System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/permissions");
                 }
             } else {
                 event.reply("Please use this command only on a Server").setEphemeral(true).queue();
-                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/config via PM");
+                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/permissions via PM");
             }
         }
     }
