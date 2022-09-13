@@ -122,9 +122,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                                 });
                                 event.reply(builder.toString()).setEphemeral(true).queue();
                             }else{
-                                event.reply("The given user has no permissions").setEphemeral(true).queue();
+                                event.reply(user.getAsMention() + " has no permissions").setEphemeral(true).queue();
                             }
-                            System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " listed the permissions from "+ user.getNickname() + " on " + guildName);
+                            System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " listed the permissions from "+ user.getEffectiveName() + " on " + guildName);
                         }
                     }else if(event.getOptions().size() == 3) {
                         if (!action.equalsIgnoreCase("add") && !action.equalsIgnoreCase("remove")) {
@@ -135,12 +135,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
                             if(action.equalsIgnoreCase("add")) {
                                 LOABot.getQueryHandler().insertUserProperty(guildName,userId,permission);
-                                event.reply("Added the permission '" + permission + "' to " + user.getNickname()).setEphemeral(true).queue();
-                                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " added the permission '" + permission + "' to "+ user.getNickname() + " on " + guildName);
+                                event.reply("Added the permission '" + permission + "' to " + user.getAsMention()).setEphemeral(true).queue();
+                                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " added the permission '" + permission + "' to "+ user.getEffectiveName() + " on " + guildName);
                             }else if(action.equalsIgnoreCase("remove")) {
                                 LOABot.getQueryHandler().removeUserProperty(guildName,userId,permission);
-                                event.reply("Removed the permission '" + permission + "' from " + user.getNickname()).setEphemeral(true).queue();
-                                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " removed the permission '" + permission + "' from "+ user.getNickname() + " on " + guildName);
+                                event.reply("Removed the permission '" + permission + "' from " + user.getAsMention()).setEphemeral(true).queue();
+                                System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " removed the permission '" + permission + "' from "+ user.getEffectiveName() + " on " + guildName);
                             }
                         }
                     }
