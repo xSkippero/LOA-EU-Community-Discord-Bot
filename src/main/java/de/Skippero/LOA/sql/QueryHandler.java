@@ -28,11 +28,11 @@ public class QueryHandler {
         this.password = cfg.getData("mysql.password");
 
         Connection con = getConnection();
-        if(con != null) {
+        if (con != null) {
             connections.add(con);
-            System.out.println("Succesfully established SQL Connection");
+            System.out.println("Successfully established SQL Connection");
             createTables();
-        }else{
+        } else {
             System.out.println("Could not established SQL Connection, exiting with Error code 1");
             System.exit(1);
         }
@@ -40,11 +40,11 @@ public class QueryHandler {
 
     public Multimap<String, String[]> loadConfiguration(Multimap<String, String[]> map) {
         ResultSet set = executeQuerySync("SELECT * FROM serverData");
-        try{
-            while(set.next()) {
-                map.put(set.getString("server"),new String[]{set.getString("field"),set.getString("value")});
+        try {
+            while (set.next()) {
+                map.put(set.getString("server"), new String[]{set.getString("field"), set.getString("value")});
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return map;
@@ -63,17 +63,53 @@ public class QueryHandler {
     private void createTables() {
         System.out.println("Creating Tables if not exits");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
+        executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
         executeUpdateSync("ALTER TABLE `serverData` ADD UNIQUE( `field`, `server`)");
     }
 
     public void updateProperty(String server, String property, String value) {
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('"+server+"','"+property+"','"+value+"') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + server + "','" + property + "','" + value + "') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+    }
+
+    public void insertUserProperty(String server, String userId, String permission) {
+        executeUpdateSync("INSERT INTO userData (server, userId, permission) VALUES ('" + server + "','" + userId + "','" + permission + "')");
+    }
+
+    public void removeUserProperty(String server, String userId, String permission) {
+        executeUpdateSync("DELETE FROM userData WHERE server = '" + server + "' AND userId = '" + userId + "' AND permission = '" + permission + "'");
+    }
+
+    public boolean hasPermission(String userId, String permission, String server) {
+        ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' server = '" + server + "'");
+        try {
+            while (set.next()) {
+                if (set.getString("permission").equalsIgnoreCase(permission)) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<String> getPermissionForServer(String userId, String server) {
+        List<String> permissions = new ArrayList<>();
+        ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' AND server = '" + server + "'");
+        try {
+            while (set.next()) {
+                permissions.add("permission");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return permissions;
     }
 
     public ResultSet executeQuerySync(String statement) {
         try {
             Connection con = getConnection();
-            if(con == null) {
+            if (con == null) {
                 return null;
             }
             Statement stm = con.createStatement();
@@ -89,7 +125,7 @@ public class QueryHandler {
     public int executeUpdateSync(String statement) {
         try {
             Connection con = getConnection();
-            if(con == null) {
+            if (con == null) {
                 return 1;
             }
             Statement stm = con.createStatement();
@@ -103,7 +139,7 @@ public class QueryHandler {
     }
 
     private void autoClose(Connection con) {
-        Timer timer = new Timer("Timer"+ UUID.randomUUID());
+        Timer timer = new Timer("Timer" + UUID.randomUUID());
 
         TimerTask task = new TimerTask() {
             public void run() {
@@ -119,9 +155,9 @@ public class QueryHandler {
     }
 
     public void closeConnection() {
-        connections.forEach(con-> {
+        connections.forEach(con -> {
             try {
-                if(!con.isClosed()) {
+                if (!con.isClosed()) {
                     con.close();
                 }
             } catch (SQLException e) {
@@ -131,8 +167,8 @@ public class QueryHandler {
     }
 
     public void createDefaultDataBaseConfiguration(String name) {
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('"+name+"','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('"+name+"','pushChannelName','loa-euw-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('"+name+"','statusChannelName','loa-euw-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushChannelName','loa-euw-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','statusChannelName','loa-euw-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
     }
 }

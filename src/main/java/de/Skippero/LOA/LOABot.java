@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -22,18 +23,17 @@ import java.util.*;
 
 public class LOABot {
 
+    public static long nextUpdateTimestamp;
+    public static Map<User, String> updateNotify;
     private static ConfigManager configManager;
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
-    private static Map<String,TextChannel> statusChannels;
-    private static Map<String,TextChannel> pushNotificationChannels;
-
-    public static long nextUpdateTimestamp;
-    public static Map<User,String> updateNotify;
-
+    private static Map<String, TextChannel> statusChannels;
+    private static Map<String, TextChannel> pushNotificationChannels;
     private static JDA jda;
+    private static int errorCount = 0;
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
 
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
@@ -61,14 +61,23 @@ public class LOABot {
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("update", "Start the update-script").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
-        jda.upsertCommand("reload","Reload all server-configurations").queue();
-        jda.upsertCommand("config", "Configure the Bot").addOption(OptionType.STRING,"property","The field you want to change",false).addOption(OptionType.STRING,"value","The value for the field you want to change",false).queue();
+        jda.upsertCommand("reload", "Reload all server-configurations").queue();
+        jda.upsertCommand("restart", "Restart the bot").queue();
+        jda.upsertCommand("stop", "Stop the bot").queue();
+        jda.upsertCommand("config", "Configure the Bot")
+                .addOption(OptionType.STRING, "property", "The field you want to change", false)
+                .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
+                .setGuildOnly(true).queue();
+        jda.upsertCommand("permissions", "Configure Guild permissions for the bot usage")
+                .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
+                .addOption(OptionType.USER, "user", "The user you want to affect")
+                .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
             System.out.println("- " + guild.getName());
-            if(!serverExistsInDB(guild.getName())) {
+            if (!serverExistsInDB(guild.getName())) {
                 queryHandler.createDefaultDataBaseConfiguration(guild.getName());
             }
         });
@@ -101,7 +110,7 @@ public class LOABot {
                 checkServerStatusAndPrintResults();
             }
         };
-        timer.schedule(task, 5*1000,period);
+        timer.schedule(task, 5 * 1000, period);
 
         Timer timer2 = new Timer("Configtimer");
         long period2 = 2 * 60 * 60 * 1000L;
@@ -110,12 +119,12 @@ public class LOABot {
                 reloadConfig(jda);
             }
         };
-        timer2.schedule(task2, 5*1000,period2);
+        timer2.schedule(task2, 5 * 1000, period2);
     }
 
     private static void reloadConfig(JDA jda) {
 
-        nextUpdateTimestamp = System.currentTimeMillis()+2*60*60*1000;
+        nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
 
         errorCount = 0;
 
@@ -141,23 +150,23 @@ public class LOABot {
                         break;
                 }
             }
-            if(pushNotifications) {
-                List<TextChannel> _pushChannels = guild.getTextChannelsByName(pushNotificationChannelName,true);
-                if(!_pushChannels.isEmpty()) {
+            if (pushNotifications) {
+                List<TextChannel> _pushChannels = guild.getTextChannelsByName(pushNotificationChannelName, true);
+                if (!_pushChannels.isEmpty()) {
                     pushNotificationChannels.put(guildName, _pushChannels.get(0));
                 }
             }
-            List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName,true);
-            if(!_statusChannels.isEmpty()) {
-                statusChannels.put(guildName,_statusChannels.get(0));
+            List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName, true);
+            if (!_statusChannels.isEmpty()) {
+                statusChannels.put(guildName, _statusChannels.get(0));
             }
         }
 
         updateNotify.forEach((user, s) -> {
             user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
         });
-        if(!updateNotify.isEmpty()) {
-            System.out.println("["+new Date().toGMTString()+"]" + " Updated configurations on " + updateNotify.size() + " servers");
+        if (!updateNotify.isEmpty()) {
+            System.out.println("[" + new Date().toGMTString() + "]" + " Updated configurations on " + updateNotify.size() + " servers");
         }
         updateNotify.clear();
     }
@@ -199,9 +208,9 @@ public class LOABot {
         SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         dt.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
-        eb.setTitle(getEmoteForState(newState) +  " Status Update " + dt.format(date));
+        eb.setTitle(getEmoteForState(newState) + " Status Update " + dt.format(date));
         pushNotificationChannels.forEach((s, textChannel) -> {
-            if(textChannel.getGuild().getName().equals(s)) {
+            if (textChannel.getGuild().getName().equals(s)) {
                 textChannel.sendMessageEmbeds(eb.build()).queue();
             }
         });
@@ -217,13 +226,13 @@ public class LOABot {
         for (Server server : ServerManager.servers) {
             builder.append(server.getName()).append(" ⮕ ").append(getEmoteForState(server.getState())).append(" (").append(server.getStateName()).append(")").append("\n");
         }
-        if(ServerManager.servers.isEmpty()) {
+        if (ServerManager.servers.isEmpty()) {
             builder.append("All servers are offline");
         }
         eb.setDescription(builder.toString());
         statusChannels.forEach((s, textChannel) -> {
             try {
-                if(textChannel.getGuild().getName().equals(s)) {
+                if (textChannel.getGuild().getName().equals(s)) {
                     MessageHistory history = new MessageHistory(textChannel);
                     List<Message> messageList = history.retrievePast(20).complete();
                     if (!messageList.isEmpty()) {
@@ -237,29 +246,28 @@ public class LOABot {
                 }
             } catch (Exception ignored) {
                 errorCount++;
-                System.out.println("["+new Date().toGMTString()+"]" + " Discord was not responding (x"+errorCount+")");
-                if(errorCount >= 10) {
-                    System.out.println("["+new Date().toGMTString()+"]" + " Discord error-count was too high, restarting now");
+                System.out.println("[" + new Date().toGMTString() + "]" + " Discord was not responding (x" + errorCount + ")");
+                if (errorCount >= 10) {
+                    System.out.println("[" + new Date().toGMTString() + "]" + " Discord error-count was too high, restarting now");
                     restartBot();
                 }
             }
         });
     }
 
-    private static void restartBot() {
+    public static void restartBot() {
         try {
-            System.out.println("["+new Date().toGMTString()+"]" + " Restarting Bot...");
+            System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot...");
+            queryHandler.closeConnection();
             Runtime.getRuntime().exec("./restart.sh");
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     }
 
-    private static int errorCount = 0;
-
     private static void getStatus() {
         Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
-        if(website.getDoc() == null) {
+        if (website.getDoc() == null) {
             return;
         }
         ServerManager.loadServers();

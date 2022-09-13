@@ -9,9 +9,9 @@ import java.io.*;
 
 public class ConfigManager {
 
-    private JsonObject jsonObject;
     private final Gson gson;
     private final JsonParser parser;
+    private JsonObject jsonObject;
 
     public ConfigManager() {
         gson = new Gson();
@@ -27,7 +27,7 @@ public class ConfigManager {
 
     private void createDefaultConfig() {
         File dataFile = new File("config.json");
-        if(!dataFile.exists()) {
+        if (!dataFile.exists()) {
             setData("mysql.host", "localhost");
             setData("mysql.port", "3306");
             setData("mysql.database", "loabot");

@@ -1,12 +1,10 @@
 package de.Skippero.LOA.utils;
 
-public class Server
-{
+public class Server {
     private final String name;
     private final State state;
 
-    public Server(String name, State state)
-    {
+    public Server(String name, State state) {
         this.name = name;
         this.state = state;
     }
