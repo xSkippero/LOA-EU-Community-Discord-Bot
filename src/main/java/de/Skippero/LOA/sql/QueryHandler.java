@@ -80,10 +80,7 @@ public class QueryHandler {
     }
 
     public boolean hasPermission(String userId, String permission, String server) {
-        ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' server = '" + server + "'");
-        if(set == null) {
-            return false;
-        }
+        ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' AND server = '" + server + "'");
         try {
             while (set.next()) {
                 if (set.getString("permission").equalsIgnoreCase(permission)) {
