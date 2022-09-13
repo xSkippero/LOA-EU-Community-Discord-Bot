@@ -116,7 +116,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                             List<String> perms = LOABot.getQueryHandler().getPermissionForServer(user.getId(),guildName);
                             if(!perms.isEmpty()) {
                                 StringBuilder builder = new StringBuilder();
-                                builder.append("Permissions from ").append(user.getNickname()).append(":\n");
+                                builder.append("Permissions from ").append(user.getAsMention()).append(":\n");
                                 perms.forEach(perm -> {
                                     builder.append("- ").append(perm).append("\n");
                                 });

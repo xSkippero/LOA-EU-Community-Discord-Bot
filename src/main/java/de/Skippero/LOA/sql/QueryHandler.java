@@ -98,7 +98,7 @@ public class QueryHandler {
         ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' AND server = '" + server + "'");
         try {
             while (set.next()) {
-                permissions.add("permission");
+                permissions.add(set.getString("permission"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
