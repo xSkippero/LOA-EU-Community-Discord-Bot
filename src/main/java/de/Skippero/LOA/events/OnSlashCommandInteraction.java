@@ -106,6 +106,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         } else if (event.getName().equalsIgnoreCase("permissions")) {
             if (event.isFromGuild()) {
                 String guildName = event.getGuild().getName();
+
+                if(event.getOptions().isEmpty() || event.getOptions().size() < 2) {
+                    event.reply("Missing arguments").setEphemeral(true).queue();
+                    return;
+                }
+
                 if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.permissions", guildName)) {
                     String action = event.getOption("action").getAsString();
                     Member user = event.getOption("user").getAsMember();
