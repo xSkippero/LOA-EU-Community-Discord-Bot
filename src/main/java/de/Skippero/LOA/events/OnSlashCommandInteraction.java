@@ -131,6 +131,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                             System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " listed the permissions from "+ user.getEffectiveName() + " on " + guildName);
                         }
                     }else if(event.getOptions().size() == 3) {
+
+                        if(user.isOwner() && !event.getMember().getId().equals(user.getId())) {
+                            event.reply("You cannot change the permissions of the server-owner").setEphemeral(true).queue();
+                            return;
+                        }
+
                         if (!action.equalsIgnoreCase("add") && !action.equalsIgnoreCase("remove")) {
                             event.reply("Please provide one of the given Actions: add/remove").setEphemeral(true).queue();
                         }else {
