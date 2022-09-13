@@ -107,7 +107,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if (event.isFromGuild()) {
                 String guildName = event.getGuild().getName();
 
-                if(event.getOptions().isEmpty() || event.getOptions().size() < 2) {
+                if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
                     event.reply("Missing arguments").setEphemeral(true).queue();
                     return;
                 }
