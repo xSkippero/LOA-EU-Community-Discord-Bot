@@ -77,8 +77,8 @@ public class LOABot {
         System.out.println("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
             System.out.println("- " + guild.getName());
-            if (!serverExistsInDB(guild.getName())) {
-                queryHandler.createDefaultDataBaseConfiguration(guild.getName());
+            if (!serverExistsInDB(guild.getId())) {
+                queryHandler.createDefaultDataBaseConfiguration(guild.getId());
             }
         });
         System.out.println(" ");
