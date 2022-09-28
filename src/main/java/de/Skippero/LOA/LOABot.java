@@ -210,7 +210,7 @@ public class LOABot {
         Date date = new Date();
         eb.setTitle(getEmoteForState(newState) + " Status Update " + dt.format(date));
         pushNotificationChannels.forEach((s, textChannel) -> {
-            if (textChannel.getGuild().getName().equals(s)) {
+            if (textChannel.getGuild().getId().equals(s)) {
                 textChannel.sendMessageEmbeds(eb.build()).queue();
             }
         });
@@ -232,7 +232,7 @@ public class LOABot {
         eb.setDescription(builder.toString());
         statusChannels.forEach((s, textChannel) -> {
             try {
-                if (textChannel.getGuild().getName().equals(s)) {
+                if (textChannel.getGuild().getId().equals(s)) {
                     MessageHistory history = new MessageHistory(textChannel);
                     List<Message> messageList = history.retrievePast(20).complete();
                     if (!messageList.isEmpty()) {
