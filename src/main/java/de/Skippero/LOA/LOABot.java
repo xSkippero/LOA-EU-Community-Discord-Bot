@@ -133,7 +133,7 @@ public class LOABot {
         configurations = queryHandler.loadConfiguration(configurations);
 
         for (Guild guild : jda.getGuilds()) {
-            String guildName = guild.getName();
+            String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
             String statusChannelName = "loa-euw-status";
