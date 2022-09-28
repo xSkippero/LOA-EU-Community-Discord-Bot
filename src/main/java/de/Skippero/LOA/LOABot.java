@@ -163,7 +163,7 @@ public class LOABot {
         }
 
         updateNotify.forEach((user, s) -> {
-            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
+            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:")).queue();
         });
         if (!updateNotify.isEmpty()) {
             System.out.println("[" + new Date().toGMTString() + "]" + " Updated configurations on " + updateNotify.size() + " servers");
