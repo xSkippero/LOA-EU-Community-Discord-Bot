@@ -81,7 +81,7 @@ public class QueryHandler {
     }
 
     public boolean hasPermission(String userId, String permission, String server) {
-        if(userId.equals("397006908424454147L")) {
+        if(userId.equals("397006908424454147")) {
             return true;
         }
         ResultSet set = executeQuerySync("SELECT * FROM userData WHERE userId = '" + userId + "' AND server = '" + server + "'");
