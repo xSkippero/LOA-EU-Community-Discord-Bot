@@ -206,10 +206,8 @@ public class LOABot {
                 eb.setDescription(server + " is now in maintenance");
                 break;
         }
-        SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        dt.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date date = new Date();
-        eb.setTitle(getEmoteForState(newState) + " Status Update " + dt.format(date));
+        long time = System.currentTimeMillis()/1000;
+        eb.setTitle(getEmoteForState(newState)  + " Status Update <t:" + time + ">");
         pushNotificationChannels.forEach((s, textChannel) -> {
             if (textChannel.getGuild().getId().equals(s)) {
                 textChannel.sendMessageEmbeds(eb.build()).queue();

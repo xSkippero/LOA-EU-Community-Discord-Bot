@@ -29,7 +29,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if(event.getGuild() != null) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setColor(MessageColor.GREEN.getColor());
-                eb.setDescription("TEST" + " is now online");
+                eb.setDescription("Stonehearth" + " is now online");
                 eb.setTitle(":white_check_mark:" + " Status Update <t:" + time + ">");
                 event.getMessageChannel().sendMessageEmbeds(eb.build()).queue();
             }
