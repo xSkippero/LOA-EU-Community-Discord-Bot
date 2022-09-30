@@ -24,13 +24,13 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 return;
             }
-            long time = System.currentTimeMillis();
+            long time = System.currentTimeMillis()/1000;
             event.reply("<t:" + time + ">").queue();
             if(event.getGuild() != null) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setColor(MessageColor.GREEN.getColor());
                 eb.setDescription("TEST" + " is now online");
-                eb.setTitle("white_check_mark" + " Status Update <t:" + time + ">");
+                eb.setTitle(":white_check_mark:" + " Status Update <t:" + time + ">");
                 event.getMessageChannel().sendMessageEmbeds(eb.build()).queue();
             }
         } else if (event.getName().equalsIgnoreCase("update")) {
