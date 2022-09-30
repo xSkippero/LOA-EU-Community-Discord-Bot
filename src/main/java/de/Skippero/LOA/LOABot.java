@@ -78,8 +78,8 @@ public class LOABot {
         System.out.println("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
             System.out.println("- " + guild.getName());
-            if (!serverExistsInDB(guild.getName())) {
-                queryHandler.createDefaultDataBaseConfiguration(guild.getName());
+            if (!serverExistsInDB(guild.getId())) {
+                queryHandler.createDefaultDataBaseConfiguration(guild.getId());
             }
         });
         System.out.println(" ");
@@ -134,7 +134,7 @@ public class LOABot {
         configurations = queryHandler.loadConfiguration(configurations);
 
         for (Guild guild : jda.getGuilds()) {
-            String guildName = guild.getName();
+            String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
             String statusChannelName = "loa-euw-status";
@@ -164,7 +164,7 @@ public class LOABot {
         }
 
         updateNotify.forEach((user, s) -> {
-            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + s + "**' is now active :smile:")).queue();
+            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:")).queue();
         });
         if (!updateNotify.isEmpty()) {
             System.out.println("[" + new Date().toGMTString() + "]" + " Updated configurations on " + updateNotify.size() + " servers");
@@ -211,7 +211,7 @@ public class LOABot {
         Date date = new Date();
         eb.setTitle(getEmoteForState(newState) + " Status Update " + dt.format(date));
         pushNotificationChannels.forEach((s, textChannel) -> {
-            if (textChannel.getGuild().getName().equals(s)) {
+            if (textChannel.getGuild().getId().equals(s)) {
                 textChannel.sendMessageEmbeds(eb.build()).queue();
             }
         });
@@ -233,7 +233,7 @@ public class LOABot {
         eb.setDescription(builder.toString());
         statusChannels.forEach((s, textChannel) -> {
             try {
-                if (textChannel.getGuild().getName().equals(s)) {
+                if (textChannel.getGuild().getId().equals(s)) {
                     MessageHistory history = new MessageHistory(textChannel);
                     List<Message> messageList = history.retrievePast(20).complete();
                     if (!messageList.isEmpty()) {

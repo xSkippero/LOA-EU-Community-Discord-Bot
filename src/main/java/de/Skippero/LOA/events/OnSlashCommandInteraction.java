@@ -79,11 +79,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.exit(0);
             }
         } else if (event.getName().equalsIgnoreCase("about")) {
-            event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.2\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
+            event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. 0.3\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
             System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " executed " + "/about");
         } else if (event.getName().equalsIgnoreCase("config")) {
             if (event.isFromGuild()) {
-                if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.config", event.getGuild().getName())) {
+                if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.config", event.getGuild().getId())) {
                     if (event.getOptions().isEmpty()) {
                         event.reply("You entered the Configuration Menu\n" + "Usage:\n" + "/config <Property> <Value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>").setEphemeral(true).queue();
                     } else if (event.getOptions().size() == 1) {
@@ -101,9 +101,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                                 return;
                             }
                         }
-                        LOABot.getQueryHandler().updateProperty(event.getGuild().getName(), property, value);
+                        LOABot.getQueryHandler().updateProperty(event.getGuild().getId(), property, value);
                         event.reply("You updated the setting, the changes will take effect when the Config-Reload happens (in approximately " + Math.round((LOABot.nextUpdateTimestamp - System.currentTimeMillis()) / 1000D / 60D) + " minutes)").setEphemeral(true).queue();
-                        LOABot.updateNotify.put(event.getUser(), event.getGuild().getName());
+                        LOABot.updateNotify.put(event.getUser(), event.getGuild().getId());
                         System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " updated " + property + " to " + value + " on " + event.getGuild().getName());
                     }
                 } else {
@@ -116,7 +116,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         } else if (event.getName().equalsIgnoreCase("permissions")) {
             if (event.isFromGuild()) {
-                String guildName = event.getGuild().getName();
+                String guildName = event.getGuild().getId();
                 if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.permissions", guildName)) {
                     if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
                         event.reply("Missing arguments").setEphemeral(true).queue();
