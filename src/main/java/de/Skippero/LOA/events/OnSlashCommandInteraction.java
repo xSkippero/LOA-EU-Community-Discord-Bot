@@ -1,16 +1,14 @@
 package de.Skippero.LOA.events;
 
 import de.Skippero.LOA.LOABot;
+import de.Skippero.LOA.utils.MessageColor;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
@@ -22,6 +20,19 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             long time = System.currentTimeMillis();
             event.reply("Pong!").setEphemeral(true).flatMap(v -> event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time)).queue();
             System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " executed " + "/ping");
+        } else if (event.getName().equalsIgnoreCase("debug")) {
+            if(event.getUser().getIdLong() != 397006908424454147L) {
+                return;
+            }
+            long time = System.currentTimeMillis();
+            event.reply("<t:" + time + ">").setEphemeral(true);
+            if(event.getGuild() != null) {
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setColor(MessageColor.GREEN.getColor());
+                eb.setDescription("TEST" + " is now online");
+                eb.setTitle("white_check_mark" + " Status Update <t:" + time + ">");
+                event.getMessageChannel().sendMessageEmbeds(eb.build());
+            }
         } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();

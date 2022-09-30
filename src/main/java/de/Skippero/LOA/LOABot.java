@@ -64,6 +64,7 @@ public class LOABot {
         jda.upsertCommand("reload", "Reload all server-configurations").queue();
         jda.upsertCommand("restart", "Restart the bot").queue();
         jda.upsertCommand("stop", "Stop the bot").queue();
+        jda.upsertCommand("debug", "Developer command").queue();
         jda.upsertCommand("config", "Configure the Bot")
                 .addOption(OptionType.STRING, "property", "The field you want to change", false)
                 .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
