@@ -21,17 +21,17 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             event.reply("Pong!").setEphemeral(true).flatMap(v -> event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time)).queue();
             System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " executed " + "/ping");
         } else if (event.getName().equalsIgnoreCase("debug")) {
-            if(event.getUser().getIdLong() != 397006908424454147L) {
+            if (event.getUser().getIdLong() != 397006908424454147L) {
                 return;
             }
             long time = System.currentTimeMillis();
-            event.reply("<t:" + time + ">").setEphemeral(true);
+            event.reply("<t:" + time + ">").queue();
             if(event.getGuild() != null) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setColor(MessageColor.GREEN.getColor());
                 eb.setDescription("TEST" + " is now online");
                 eb.setTitle("white_check_mark" + " Status Update <t:" + time + ">");
-                event.getMessageChannel().sendMessageEmbeds(eb.build());
+                event.getMessageChannel().sendMessageEmbeds(eb.build()).queue();
             }
         } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
