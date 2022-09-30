@@ -40,7 +40,6 @@ public class ServerManager {
                         lastStates.put(server.getName(), server.getState());
                     } else {
                         State lastState = lastStates.get(server.getName());
-                        lastState = State.BUSY;
                         if (lastState != server.getState()) {
                             LOABot.pushStateUpdateNotify(server.getName(), server.getState());
                             lastStates.put(server.getName(), server.getState());
