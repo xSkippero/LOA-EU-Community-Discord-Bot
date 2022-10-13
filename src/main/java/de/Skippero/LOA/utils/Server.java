@@ -10,9 +10,9 @@ public class Server {
     }
 
     public String getName() {
-        if(this.name.Equals("Rethramis")) {
+        if(this.name.equals("Rethramis")) {
             return "Nia";
-        }else if(this.name.Equals("Moonkeep")) {
+        }else if(this.name.equals("Moonkeep")) {
             return "Ealyn";
         }
         return this.name;
