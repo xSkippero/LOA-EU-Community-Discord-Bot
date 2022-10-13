@@ -10,6 +10,11 @@ public class Server {
     }
 
     public String getName() {
+        if(this.name.Equals("Rethramis") {
+            return "Nia";
+        }else if(this.name.Equals("Moonkeep") {
+            return "Ealyn";
+        }
         return this.name;
     }
 
