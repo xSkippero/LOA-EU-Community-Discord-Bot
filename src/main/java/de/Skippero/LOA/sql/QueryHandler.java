@@ -174,5 +174,6 @@ public class QueryHandler {
         executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
         executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushChannelName','loa-euw-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
         executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','statusChannelName','loa-euw-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','merchantChannelName','loa-euw-merchants') ON DUPLICATE KEY UPDATE value = VALUES(value)");
     }
 }

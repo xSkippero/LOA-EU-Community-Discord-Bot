@@ -4,6 +4,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import de.Skippero.LOA.config.ConfigManager;
 import de.Skippero.LOA.events.OnSlashCommandInteraction;
+import de.Skippero.LOA.features.merchants.MerchantManager;
+import de.Skippero.LOA.features.states.Server;
+import de.Skippero.LOA.features.states.ServerManager;
+import de.Skippero.LOA.features.states.State;
 import de.Skippero.LOA.sql.QueryHandler;
 import de.Skippero.LOA.utils.*;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,9 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LOABot {
@@ -29,9 +31,13 @@ public class LOABot {
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
     private static Map<String, TextChannel> statusChannels;
+    public static Map<String, TextChannel> merchantChannels;
     private static Map<String, TextChannel> pushNotificationChannels;
     private static JDA jda;
     private static int errorCount = 0;
+
+    public static TextChannel test;
+
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -41,6 +47,8 @@ public class LOABot {
         }
 
         System.out.println("Starting LOA-EUW-Status-Bot by Skippero");
+
+        MerchantManager.openConnection();
 
         configManager = new ConfigManager();
         queryHandler = new QueryHandler();
@@ -73,6 +81,10 @@ public class LOABot {
                 .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
                 .addOption(OptionType.USER, "user", "The user you want to affect")
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
+
+        jda.getGuilds().forEach(guild -> {
+            test = guild.getTextChannelsByName("test",true).get(0);
+        });
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
@@ -131,6 +143,7 @@ public class LOABot {
 
         pushNotificationChannels.clear();
         statusChannels.clear();
+        merchantChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
 
         for (Guild guild : jda.getGuilds()) {
@@ -138,6 +151,7 @@ public class LOABot {
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
             String statusChannelName = "loa-euw-status";
+            String merchantChannelName = "loa-euw-merchants";
             for (String[] strings : configurations.get(guildName)) {
                 switch (strings[0]) {
                     case "pushNotifications":
@@ -148,6 +162,9 @@ public class LOABot {
                         break;
                     case "statusChannelName":
                         statusChannelName = strings[1];
+                        break;
+                    case "merchantChannelName":
+                        merchantChannelName = strings[1];
                         break;
                 }
             }
@@ -160,6 +177,10 @@ public class LOABot {
             List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName, true);
             if (!_statusChannels.isEmpty()) {
                 statusChannels.put(guildName, _statusChannels.get(0));
+            }
+            List<TextChannel> _merchantChannels = guild.getTextChannelsByName(merchantChannelName, true);
+            if (!_statusChannels.isEmpty()) {
+                merchantChannels.put(guildName, _statusChannels.get(0));
             }
         }
 

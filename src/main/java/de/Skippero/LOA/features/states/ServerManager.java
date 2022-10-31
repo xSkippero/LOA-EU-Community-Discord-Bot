@@ -1,6 +1,8 @@
-package de.Skippero.LOA.utils;
+package de.Skippero.LOA.features.states;
 
 import de.Skippero.LOA.LOABot;
+import de.Skippero.LOA.utils.MessageColor;
+import de.Skippero.LOA.utils.Website;
 import org.jsoup.nodes.Element;
 
 import java.util.HashMap;

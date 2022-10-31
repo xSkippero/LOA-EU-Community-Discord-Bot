@@ -1,6 +1,7 @@
 package de.Skippero.LOA.events;
 
 import de.Skippero.LOA.LOABot;
+import de.Skippero.LOA.features.merchants.*;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,9 +30,15 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if(event.getGuild() != null) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setColor(MessageColor.GREEN.getColor());
-                eb.setDescription("Stonehearth" + " is now online");
+                eb.setDescription("Nia" + " is now online");
                 eb.setTitle(":white_check_mark:" + " Status Update <t:" + time + ">");
                 event.getMessageChannel().sendMessageEmbeds(eb.build()).queue();
+
+                MerchantItem card = new MerchantItem("Wei",MerchantItemType.CARD, MerchantItemRarity.LEGENDARY,"Card for the 'Light of Salvation' (+15% DMG in total) Cardset");
+                MerchantItem rapport = new MerchantItem("TEST",MerchantItemType.RAPPORT,MerchantItemRarity.EPIC);
+                Merchant merchant = new Merchant("TEST","TEST-ENTRY","Battlebound_Plains",rapport,card);
+                MerchantManager.sendMerchantUpdate(merchant,true, false, event.getGuild().getJDA().getTextChannelById(event.getMessageChannel().getId()));
+
             }
         } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
@@ -85,13 +92,13 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if (event.isFromGuild()) {
                 if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.config", event.getGuild().getId())) {
                     if (event.getOptions().isEmpty()) {
-                        event.reply("You entered the Configuration Menu\n" + "Usage:\n" + "/config <Property> <Value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>").setEphemeral(true).queue();
+                        event.reply("You entered the Configuration Menu\n" + "Usage:\n" + "/config <Property> <Value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>\n" + "merchantChannelName: <'value'>").setEphemeral(true).queue();
                     } else if (event.getOptions().size() == 1) {
                         event.reply("You are missing on Argument").setEphemeral(true).queue();
                     } else if (event.getOptions().size() == 2) {
                         String property = event.getOption("property").getAsString();
                         String value = event.getOption("value").getAsString();
-                        if (!property.equals("pushNotifications") && !property.equals("pushChannelName") && !property.equals("statusChannelName")) {
+                        if (!property.equals("pushNotifications") && !property.equals("pushChannelName") && !property.equals("statusChannelName") && !property.equals("merchantChannelName")) {
                             event.reply("Please provide a Property from the List").setEphemeral(true).queue();
                             return;
                         }

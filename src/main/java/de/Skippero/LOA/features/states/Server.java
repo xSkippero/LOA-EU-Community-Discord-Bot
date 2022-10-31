@@ -1,4 +1,4 @@
-package de.Skippero.LOA.utils;
+package de.Skippero.LOA.features.states;
 
 public class Server {
     private final String name;
