@@ -99,6 +99,7 @@ public class LOABot {
         pushNotificationChannels = new HashMap<>();
         statusChannels = new HashMap<>();
         updateNotify = new HashMap<>();
+        merchantChannels = new HashMap<>();
 
         startTimers(jda);
     }
