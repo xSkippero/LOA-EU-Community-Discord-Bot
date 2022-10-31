@@ -28,7 +28,7 @@ public class MerchantManager {
     static {
         //Cards
         requiredItems.put("Wei",new MerchantItem("Wei", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for the 'Light of Salvation' set (+15% DMG in total)"));
-        requiredItems.put("Seria",new MerchantItem("Seria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'Lostwind Cliff' set (+7% Crit) Cardset"));
+        requiredItems.put("Seria",new MerchantItem("Seria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'Lostwind Cliff' set (+7% Crit)"));
         requiredItems.put("Sian",new MerchantItem("Sian", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'We’ll Meet Again' set (Reduced DMG and Heal on Low HP)"));
         requiredItems.put("Madnick",new MerchantItem("Madnick", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for the 'We’ll Meet Again' set (Reduced DMG and Heal on Low HP)"));
         requiredItems.put("Mokamoka",new MerchantItem("Mokamoka", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for the 'Forest Of Giants' set (+15% Health Recovery, better Armor)"));
@@ -68,6 +68,8 @@ public class MerchantManager {
                     System.out.println("SignalR -> " + hubConnection.getConnectionState());
                     hubConnection.invoke("SubscribeToServer","Ealyn");
                     hubConnection.invoke("SubscribeToServer","Nia");
+                    
+                    try {
 
                     hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
@@ -102,6 +104,9 @@ public class MerchantManager {
                         }
 
                     }, Object.class, Object.class);
+                    
+                    }catch(Exception ignored) {}
+                     
                     cancel();
                 }
             }
