@@ -177,7 +177,6 @@ public class LOABot {
             }
             List<TextChannel> _merchantChannels = guild.getTextChannelsByName(merchantChannelName, true);
             if (!_statusChannels.isEmpty()) {
-                System.out.println(guildName + " " + _merchantChannels.get(0).getName());
                 merchantChannels.put(guildName, _merchantChannels.get(0));
             }
         }
