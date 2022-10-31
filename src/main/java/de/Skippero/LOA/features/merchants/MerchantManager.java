@@ -70,7 +70,10 @@ public class MerchantManager {
                         hubConnection.invoke("SubscribeToServer","Ealyn");
                         hubConnection.invoke("SubscribeToServer","Nia");
 
-                        hubConnection.on("UpdateVotes", System.out::println, Object.class);
+                        hubConnection.on("UpdateVotes", (votes) -> {
+                            //ignoring votes for now
+                        }, Object.class);
+
                         hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
                             String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+","_");
