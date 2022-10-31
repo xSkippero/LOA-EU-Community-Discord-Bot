@@ -138,6 +138,8 @@ public class LOABot {
 
         errorCount = 0;
 
+        System.out.println("Hey");
+
         pushNotificationChannels.clear();
         statusChannels.clear();
         merchantChannels.clear();
