@@ -82,10 +82,6 @@ public class LOABot {
                 .addOption(OptionType.USER, "user", "The user you want to affect")
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
 
-        jda.getGuilds().forEach(guild -> {
-            test = guild.getTextChannelsByName("test",true).get(0);
-        });
-
         System.out.println(" ");
         System.out.println("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {

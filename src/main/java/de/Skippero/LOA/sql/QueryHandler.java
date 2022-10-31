@@ -43,6 +43,7 @@ public class QueryHandler {
         ResultSet set = executeQuerySync("SELECT * FROM serverData");
         try {
             while (set.next()) {
+                System.out.println(set.getString("server") + " " + set.getString("field") + " " + set.getString("value"));
                 map.put(set.getString("server"), new String[]{set.getString("field"), set.getString("value")});
             }
         } catch (SQLException e) {
