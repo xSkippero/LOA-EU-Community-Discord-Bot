@@ -50,7 +50,7 @@ public class MerchantManager {
     }
 
     public static void openConnection() {
-        HubConnection hubConnection = HubConnectionBuilder.create("https://test.lostmerchants.com/MerchantHub").build();
+        HubConnection hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
         hubConnection.setKeepAliveInterval(60 * 1000);
         hubConnection.setServerTimeout(8 * 60 * 1000);
         hubConnection.onClosed((ex) -> {
@@ -71,8 +71,6 @@ public class MerchantManager {
 
                     hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
-                        System.out.println("Incoming Update -> " + server + " = " +  merchants);
-
                         String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+","_");
                         RawMerchantUpdate merchantUpdate = new Gson().fromJson(result, RawMerchantUpdate.class);
                         RawActiveMerchant activeMerchant = merchantUpdate.getActiveMerchants()[0];
@@ -80,8 +78,6 @@ public class MerchantManager {
                         MerchantItemRarity rapportRarity = MerchantItemRarity.getByDouble(activeMerchant.getRapport().getRarity());
                         MerchantItem card = new MerchantItem(activeMerchant.getCard().getName(),MerchantItemType.CARD,cardRarity);
                         MerchantItem rapport = new MerchantItem(activeMerchant.getRapport().getName(),MerchantItemType.RAPPORT,rapportRarity);
-                        System.out.println(card.getName());
-                        System.out.println(rapport.getName());
                         boolean goodCard = false;
                         boolean goodRapport = false;
                         Merchant merchant = null;
@@ -90,23 +86,14 @@ public class MerchantManager {
                         if(requiredItems.containsKey(rapport.getName()))
                             goodRapport = true;
 
-                        System.out.println(goodCard);
-                        System.out.println(goodRapport);
-
                         if(goodCard || goodRapport) {
                             if(goodCard)
                                 card = requiredItems.get(card.getName());
                             if(goodRapport)
                                 rapport = requiredItems.get(rapport.getName());
 
-                            System.out.println(card.getName());
-                            System.out.println(rapport.getName());
-
                             merchant = new Merchant(activeMerchant.getName(),merchantUpdate.getServer(),activeMerchant.getZone(),rapport,card);
                         }
-
-                        System.out.println(card.getName());
-                        System.out.println(rapport.getName());
 
                         if(merchant != null) {
                             for (TextChannel value : LOABot.merchantChannels.values()) {
