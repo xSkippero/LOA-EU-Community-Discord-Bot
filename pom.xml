@@ -54,7 +54,20 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+
                             <filters>
+                                <filter>
+                                    <artifact>LOA-EUW-Status-Bot</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>LOA-EUW-Status-Bot</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
