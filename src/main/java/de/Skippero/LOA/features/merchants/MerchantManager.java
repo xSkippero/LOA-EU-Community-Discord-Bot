@@ -66,47 +66,45 @@ public class MerchantManager {
             public void run() {
                 if(hubConnection.getConnectionState().equals(HubConnectionState.CONNECTED)) {
                     System.out.println("SignalR -> " + hubConnection.getConnectionState());
-                    hubConnection.invoke("SubscribeToServer","Ealyn");
-                    hubConnection.invoke("SubscribeToServer","Nia");
-                    
                     try {
+                        hubConnection.invoke("SubscribeToServer","Ealyn");
+                        hubConnection.invoke("SubscribeToServer","Nia");
 
-                    hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
+                        hubConnection.on("UpdateVotes", System.out::println, Object.class);
+                        hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
-                        String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+","_");
-                        RawMerchantUpdate merchantUpdate = new Gson().fromJson(result, RawMerchantUpdate.class);
-                        RawActiveMerchant activeMerchant = merchantUpdate.getActiveMerchants()[0];
-                        MerchantItemRarity cardRarity = MerchantItemRarity.getByDouble(activeMerchant.getCard().getRarity());
-                        MerchantItemRarity rapportRarity = MerchantItemRarity.getByDouble(activeMerchant.getRapport().getRarity());
-                        MerchantItem card = new MerchantItem(activeMerchant.getCard().getName(),MerchantItemType.CARD,cardRarity);
-                        MerchantItem rapport = new MerchantItem(activeMerchant.getRapport().getName(),MerchantItemType.RAPPORT,rapportRarity);
-                        boolean goodCard = false;
-                        boolean goodRapport = false;
-                        Merchant merchant = null;
-                        if(requiredItems.containsKey(card.getName()))
-                            goodCard = true;
-                        if(requiredItems.containsKey(rapport.getName()))
-                            goodRapport = true;
+                            String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+","_");
+                            RawMerchantUpdate merchantUpdate = new Gson().fromJson(result, RawMerchantUpdate.class);
+                            RawActiveMerchant activeMerchant = merchantUpdate.getActiveMerchants()[0];
+                            MerchantItemRarity cardRarity = MerchantItemRarity.getByDouble(activeMerchant.getCard().getRarity());
+                            MerchantItemRarity rapportRarity = MerchantItemRarity.getByDouble(activeMerchant.getRapport().getRarity());
+                            MerchantItem card = new MerchantItem(activeMerchant.getCard().getName(),MerchantItemType.CARD,cardRarity);
+                            MerchantItem rapport = new MerchantItem(activeMerchant.getRapport().getName(),MerchantItemType.RAPPORT,rapportRarity);
+                            boolean goodCard = false;
+                            boolean goodRapport = false;
+                            Merchant merchant = null;
+                            if(requiredItems.containsKey(card.getName()))
+                                goodCard = true;
+                            if(requiredItems.containsKey(rapport.getName()))
+                                goodRapport = true;
 
-                        if(goodCard || goodRapport) {
-                            if(goodCard)
-                                card = requiredItems.get(card.getName());
-                            if(goodRapport)
-                                rapport = requiredItems.get(rapport.getName());
+                            if(goodCard || goodRapport) {
+                                if(goodCard)
+                                    card = requiredItems.get(card.getName());
+                                if(goodRapport)
+                                    rapport = requiredItems.get(rapport.getName());
 
-                            merchant = new Merchant(activeMerchant.getName(),merchantUpdate.getServer(),activeMerchant.getZone(),rapport,card);
-                        }
-
-                        if(merchant != null) {
-                            for (TextChannel value : LOABot.merchantChannels.values()) {
-                                sendMerchantUpdate(merchant,goodCard,goodRapport,value);
+                                merchant = new Merchant(activeMerchant.getName(),merchantUpdate.getServer(),activeMerchant.getZone(),rapport,card);
                             }
-                        }
 
-                    }, Object.class, Object.class);
-                    
+                            if(merchant != null) {
+                                for (TextChannel value : LOABot.merchantChannels.values()) {
+                                    sendMerchantUpdate(merchant,goodCard,goodRapport,value);
+                                }
+                            }
+
+                        }, Object.class, Object.class);
                     }catch(Exception ignored) {}
-                     
                     cancel();
                 }
             }
@@ -149,10 +147,10 @@ public class MerchantManager {
         StringBuilder builder1 = new StringBuilder();
 
         builder1.append("Merchant: ").append("**").append(merchant.getName()).append("**").append("\n").append("Zone: ").append("**").append(merchant.getZone().replaceAll("_", " ")).append("**").append("\n\n")
-        .append(goodCard ? "**" + cardText + " **" : cardText).append("\n")
-        .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n\n")
-        .append(goodRapport ? "**" + rapportText + "**" : rapportText).append("\n")
-        .append(!rapport.getDescription().equals("") ? rapport.getDescription() : "A nice little gift");
+                .append(goodCard ? "**" + cardText + " **" : cardText).append("\n")
+                .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n\n")
+                .append(goodRapport ? "**" + rapportText + "**" : rapportText).append("\n")
+                .append(!rapport.getDescription().equals("") ? rapport.getDescription() : "A nice little gift");
 
 
         builder.setDescription(builder1);
