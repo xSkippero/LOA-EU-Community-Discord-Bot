@@ -16,10 +16,8 @@ import de.Skippero.LOA.features.merchants.receiver.RawActiveMerchant;
 import de.Skippero.LOA.features.merchants.receiver.RawMerchantUpdate;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import org.w3c.dom.Text;
 
 import java.util.*;
 
@@ -27,7 +25,7 @@ public class MerchantManager {
 
     public static final Map<String,MerchantItem> requiredItems = new HashMap<>();
 
-    {
+    static {
         //Cards
         requiredItems.put("Wei",new MerchantItem("Wei", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for the 'Light of Salvation' set (+15% DMG in total)"));
         requiredItems.put("Seria",new MerchantItem("Seria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'Lostwind Cliff' set (+7% Crit) Cardset"));
