@@ -191,11 +191,9 @@ public class LOABot {
             if (!_merchantChannels.isEmpty()) {
                 if(startUp) {
                     MessageHistory history = _merchantChannels.get(0).getHistory();
-                    for (Message message : history.getRetrievedHistory()) {
-                        if(message.getAuthor().isBot()) {
-                            message.delete().queue();
-                        }
-                    }
+                    List<Message> messages;
+                    messages = history.retrievePast(100).complete();
+                    _merchantChannels.get(0).deleteMessages(messages).queue();
                 }
                 merchantChannels.put(guildName, _merchantChannels.get(0));
             }
