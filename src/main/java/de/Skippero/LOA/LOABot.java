@@ -193,7 +193,11 @@ public class LOABot {
                     MessageHistory history = _merchantChannels.get(0).getHistory();
                     List<Message> messages;
                     messages = history.retrievePast(100).complete();
-                    _merchantChannels.get(0).deleteMessages(messages).queue();
+                    if(messages.isEmpty() && messages.size() > 1) {
+                        _merchantChannels.get(0).deleteMessages(messages).queue();
+                    }else if(!messages.isEmpty()) {
+                        _merchantChannels.get(0).deleteMessageById(messages.get(0).getId()).queue();
+                    }
                 }
                 merchantChannels.put(guildName, _merchantChannels.get(0));
             }
