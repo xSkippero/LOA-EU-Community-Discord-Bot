@@ -142,6 +142,8 @@ public class LOABot {
         timer2.schedule(task2, 5 * 1000, period2);
     }
 
+    private static boolean startUp = true;
+
     private static void reloadConfig(JDA jda) {
 
         nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
@@ -186,7 +188,15 @@ public class LOABot {
                 statusChannels.put(guildName, _statusChannels.get(0));
             }
             List<TextChannel> _merchantChannels = guild.getTextChannelsByName(merchantChannelName, true);
-            if (!_statusChannels.isEmpty()) {
+            if (!_merchantChannels.isEmpty()) {
+                if(startUp) {
+                    MessageHistory history = _merchantChannels.get(0).getHistory();
+                    for (Message message : history.getRetrievedHistory()) {
+                        if(message.getAuthor().isBot()) {
+                            message.delete().queue();
+                        }
+                    }
+                }
                 merchantChannels.put(guildName, _merchantChannels.get(0));
             }
         }
@@ -198,6 +208,7 @@ public class LOABot {
             System.out.println("[" + new Date().toGMTString() + "]" + " Updated configurations on " + updateNotify.size() + " servers");
         }
         updateNotify.clear();
+        startUp = false;
     }
 
     private static String getEmoteForState(State state) {
