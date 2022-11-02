@@ -56,7 +56,7 @@ public class MerchantManager {
     private static HubConnection hubConnection;
 
     public static void openConnection() {
-        new Thread(() -> {
+        Thread signalRThread = new Thread(() -> {
             try {
                 hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
                 hubConnection.setKeepAliveInterval(60 * 1000);
@@ -139,6 +139,7 @@ public class MerchantManager {
                 LOABot.restartBot();
             }
         });
+        signalRThread.start();
     }
 
     private static void sendErrorReportToDev(Exception e) {
