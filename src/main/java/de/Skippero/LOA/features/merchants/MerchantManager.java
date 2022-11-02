@@ -16,8 +16,12 @@ import de.Skippero.LOA.features.merchants.receiver.RawActiveMerchant;
 import de.Skippero.LOA.features.merchants.receiver.RawMerchantUpdate;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import org.apache.maven.model.Model;
 
 import java.util.*;
 
@@ -49,26 +53,28 @@ public class MerchantManager {
         requiredItems.put("Necromancer's_Records",new MerchantItem("Necromancer's Records", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
     }
 
-    public static void openConnection() {
-        HubConnection hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
-        hubConnection.setKeepAliveInterval(60 * 1000);
-        hubConnection.setServerTimeout(8 * 60 * 1000);
-        hubConnection.onClosed((ex) -> {
-            if (ex != null) {
-                System.out.printf("There was an error: %s", ex.getMessage());
-            }
-        });
-        hubConnection.start();
+    private static HubConnection hubConnection;
 
-        Timer timer = new Timer("signalR");
-        long period = 1000L;
-        TimerTask task = new TimerTask() {
-            public void run() {
-                if(hubConnection.getConnectionState().equals(HubConnectionState.CONNECTED)) {
-                    System.out.println("SignalR -> " + hubConnection.getConnectionState());
-                    try {
-                        hubConnection.invoke("SubscribeToServer","Ealyn");
-                        hubConnection.invoke("SubscribeToServer","Nia");
+    public static void openConnection() {
+        try {
+            hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
+            hubConnection.setKeepAliveInterval(60 * 1000);
+            hubConnection.setServerTimeout(8 * 60 * 1000);
+            hubConnection.onClosed((ex) -> {
+                if (ex != null) {
+                    System.out.printf("There was an error: %s", ex.getMessage());
+                }
+            });
+            hubConnection.start();
+
+            Timer timer = new Timer("signalR");
+            long period = 1000L;
+            TimerTask task = new TimerTask() {
+                public void run() {
+                    if (hubConnection.getConnectionState().equals(HubConnectionState.CONNECTED)) {
+                        System.out.println("SignalR -> " + hubConnection.getConnectionState());
+                        hubConnection.invoke("SubscribeToServer", "Ealyn");
+                        hubConnection.invoke("SubscribeToServer", "Nia");
 
                         hubConnection.on("UpdateVotes", (votes) -> {
                             //ignoring votes for now
@@ -76,43 +82,74 @@ public class MerchantManager {
 
                         hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
-                            String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+","_");
+                            String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+", "_");
                             RawMerchantUpdate merchantUpdate = new Gson().fromJson(result, RawMerchantUpdate.class);
                             RawActiveMerchant activeMerchant = merchantUpdate.getActiveMerchants()[0];
                             MerchantItemRarity cardRarity = MerchantItemRarity.getByDouble(activeMerchant.getCard().getRarity());
                             MerchantItemRarity rapportRarity = MerchantItemRarity.getByDouble(activeMerchant.getRapport().getRarity());
-                            MerchantItem card = new MerchantItem(activeMerchant.getCard().getName(),MerchantItemType.CARD,cardRarity);
-                            MerchantItem rapport = new MerchantItem(activeMerchant.getRapport().getName(),MerchantItemType.RAPPORT,rapportRarity);
+                            MerchantItem card = new MerchantItem(activeMerchant.getCard().getName(), MerchantItemType.CARD, cardRarity);
+                            MerchantItem rapport = new MerchantItem(activeMerchant.getRapport().getName(), MerchantItemType.RAPPORT, rapportRarity);
                             boolean goodCard = false;
                             boolean goodRapport = false;
                             Merchant merchant = null;
-                            if(requiredItems.containsKey(card.getName()))
+                            if (requiredItems.containsKey(card.getName()))
                                 goodCard = true;
-                            if(requiredItems.containsKey(rapport.getName()))
+                            if (requiredItems.containsKey(rapport.getName()))
                                 goodRapport = true;
 
-                            if(goodCard || goodRapport) {
-                                if(goodCard)
+                            if (goodCard || goodRapport) {
+                                if (goodCard)
                                     card = requiredItems.get(card.getName());
-                                if(goodRapport)
+                                if (goodRapport)
                                     rapport = requiredItems.get(rapport.getName());
 
-                                merchant = new Merchant(activeMerchant.getName(),merchantUpdate.getServer(),activeMerchant.getZone(),rapport,card);
+                                merchant = new Merchant(activeMerchant.getName(), merchantUpdate.getServer(), activeMerchant.getZone(), rapport, card);
                             }
 
-                            if(merchant != null) {
+                            if (merchant != null) {
                                 for (TextChannel value : LOABot.merchantChannels.values()) {
-                                    sendMerchantUpdate(merchant,goodCard,goodRapport,value);
+                                    sendMerchantUpdate(merchant, goodCard, goodRapport, value);
                                 }
                             }
 
                         }, Object.class, Object.class);
-                    }catch(Exception ignored) {}
-                    cancel();
+                        cancel();
+                    }
                 }
+            };
+            timer.schedule(task, 1000, period);
+        }catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("SignalR run into an error -> restarting the bot...");
+            User dev = LOABot.jda.getUserById(397006908424454147L);
+            if(dev != null) {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(MessageColor.RED.getColor());
+                builder.setTitle("LOA-EUW-Status - signalR-crash-report");
+                Model info = LOABot.buildInformation;
+                String infoString = info.getGroupId() + info.getArtifactId() + " v. " + info.getVersion();
+                builder.setAuthor(infoString);
+                Date date = new Date();
+                String debugStack = "";
+                debugStack+="nextReload=" + LOABot.nextUpdateTimestamp + ";";
+                Gson gson = new Gson();
+                debugStack+="updateNotifys=" + gson.toJson(LOABot.updateNotify) + ";";
+                debugStack+="jda(responseTotal&gatewayPing)=" + LOABot.jda.getResponseTotal() + "," + LOABot.jda.getGatewayPing() + ";";
+                Runtime run = Runtime.getRuntime();
+                debugStack+="technical=" + run.freeMemory() + "(freeRAM), " + run.maxMemory() + "(maxRAM), " + run.totalMemory() + "(totalRAM);" + run.availableProcessors() + "(availableProcessors);";
+                String signalRStack = "";
+                signalRStack+="connectionId=" + hubConnection.getConnectionId() + ";";
+                signalRStack+="connectionState=" + hubConnection.getConnectionState().name() + ";";
+                builder.setDescription("Time: " + date.toGMTString() + "\n"
+                        + "Timestamp:" + date.getTime() + "\n"
+                        + "SignalR: " + signalRStack + "\n"
+                        + "Debug: " + debugStack + "\n"
+                        + "Error: " + Arrays.toString(e.getStackTrace())
+                        );
+                dev.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build())).queue();
             }
-        };
-        timer.schedule(task, 1000, period);
+            LOABot.restartBot();
+        }
     }
 
     private static MessageColor getColorByRarity(MerchantItemRarity rarity) {

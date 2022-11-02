@@ -19,7 +19,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
@@ -33,20 +38,24 @@ public class LOABot {
     private static Map<String, TextChannel> statusChannels;
     public static Map<String, TextChannel> merchantChannels;
     private static Map<String, TextChannel> pushNotificationChannels;
-    private static JDA jda;
+    public static JDA jda;
+    public static String botVersion;
+    public static Model buildInformation;
     private static int errorCount = 0;
 
-    public static TextChannel test;
-
-
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
 
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
         }
 
-        System.out.println("Starting LOA-EUW-Status-Bot by Skippero");
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new FileReader("pom.xml"));
+        buildInformation = model;
+        botVersion = model.getVersion();
+
+        System.out.println("Starting LOA-EUW-Status-Bot v. " + botVersion + " by Skippero");
 
         MerchantManager.openConnection();
 
@@ -193,7 +202,7 @@ public class LOABot {
                     MessageHistory history = _merchantChannels.get(0).getHistory();
                     List<Message> messages;
                     messages = history.retrievePast(100).complete();
-                    if(messages.isEmpty() && messages.size() > 1) {
+                    if(!messages.isEmpty() && messages.size() > 1) {
                         _merchantChannels.get(0).deleteMessages(messages).queue();
                     }else if(!messages.isEmpty()) {
                         _merchantChannels.get(0).deleteMessageById(messages.get(0).getId()).queue();
