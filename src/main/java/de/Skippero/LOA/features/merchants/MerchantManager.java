@@ -215,7 +215,7 @@ public class MerchantManager {
             builder1.append("Merchant: ").append("**").append(merchant.getName()).append("**").append("\n").append("Zone: ").append("**").append(merchant.getZone().replaceAll("_", " ")).append("**").append("\n\n")
                     .append(goodCard ? "**" + cardText + " **" : cardText).append("\n")
                     .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n")
-                            .append(merchant.getServer().equals("Nia") ? "@Nia" : "@Ealyn");
+                            .append("@everyone");
 
             builder.setColor(MessageColor.ORANGE.getColor());
         }
