@@ -58,29 +58,10 @@ public class MerchantManager {
         hubConnection.setKeepAliveInterval(60 * 1000);
         hubConnection.setServerTimeout(8 * 60 * 1000);
         hubConnection.onClosed((ex) -> {
-            System.out.println("onClosed");
-            if(ex != null) {
-                sendErrorReportToDev(ex);
-            }else{
-                sendErrorReportToDev(new Exception("signalR Connection was closed, unable to get reason"));
-            }
-            LOABot.restartBot();
+            System.out.println("[" + new Date().toGMTString() + "] SignalR connection interrupted, restarting HubClient...");
+            hubConnection.close();
+            openConnection();
         });
-        hubConnection.on("onFailure",(ex) -> {
-            System.out.println("onFailure");
-            sendErrorReportToDev(new Exception("signalR Connection was closed, unable to get reason"));
-            LOABot.restartBot();
-        }, Object.class);
-        hubConnection.on("Failure",(ex) -> {
-            System.out.println("Failure");
-            sendErrorReportToDev(new Exception("signalR Connection was closed, unable to get reason"));
-            LOABot.restartBot();
-        }, Object.class);
-        hubConnection.on("failure",(ex) -> {
-            System.out.println("failure");
-            sendErrorReportToDev(new Exception("signalR Connection was closed, unable to get reason"));
-            LOABot.restartBot();
-        }, Object.class);
         hubConnection.start();
 
         Timer timer = new Timer("signalR");
@@ -88,7 +69,7 @@ public class MerchantManager {
         TimerTask task = new TimerTask() {
             public void run() {
                 if (hubConnection.getConnectionState().equals(HubConnectionState.CONNECTED)) {
-                    System.out.println("SignalR -> " + hubConnection.getConnectionState());
+                    System.out.println("SignalR -> " + hubConnection.getConnectionState() + " ID: " + hubConnection.getConnectionId());
                     hubConnection.invoke("SubscribeToServer", "Ealyn");
                     hubConnection.invoke("SubscribeToServer", "Nia");
 
@@ -134,33 +115,6 @@ public class MerchantManager {
             }
         };
         timer.schedule(task, 1000, period);
-    }
-
-    private static void sendErrorReportToDev(Exception e) {
-        User dev = LOABot.jda.getUserById(397006908424454147L);
-        if (dev != null) {
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.setColor(MessageColor.RED.getColor());
-            builder.setTitle("LOA-EUW-Status - signalR-crash-report");
-            Model info = LOABot.buildInformation;
-            String infoString = info.getGroupId() + "." + info.getArtifactId() + " v. " + info.getVersion();
-            builder.setAuthor(infoString);
-            Date date = new Date();
-            String debugStack = "";
-            Gson gson = new Gson();
-            debugStack += "updateNotifys=" + gson.toJson(LOABot.updateNotify) + ";";
-            debugStack += "jda(responseTotal&gatewayPing)=" + LOABot.jda.getResponseTotal() + "," + LOABot.jda.getGatewayPing() + ";";
-            String signalRStack = "";
-            signalRStack += "connectionId=" + hubConnection.getConnectionId() + ";";
-            signalRStack += "connectionState=" + hubConnection.getConnectionState().name() + ";";
-            builder.setDescription("Time: " + date.toGMTString() + "\n"
-                    + "Timestamp:" + date.getTime() + "\n"
-                    + "SignalR: " + signalRStack + "\n"
-                    + "Debug: " + debugStack + "\n"
-                    + "Error: " + (e != null ? Arrays.toString(e.getStackTrace()) : "undefined")
-            );
-            dev.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build())).queue();
-        }
     }
 
     private static MessageColor getColorByRarity(MerchantItemRarity rarity) {
