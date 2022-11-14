@@ -194,11 +194,18 @@ public class LOABot {
         long period2 = 2 * 60 * 60 * 1000L;
         TimerTask task2 = new TimerTask() {
             public void run() {
-                OnSlashCommandInteraction.runDebug(LOABot.jda.getUserById("397006908424454147"));
                 reloadConfig(jda);
             }
         };
         timer2.schedule(task2, 5 * 1000, period2);
+
+        Timer asd = new Timer("asd");
+        TimerTask asd2 = new TimerTask() {
+            public void run() {
+                OnSlashCommandInteraction.runDebug(LOABot.jda.getUserById("397006908424454147"));
+            }
+        };
+        asd.schedule(asd2, 10 * 1000);
     }
 
     private static boolean startUp = true;
