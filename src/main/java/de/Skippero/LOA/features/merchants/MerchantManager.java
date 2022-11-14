@@ -138,7 +138,7 @@ public class MerchantManager {
     private static HubConnection hubConnection;
 
     public static void openConnection() {
-        hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
+        hubConnection = HubConnectionBuilder.create("https://test.lostmerchants.com/MerchantHub").build();
         hubConnection.setKeepAliveInterval(60 * 1000);
         hubConnection.setServerTimeout(8 * 60 * 1000);
         hubConnection.onClosed((ex) -> {
@@ -237,7 +237,6 @@ public class MerchantManager {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
-        builder.setTitle(":loudspeaker: Personal Card Notification");
         String builder1 = "Merchant: " + "**" + activeMerchant.getName() + "**" + "\n" + "Zone: " + "**" + activeMerchant.getZone().replaceAll("_", " ") + "**" + "\n\n" +
                 card.getName() + "\n" +
                 (!card.getDescription().equals("") ? card.getDescription() : "A fine card") + "\n\n";
@@ -245,9 +244,9 @@ public class MerchantManager {
         ZonedDateTime time = ZonedDateTime.now();
         long current = time.getMinute();
         long difference = current-30;
-        long add = difference * 60;
+        long add = (25-difference) * 60;
         long until = (System.currentTimeMillis()/1000 + add);
-        builder.setAuthor("Expires in: <t:" + until + ":R>");
+        builder.setTitle(":loudspeaker: Personal Card Notification | <t:" + until + ":R>");
         MessageCreateAction msg = channel.sendMessageEmbeds(builder.build());
         msg.queue(message -> {
             Timer timer2 = new Timer(activeMerchant.getName()+merchantUpdate.getServer()+UUID.randomUUID());
@@ -289,11 +288,16 @@ public class MerchantManager {
         MerchantItem rapport = merchant.getRapportItem();
 
         boolean deluxeCard = card.getName().equals("Wei");
+        ZonedDateTime time = ZonedDateTime.now();
+        long current = time.getMinute();
+        long difference = current-30;
+        long add = (25-difference) * 60;
+        long until = (System.currentTimeMillis()/1000 + add);
 
         if(!deluxeCard) {
-            builder.setTitle(":loudspeaker: **"+merchant.getServer()+ "** ⮕ **Valueable Item**");
+            builder.setTitle(":loudspeaker: **"+merchant.getServer()+ "** ⮕ **Valueable Item** | <t:" + until + ":R>");
         }else{
-            builder.setTitle(":star: **"+merchant.getServer()+ "** ⮕ **WEI CARD** :star:");
+            builder.setTitle(":star: **"+merchant.getServer()+ "** ⮕ **WEI CARD** | <t:" + until + ":R>  :star:");
         }
 
         String cardText = card.getRarity().getDisplayName() + " Card: " + card.getName().replaceAll("_", " ");
@@ -316,12 +320,6 @@ public class MerchantManager {
 
             builder.setColor(MessageColor.ORANGE.getColor());
         }
-        ZonedDateTime time = ZonedDateTime.now();
-        long current = time.getMinute();
-        long difference = current-30;
-        long add = difference * 60;
-        long until = (System.currentTimeMillis()/1000 + add);
-        builder.setAuthor("Expires in: <t:" + until + ":R>");
         builder.setDescription(builder1);
         builder.setImage("http://Skippero.de/zones/" + merchant.getZone().replaceAll("_","%20") + ".jpg");
         MessageCreateAction msg = channel.sendMessageEmbeds(builder.build());
