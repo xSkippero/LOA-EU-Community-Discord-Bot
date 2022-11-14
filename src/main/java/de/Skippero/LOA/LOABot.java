@@ -212,9 +212,8 @@ public class LOABot {
         statusChannels.clear();
         merchantChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
-
         for (Guild guild : jda.getGuilds()) {
-            guild.loadMembers(member -> System.out.println(member.getId()));
+            guild.loadMembers(member -> incrementUserCount());
             String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
@@ -262,6 +261,9 @@ public class LOABot {
             }
         }
 
+        System.out.println("Cached " + userCount + " Users");
+        System.out.println("[" + new Date().toGMTString() + "] Successfully started all the modules");
+
         Button delButton = Button.danger("del","Delete");
 
         updateNotify.forEach((user, s) -> {
@@ -272,6 +274,12 @@ public class LOABot {
         }
         updateNotify.clear();
         startUp = false;
+    }
+
+    private static int userCount = 0;
+
+    private static void incrementUserCount() {
+        userCount++;
     }
 
     private static String getEmoteForState(State state) {
