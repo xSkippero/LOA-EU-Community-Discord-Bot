@@ -2,6 +2,7 @@ package de.Skippero.LOA.events;
 
 import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.features.merchants.*;
+import de.Skippero.LOA.features.merchants.receiver.RawActiveMerchant;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -26,21 +27,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 return;
             }
-            long time = System.currentTimeMillis()/1000;
-            event.reply("<t:" + time + ">").queue();
-            if(event.getGuild() != null) {
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setColor(MessageColor.GREEN.getColor());
-                eb.setDescription("Nia" + " is now online");
-                eb.setTitle(":white_check_mark:" + " Status Update <t:" + time + ">");
-                event.getMessageChannel().sendMessageEmbeds(eb.build()).queue();
-
-                MerchantItem card = new MerchantItem("Wei",MerchantItemType.CARD, MerchantItemRarity.LEGENDARY,"Card for the 'Light of Salvation' (+15% DMG in total) Cardset");
-                MerchantItem rapport = new MerchantItem("TEST",MerchantItemType.RAPPORT,MerchantItemRarity.EPIC);
-                Merchant merchant = new Merchant("TEST","TEST-ENTRY","Battlebound_Plains",rapport,card);
-                MerchantManager.sendMerchantUpdate(merchant,true, false, event.getGuild().getJDA().getTextChannelById(event.getMessageChannel().getId()));
-
-            }
+            runDebug(event.getUser());
         } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
@@ -213,8 +200,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
 
             if (event.getOptions().size() == 1) {
-                if(!action.equalsIgnoreCase("show") && !action.equalsIgnoreCase("list")) {
-                    event.reply("Please provide either another action with a cardId or use 'show' to show a list of available cards to select").setEphemeral(true).queue();
+                if(!action.equalsIgnoreCase("show") && !action.equalsIgnoreCase("list") && !action.equalsIgnoreCase("clear")) {
+                    event.reply("Please provide either another action with a cardId or use 'show', 'list' or 'clear'").setEphemeral(true).queue();
                 } else {
                     if(action.equalsIgnoreCase("show")) {
                         StringBuilder builder = new StringBuilder();
@@ -244,6 +231,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         embedBuilder.setDescription(builder.toString());
                         embedBuilder.setTitle("LostMerchants Selected-Card-list");
                         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                    }else if(action.equalsIgnoreCase("clear")) {
+                        LOABot.getQueryHandler().clearUserVendorCards(event.getUser().getId());
+                        event.reply("Cleared your notification list").setEphemeral(true).queue();
                     }
                 }
             }else if(event.getOptions().size() >= 2) {
@@ -285,6 +275,14 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 }
             }
         }
+    }
+
+    private void runDebug(User user) {
+        RawActiveMerchant activeMerchant = new RawActiveMerchant();
+        activeMerchant.setName("Mac ");
+        activeMerchant.setZone("Bitterwind_Hill");
+        MerchantItem item = new MerchantItem("Wei",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY,"Vendor in Anikka");
+        MerchantManager.sendPrivateNotification(MerchantItemRarity.LEGENDARY,activeMerchant,item,user);
     }
 
     private void updateUserVendorNotifications(User user) {

@@ -41,4 +41,28 @@ public class RawActiveMerchant {
     public String getName() {
         return name;
     }
+
+    public void setCard(RawItem card) {
+        this.card = card;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRapport(RawItem rapport) {
+        this.rapport = rapport;
+    }
+
+    public void setVotes(double votes) {
+        this.votes = votes;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
+    }
 }

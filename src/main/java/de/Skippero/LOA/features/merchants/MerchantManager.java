@@ -55,84 +55,59 @@ public class MerchantManager {
     } //Cards for public
 
     static  {
-        //Ben (Rethramis)
         allCardItems.put("Siera",new MerchantItem("Siera",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Rethramis"));
-        allCardItems.put("Prideholme_Neria",new MerchantItem("Prideholme Neria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rethramis"));
-        allCardItems.put("Varut",new MerchantItem("Varut",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rethramis"));
-
-        //Lucas (Yudia)
         allCardItems.put("Giant_Worm",new MerchantItem("Giant Worm",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Morina",new MerchantItem("Morina",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
-        allCardItems.put("Thunder",new MerchantItem("Thunder",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yudia"));
-
-        //Malone (West Luterra)
         allCardItems.put("Berhart",new MerchantItem("Berhart",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in West Luterra"));
         allCardItems.put("Cardogan",new MerchantItem("Cardogan",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in West Luterra"));
-        allCardItems.put("Cassleford",new MerchantItem("Cassleford",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in West Luterra"));
-
-        //Morris (East Luterra)
+        allCardItems.put("Killian",new MerchantItem("Killian",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
+        allCardItems.put("Satra",new MerchantItem("Satra",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
         allCardItems.put("Brinewt",new MerchantItem("Brinewt",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in East Luterra"));
         allCardItems.put("Morpheo",new MerchantItem("Morpheo",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in East Luterra"));
-        allCardItems.put("Meehan",new MerchantItem("Meehan",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
-        allCardItems.put("Thunderwings",new MerchantItem("Thunderwings",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in East Luterra"));
-
-        //Burt (East Luterra)
-        allCardItems.put("Nox",new MerchantItem("Nox",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
-        allCardItems.put("Seria",new MerchantItem("Seria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
-
-        //Oliver (Tortoyk)
         allCardItems.put("Egg_of_Creation",new MerchantItem("Egg of Creation",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Tortoyk"));
-        allCardItems.put("Eolh",new MerchantItem("Eolh",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Tortoyk"));
-        allCardItems.put("Mokamoka",new MerchantItem("Mokamoka",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Tortoyk"));
-
-        //Mac (Annika)
         allCardItems.put("Madam_Moonscent",new MerchantItem("Madam Moonscent",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Anikka"));
         allCardItems.put("Sir_Druden",new MerchantItem("Sir Druden",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Anikka"));
         allCardItems.put("Sir_Valleylead",new MerchantItem("Sir Valleylead",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Anikka"));
-        allCardItems.put("Wei",new MerchantItem("Wei",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY, "Vendor in Anikka"));
+        allCardItems.put("Javern",new MerchantItem("Javern",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Shushire"));
 
-        //Nox (Arthetine)
+        allCardItems.put("Cassleford",new MerchantItem("Cassleford",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in West Luterra"));
+        allCardItems.put("Thunder",new MerchantItem("Thunder",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yudia"));
+        allCardItems.put("Prideholme_Neria",new MerchantItem("Prideholme Neria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rethramis"));
+        allCardItems.put("Varut",new MerchantItem("Varut",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rethramis"));
+        allCardItems.put("Meehan",new MerchantItem("Meehan",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
+        allCardItems.put("Nox",new MerchantItem("Nox",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
+        allCardItems.put("Seria",new MerchantItem("Seria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in East Luterra"));
+        allCardItems.put("Eolh",new MerchantItem("Eolh",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Tortoyk"));
         allCardItems.put("Bergstrom",new MerchantItem("Bergstrom",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Arthetine"));
         allCardItems.put("Stern_Neria",new MerchantItem("Stern Neria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Arthetine"));
-        allCardItems.put("Krause",new MerchantItem("Krause",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Arthetine"));
-
-        //Peter (North Vern)
         allCardItems.put("Gideon",new MerchantItem("Gideon",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in North Vern"));
         allCardItems.put("Payla",new MerchantItem("Payla",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in North Vern"));
-        allCardItems.put("Thar",new MerchantItem("Thar",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in North Vern"));
-
-        //Jeffrey (Shushire)
-        allCardItems.put("Javern",new MerchantItem("Javern",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Shushire"));
         allCardItems.put("Sian",new MerchantItem("Sian",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Shushire"));
-        allCardItems.put("Madnick",new MerchantItem("Madnick",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Shushire"));
-
-        //Aricer (Rohendel)
         allCardItems.put("Alifer",new MerchantItem("Alifer",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rohendel"));
         allCardItems.put("Lenora",new MerchantItem("Lenora",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rohendel"));
-        allCardItems.put("Gnosis",new MerchantItem("Gnosis",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Rohendel"));
-
-        //Laitir (Yorn)
         allCardItems.put("Great_Castle_Neria",new MerchantItem("Great Castle Neria",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yorn"));
         allCardItems.put("Piyer",new MerchantItem("Piyer",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yorn"));
-        allCardItems.put("Kaysarr",new MerchantItem("Kaysarr",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Yorn"));
-
-        //Dorella (Feiton)
         allCardItems.put("Goulding",new MerchantItem("Goulding",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Feiton"));
         allCardItems.put("Levi",new MerchantItem("Levi",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Feiton"));
-        allCardItems.put("Kaldor",new MerchantItem("Kaldor",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Feiton"));
-
-        //Rayni (Punika)
         allCardItems.put("Cicerra",new MerchantItem("Cicerra",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Punika"));
         allCardItems.put("Seto",new MerchantItem("Seto",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Punika"));
         allCardItems.put("Stella",new MerchantItem("Stella",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Punika"));
-        allCardItems.put("Albion",new MerchantItem("Albion",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Punika"));
-
-        //Evan (South Vern)
-        allCardItems.put("Killian",new MerchantItem("Killian",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
-        allCardItems.put("Satra",new MerchantItem("Satra",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
         allCardItems.put("Lujean",new MerchantItem("Lujean",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in South Vern"));
         allCardItems.put("Vern_Zenlord",new MerchantItem("Vern Zenlord",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in South Vern"));
         allCardItems.put("Xereon",new MerchantItem("Xereon",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in South Vern"));
+
+        allCardItems.put("Thunderwings",new MerchantItem("Thunderwings",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in East Luterra"));
+        allCardItems.put("Mokamoka",new MerchantItem("Mokamoka",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Tortoyk"));
+        allCardItems.put("Krause",new MerchantItem("Krause",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Arthetine"));
+        allCardItems.put("Thar",new MerchantItem("Thar",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in North Vern"));
+        allCardItems.put("Madnick",new MerchantItem("Madnick",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Shushire"));
+        allCardItems.put("Gnosis",new MerchantItem("Gnosis",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Rohendel"));
+        allCardItems.put("Kaysarr",new MerchantItem("Kaysarr",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Yorn"));
+        allCardItems.put("Kaldor",new MerchantItem("Kaldor",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Feiton"));
+        allCardItems.put("Albion",new MerchantItem("Albion",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Punika"));
+
+
+        allCardItems.put("Wei",new MerchantItem("Wei",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY, "Vendor in Anikka"));
     } //Cards for users
 
     private static HubConnection hubConnection;
@@ -227,7 +202,7 @@ public class MerchantManager {
         timer.schedule(task, 1000, period);
     }
 
-    private static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, User user) {
+    public static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, User user) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
