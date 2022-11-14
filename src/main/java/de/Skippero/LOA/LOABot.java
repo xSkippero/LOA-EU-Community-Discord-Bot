@@ -340,7 +340,7 @@ public class LOABot {
                     List<Message> messageList = history.retrievePast(20).complete();
                     if (!messageList.isEmpty()) {
                         for (Message message : messageList) {
-                            if (message.getAuthor().getIdLong() == 1009381581787504726L) {
+                            if (message.getAuthor().getIdLong() == jda.getSelfUser().getIdLong()) {
                                 textChannel.deleteMessageById(message.getId()).queue();
                             }
                         }
