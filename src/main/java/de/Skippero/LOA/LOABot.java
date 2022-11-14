@@ -213,8 +213,8 @@ public class LOABot {
         merchantChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
         for (Guild guild : jda.getGuilds()) {
+            System.out.println("[" + new Date().toGMTString() + "] Loading members into Cache");
             guild.loadMembers(member -> {});
-            System.out.println("\n");
             String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
