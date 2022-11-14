@@ -10,13 +10,27 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.FileUpload;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
     private final Map<String, Long> timer = new HashMap<>();
+
+    private File read(String filename) {
+        File mapFile = new File(filename);
+        if (!mapFile.exists()) {
+            try {
+                mapFile.createNewFile();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+        return mapFile;
+    }
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -28,7 +42,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 return;
             }
-            runDebug(event.getUser());
+            if(!event.isFromGuild()) {
+                runDebug(event.getUser());
+                event.reply("Debug performed!").setEphemeral(true).queue();
+                return;
+            }
+            event.reply("Sending log").addFiles(FileUpload.fromData(read("bot.log"))).setEphemeral(true).queue();
         } else if (event.getName().equalsIgnoreCase("update")) {
             if (event.getUser().getIdLong() != 397006908424454147L) {
                 event.reply("You dont have the required permissions to execute this command").setEphemeral(true).queue();
