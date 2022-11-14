@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class QueryHandler {
 
@@ -31,10 +32,10 @@ public class QueryHandler {
         Connection con = getConnection();
         if (con != null) {
             connections.add(con);
-            System.out.println("Successfully established SQL Connection");
+            System.out.println("[" + new Date().toGMTString() + "] Successfully established SQL Connection");
             createTables();
         } else {
-            System.out.println("Could not established SQL Connection, exiting with Error code 1");
+            System.out.println("[" + new Date().toGMTString() + "] Could not established SQL Connection, exiting with Error code 1");
             System.exit(1);
         }
     }
@@ -62,7 +63,7 @@ public class QueryHandler {
     }
 
     private void createTables() {
-        System.out.println("Creating Tables if not exits");
+        System.out.println("[" + new Date().toGMTString() + "] Creating Tables if not exits");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS userVendorData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), cardId int)");

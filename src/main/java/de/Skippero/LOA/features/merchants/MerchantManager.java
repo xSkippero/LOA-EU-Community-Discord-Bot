@@ -130,7 +130,7 @@ public class MerchantManager {
         TimerTask task = new TimerTask() {
             public void run() {
                 if (hubConnection.getConnectionState().equals(HubConnectionState.CONNECTED)) {
-                    System.out.println("SignalR -> " + hubConnection.getConnectionState() + " ID: " + hubConnection.getConnectionId());
+                    System.out.println("[" + new Date().toGMTString() + "] SignalR -> " + hubConnection.getConnectionState() + " ID: " + hubConnection.getConnectionId());
                     hubConnection.invoke("SubscribeToServer", "Ealyn");
                     hubConnection.invoke("SubscribeToServer", "Nia");
 
