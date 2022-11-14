@@ -61,7 +61,7 @@ public class MerchantManager {
         allCardItems.put("Giant_Worm",new MerchantItem("Giant Worm",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Morina",new MerchantItem("Morina",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Berhart",new MerchantItem("Berhart",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in West Luterra"));
-        allCardItems.put("Cardogan",new MerchantItem("Cardogan",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in West Luterra"));
+        allCardItems.put("Cadogan",new MerchantItem("Cadogan",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in West Luterra"));
         allCardItems.put("Killian",new MerchantItem("Killian",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
         allCardItems.put("Satra",new MerchantItem("Satra",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in South Vern"));
         allCardItems.put("Brinewt",new MerchantItem("Brinewt",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in East Luterra"));
@@ -115,7 +115,7 @@ public class MerchantManager {
     private static HubConnection hubConnection;
 
     public static void openConnection() {
-        hubConnection = HubConnectionBuilder.create("https://test.lostmerchants.com/MerchantHub").build();
+        hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
         hubConnection.setKeepAliveInterval(60 * 1000);
         hubConnection.setServerTimeout(8 * 60 * 1000);
         hubConnection.onClosed((ex) -> {
