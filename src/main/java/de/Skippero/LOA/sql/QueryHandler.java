@@ -122,7 +122,7 @@ public class QueryHandler {
         try {
             while (set.next()) {
                 int cardId = set.getInt("cardId");
-                if(cardId > 0) {
+                if(cardId >= 0) {
                     selectedCards.add(cardId);
                 }
             }

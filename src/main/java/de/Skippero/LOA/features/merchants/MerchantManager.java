@@ -196,7 +196,7 @@ public class MerchantManager {
                                     for (User niaUser : LOABot.niaUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(niaUser);
                                         if(required.contains(index)) {
-                                            sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,niaUser);
+                                            sendPrivateNotification(cardRarity,activeMerchant,card,niaUser);
                                         }
                                     }
                                 }
@@ -206,7 +206,7 @@ public class MerchantManager {
                                     for (User ealynUser : LOABot.ealynUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(ealynUser);
                                         if(required.contains(index)) {
-                                            sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,ealynUser);
+                                            sendPrivateNotification(cardRarity,activeMerchant,card,ealynUser);
                                         }
                                     }
                                 }
@@ -227,7 +227,7 @@ public class MerchantManager {
         timer.schedule(task, 1000, period);
     }
 
-    private static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, RawMerchantUpdate merchantUpdate, User user) {
+    private static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, User user) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
@@ -241,6 +241,8 @@ public class MerchantManager {
         long add = (25-difference) * 60;
         long until = (System.currentTimeMillis()/1000 + add);
         builder.setTitle(":loudspeaker: Personal Card Notification | <t:" + until + ":R>");
+        System.out.println(user);
+        System.out.println(user.getId());
         user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build())).queue();
     }
 
