@@ -61,7 +61,7 @@ public class MerchantManager {
         allCardItems.put("Varut",new MerchantItem("Varut",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rethramis"));
 
         //Lucas (Yudia)
-        allCardItems.put("Giant_Worm",new MerchantItem("Siera",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
+        allCardItems.put("Giant_Worm",new MerchantItem("Giant Worm",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Morina",new MerchantItem("Morina",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Thunder",new MerchantItem("Thunder",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yudia"));
 
