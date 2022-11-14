@@ -219,7 +219,7 @@ public class MerchantManager {
                 activeMerchant.getZone().replaceAll("_", " ") + "**" + "\n\n" + "**" + card.getName() + "** ⮕ " +
                 card.getDescription() + "\n\n" + "Expires: **<t:" + until + ":R>**";
         builder.setDescription(builder1);
-        builder.setTitle(":loudspeaker: Personal notification");
+        builder.setTitle(":loudspeaker: **Personal Merchant-Notification**");
 
         Button delButton = Button.danger("del","Delete");
 
