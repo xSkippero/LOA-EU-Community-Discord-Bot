@@ -43,7 +43,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 return;
             }
             if(!event.isFromGuild()) {
-                runDebug(event.getUser());
+                runDebug(LOABot.jda.getUserById("397006908424454147"));
                 event.reply("Debug performed!").setEphemeral(true).queue();
                 return;
             }
