@@ -94,8 +94,7 @@ public class LOABot {
                 .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
                 .addOption(OptionType.USER, "user", "The user you want to affect")
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
-        jda.upsertCommand("vendor", "Configure LostMerchants personal notifications")
-                .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list/show)")
+        jda.upsertCommand("vendor", "Configure LostMerchants personal notifications").addOption(OptionType.STRING, "action", "What you want to do (add/remove/list/show)")
                 .addOption(OptionType.INTEGER, "cardid", "The id of the Card you want to add/remove", false).queue();
 
         System.out.println(" ");

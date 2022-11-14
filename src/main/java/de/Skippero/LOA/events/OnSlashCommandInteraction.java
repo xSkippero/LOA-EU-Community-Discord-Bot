@@ -182,12 +182,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/permissions via PM");
             }
         }else if(event.getName().equalsIgnoreCase("vendor")) {
-
-            if(event.isFromGuild()) {
-                event.reply("Please use this command only via PM").setEphemeral(true).queue();
-                return;
-            }
-
             if(event.getOptions().isEmpty() || event.getOptions().size() < 1 || event.getOption("action") == null) {
                 event.reply("Missing arguments").setEphemeral(true).queue();
                 return;
