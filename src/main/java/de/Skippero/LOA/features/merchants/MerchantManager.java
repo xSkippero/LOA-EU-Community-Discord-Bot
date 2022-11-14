@@ -17,12 +17,13 @@ import de.Skippero.LOA.features.merchants.receiver.RawMerchantUpdate;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class MerchantManager {
@@ -206,19 +207,20 @@ public class MerchantManager {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
-        String builder1 = "Merchant: " + "**" + activeMerchant.getName() + "**" + "\n" + "Zone: " + "**" + activeMerchant.getZone().replaceAll("_", " ") + "**" + "\n\n" +
-                card.getName() + "\n" +
-                (!card.getDescription().equals("") ? card.getDescription() : "A fine card") + "\n\n";
-        builder.setDescription(builder1);
         ZonedDateTime time = ZonedDateTime.now();
         long current = time.getMinute();
         long difference = current-30;
         long add = (25-difference) * 60;
         long until = (System.currentTimeMillis()/1000 + add);
-        builder.setTitle(":loudspeaker: Personal Card Notification | <t:" + until + ":R>");
-        System.out.println(user);
-        System.out.println(user.getId());
-        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build())).queue();
+        String builder1 = "Merchant: " + "**" + activeMerchant.getName() + "**" + "\n" + "Zone: " + "**" +
+                activeMerchant.getZone().replaceAll("_", " ") + "**" + "\n\n" + "**" + card.getName() + "** ⮕ " +
+                card.getDescription() + "\n\n\n" + "Expires: **<t:" + until + ":R>**";
+        builder.setDescription(builder1);
+        builder.setTitle(":loudspeaker: Personal notification");
+
+        Button delButton = Button.danger("del",":x:");
+
+        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
     }
 
     private static MessageColor getColorByRarity(MerchantItemRarity rarity) {
@@ -250,16 +252,11 @@ public class MerchantManager {
         MerchantItem rapport = merchant.getRapportItem();
 
         boolean deluxeCard = card.getName().equals("Wei");
-        ZonedDateTime time = ZonedDateTime.now();
-        long current = time.getMinute();
-        long difference = current-30;
-        long add = (25-difference) * 60;
-        long until = (System.currentTimeMillis()/1000 + add);
-
+//|
         if(!deluxeCard) {
-            builder.setTitle(":loudspeaker: **"+merchant.getServer()+ "** ⮕ **Valueable Item** | <t:" + until + ":R>");
+            builder.setTitle(":loudspeaker: **"+merchant.getServer()+ "** ⮕ **Valueable Item**");
         }else{
-            builder.setTitle(":star: **"+merchant.getServer()+ "** ⮕ **WEI CARD** | <t:" + until + ":R>  :star:");
+            builder.setTitle(":star: **"+merchant.getServer()+ "** ⮕ **WEI CARD** :star:");
         }
 
         String cardText = card.getRarity().getDisplayName() + " Card: " + card.getName().replaceAll("_", " ");
@@ -267,18 +264,25 @@ public class MerchantManager {
 
         StringBuilder builder1 = new StringBuilder();
 
+        ZonedDateTime time = ZonedDateTime.now();
+        long current = time.getMinute();
+        long difference = current-30;
+        long add = (25-difference) * 60;
+        long until = (System.currentTimeMillis()/1000 + add);
+
         builder1.append("Merchant: ").append("**").append(merchant.getName()).append("**").append("\n").append("Zone: ").append("**").append(merchant.getZone().replaceAll("_", " ")).append("**").append("\n\n")
                 .append(goodCard ? "**" + cardText + " **" : cardText).append("\n")
                 .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n\n")
                 .append(goodRapport ? "**" + rapportText + "**" : rapportText).append("\n")
-                .append(!rapport.getDescription().equals("") ? rapport.getDescription() : "A nice little gift");
+                .append(!rapport.getDescription().equals("") ? rapport.getDescription() : "A nice little gift")
+                .append("\n\n\n").append("Expires: **<t:").append(until).append(":R>**");
 
         if(deluxeCard) {
             builder1 = new StringBuilder();
             builder1.append("Merchant: ").append("**").append(merchant.getName()).append("**").append("\n").append("Zone: ").append("**").append(merchant.getZone().replaceAll("_", " ")).append("**").append("\n\n")
                     .append(goodCard ? "**" + cardText + " **" : cardText).append("\n")
-                    .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n")
-                            .append("@everyone");
+                    .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card")
+                    .append("\n\n\n").append("Expires: **<t:").append(until).append(":R>**");
 
             builder.setColor(MessageColor.ORANGE.getColor());
         }

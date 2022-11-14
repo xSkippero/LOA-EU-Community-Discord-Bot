@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.IOException;
@@ -273,6 +274,14 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        if(event.getButton().getId() != null) {
+            if(event.getButton().getId().equalsIgnoreCase("del")) {
+                event.getInteraction().getMessage().delete().queue();
             }
         }
     }
