@@ -100,7 +100,7 @@ public class LOABot {
         jda.upsertCommand("vendor", "Configure LostMerchants personal notifications").addOption(OptionType.STRING, "action", "What you want to do (add/remove/list/show/clear)")
                 .addOption(OptionType.INTEGER, "cardid", "The id of the Card you want to add/remove", false).queue();
 
-        System.out.println("[" + new Date().toGMTString() + "] -----------------------------------------------------");
+        System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
         System.out.println("[" + new Date().toGMTString() + "] Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
             System.out.println("[" + new Date().toGMTString() + "] - " + guild.getName());
@@ -108,7 +108,7 @@ public class LOABot {
                 queryHandler.createDefaultDataBaseConfiguration(guild.getId());
             }
         });
-        System.out.println("[" + new Date().toGMTString() + "] -----------------------------------------------------");
+        System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
 
         pushNotificationChannels = new HashMap<>();
         statusChannels = new HashMap<>();
@@ -213,7 +213,7 @@ public class LOABot {
         merchantChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
         for (Guild guild : jda.getGuilds()) {
-            guild.loadMembers(member -> System.out.print("."));
+            guild.loadMembers(member -> {});
             System.out.println("\n");
             String guildName = guild.getId();
             boolean pushNotifications = false;
@@ -262,7 +262,7 @@ public class LOABot {
             }
         }
 
-        System.out.println("[" + new Date().toGMTString() + "] Successfully started all the modules");
+        System.out.println("[" + new Date().toGMTString() + "] Successfully started the bot");
 
         Button delButton = Button.danger("del","Delete");
 
