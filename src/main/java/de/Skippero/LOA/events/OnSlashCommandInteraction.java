@@ -185,12 +185,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     case 0:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-1);
                         event.reply("Server selected ⮕ Ealyn").setEphemeral(true).queue();
-                        LOABot.ealynUsers.add(event.getUser());
+                        LOABot.ealynUsers.add(event.getUser().getId());
                         break;
                     case 1:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-2);
                         event.reply("Server selected ⮕ Nia").setEphemeral(true).queue();
-                        LOABot.niaUsers.add(event.getUser());
+                        LOABot.niaUsers.add(event.getUser().getId());
                         break;
                 }
                 return;
@@ -249,7 +249,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                             LOABot.getQueryHandler().insertUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
                             event.reply("Added the card with the id '" + cardid + "' to your notifications").setEphemeral(true).queue();
-                            LOABot.userCardNotifications.put(event.getUser(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
+                            LOABot.userCardNotifications.put(event.getUser().getId(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
                             switch (server) {
                                 case -1:
                                     if(!LOABot.neededCardIndexesEayln.contains(cardid)) {
@@ -262,6 +262,10 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                                     }
                                     break;
                             }
+                            System.out.println("-----------------------------");
+                            System.out.println(LOABot.neededCardIndexesNia);
+                            System.out.println(LOABot.userCardNotifications);
+                            System.out.println("-----------------------------");
                         }else{
                             event.reply("You already have that card selected").setEphemeral(true).queue();
                         }
@@ -269,7 +273,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         if(userSelection.contains(cardid)) {
                             LOABot.getQueryHandler().removeUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
-                            LOABot.userCardNotifications.put(event.getUser(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
+                            LOABot.userCardNotifications.put(event.getUser().getId(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
                             event.reply("Removed the card with the id '" + cardid + "' from your notifications").setEphemeral(true).queue();
                         }else{
                             event.reply("You do not have that card selected").setEphemeral(true).queue();
@@ -293,11 +297,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         activeMerchant.setName("Mac ");
         activeMerchant.setZone("Bitterwind_Hill");
         MerchantItem item = new MerchantItem("Wei",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY,"Vendor in Anikka");
-        MerchantManager.sendPrivateNotification(MerchantItemRarity.LEGENDARY,activeMerchant,item,user);
+        MerchantManager.sendPrivateNotification(MerchantItemRarity.LEGENDARY,activeMerchant,item,user.getId());
     }
 
     private void updateUserVendorNotifications(User user) {
-        LOABot.userCardNotifications.put(user,LOABot.getQueryHandler().getSelectedCardsForUser(user.getId()));
+        LOABot.userCardNotifications.put(user.getId(),LOABot.getQueryHandler().getSelectedCardsForUser(user.getId()));
     }
 
     public void sendConfirm(SlashCommandInteractionEvent e) {

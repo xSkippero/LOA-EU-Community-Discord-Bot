@@ -33,14 +33,14 @@ public class LOABot {
 
     public static long nextUpdateTimestamp;
     public static Map<User, String> updateNotify;
-    public static Map<User, List<Integer>> userCardNotifications;
+    public static Map<String, List<Integer>> userCardNotifications;
     public static List<Integer> neededCardIndexesEayln;
     public static List<Integer> neededCardIndexesNia;
     public static JDA jda;
     public static String botVersion;
     public static Model buildInformation;
-    public static List<User> niaUsers;
-    public static List<User> ealynUsers;
+    public static List<String> niaUsers;
+    public static List<String> ealynUsers;
     public static Map<String, TextChannel> merchantChannels;
     private static ConfigManager configManager;
     private static QueryHandler queryHandler;
@@ -128,17 +128,16 @@ public class LOABot {
     private static void loadUserNotifications() {
         List<String> userIds = getQueryHandler().getAllVendorUserIds();
         for (String userId : userIds) {
-            User user = jda.getUserById(userId);
             int server = getQueryHandler().getServerForCardUser(userId);
             List<Integer> selCards = getQueryHandler().getSelectedCardsForUser(userId);
             switch (server) {
                 case -1:
-                    ealynUsers.add(user);
-                    userCardNotifications.put(user,selCards);
+                    ealynUsers.add(userId);
+                    userCardNotifications.put(userId,selCards);
                     break;
                 case -2:
-                    niaUsers.add(user);
-                    userCardNotifications.put(user,selCards);
+                    niaUsers.add(userId);
+                    userCardNotifications.put(userId,selCards);
                     break;
             }
             for (Integer selCard : selCards) {

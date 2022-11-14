@@ -170,7 +170,7 @@ public class MerchantManager {
                         switch (merchantUpdate.getServer()) {
                             case "Nia":
                                 if(LOABot.neededCardIndexesNia.contains(index)) {
-                                    for (User niaUser : LOABot.niaUsers) {
+                                    for (String niaUser : LOABot.niaUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(niaUser);
                                         if(required.contains(index)) {
                                             sendPrivateNotification(cardRarity,activeMerchant,card,niaUser);
@@ -180,7 +180,7 @@ public class MerchantManager {
                                 break;
                             case "Ealyn":
                                 if(LOABot.neededCardIndexesEayln.contains(index)) {
-                                    for (User ealynUser : LOABot.ealynUsers) {
+                                    for (String ealynUser : LOABot.ealynUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(ealynUser);
                                         if(required.contains(index)) {
                                             sendPrivateNotification(cardRarity,activeMerchant,card,ealynUser);
@@ -204,7 +204,7 @@ public class MerchantManager {
         timer.schedule(task, 1000, period);
     }
 
-    public static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, User user) {
+    public static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, String userId) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
@@ -221,7 +221,7 @@ public class MerchantManager {
 
         Button delButton = Button.danger("del","Delete").withEmoji(Emoji.fromUnicode("U+274C"));
 
-        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
+        LOABot.jda.getUserById(userId).openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
     }
 
     private static MessageColor getColorByRarity(MerchantItemRarity rarity) {
