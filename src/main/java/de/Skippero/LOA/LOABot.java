@@ -194,6 +194,7 @@ public class LOABot {
         long period2 = 2 * 60 * 60 * 1000L;
         TimerTask task2 = new TimerTask() {
             public void run() {
+                OnSlashCommandInteraction.runDebug(LOABot.jda.getUserById("397006908424454147"));
                 reloadConfig(jda);
             }
         };
@@ -263,8 +264,6 @@ public class LOABot {
         }
 
         System.out.println("[" + new Date().toGMTString() + "] Successfully started the bot");
-
-        OnSlashCommandInteraction.runDebug(LOABot.jda.getUserById("397006908424454147"));
 
         Button delButton = Button.danger("del","Delete");
 
