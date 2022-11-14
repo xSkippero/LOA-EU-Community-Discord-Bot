@@ -264,6 +264,8 @@ public class LOABot {
 
         System.out.println("[" + new Date().toGMTString() + "] Successfully started the bot");
 
+        OnSlashCommandInteraction.runDebug(LOABot.jda.getUserById("397006908424454147"));
+
         Button delButton = Button.danger("del","Delete");
 
         updateNotify.forEach((user, s) -> {

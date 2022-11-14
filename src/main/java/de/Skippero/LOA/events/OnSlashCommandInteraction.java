@@ -43,7 +43,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 return;
             }
             if(!event.isFromGuild()) {
-                runDebug(LOABot.jda.getUserById("397006908424454147"));
+                runDebug(event.getUser());
                 event.reply("Debug performed!").setEphemeral(true).queue();
                 return;
             }
@@ -310,7 +310,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         }
     }
 
-    private void runDebug(User user) {
+    public static void runDebug(User user) {
         RawActiveMerchant activeMerchant = new RawActiveMerchant();
         activeMerchant.setName("Mac ");
         activeMerchant.setZone("Bitterwind_Hill");
