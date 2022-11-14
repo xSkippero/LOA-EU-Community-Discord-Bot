@@ -260,7 +260,7 @@ public class LOABot {
             }
         }
 
-        Button delButton = Button.danger("del","Delete").withEmoji(Emoji.fromUnicode("U+274C"));
+        Button delButton = Button.danger("del","Delete");
 
         updateNotify.forEach((user, s) -> {
             user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:").setActionRow(delButton)).queue();

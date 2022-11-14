@@ -262,10 +262,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                                     }
                                     break;
                             }
-                            System.out.println("-----------------------------");
-                            System.out.println(LOABot.neededCardIndexesNia);
-                            System.out.println(LOABot.userCardNotifications);
-                            System.out.println("-----------------------------");
                         }else{
                             event.reply("You already have that card selected").setEphemeral(true).queue();
                         }
