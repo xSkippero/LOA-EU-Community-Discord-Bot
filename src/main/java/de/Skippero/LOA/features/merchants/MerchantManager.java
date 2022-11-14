@@ -18,6 +18,7 @@ import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
@@ -214,11 +215,11 @@ public class MerchantManager {
         long until = (System.currentTimeMillis()/1000 + add);
         String builder1 = "Merchant: " + "**" + activeMerchant.getName() + "**" + "\n" + "Zone: " + "**" +
                 activeMerchant.getZone().replaceAll("_", " ") + "**" + "\n\n" + "**" + card.getName() + "** ⮕ " +
-                card.getDescription() + "\n\n\n" + "Expires: **<t:" + until + ":R>**";
+                card.getDescription() + "\n\n" + "Expires: **<t:" + until + ":R>**";
         builder.setDescription(builder1);
         builder.setTitle(":loudspeaker: Personal notification");
 
-        Button delButton = Button.danger("del",":x:");
+        Button delButton = Button.danger("del","").withEmoji(Emoji.fromUnicode("U+274C"));
 
         user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
     }
@@ -275,7 +276,7 @@ public class MerchantManager {
                 .append(!card.getDescription().equals("") ? card.getDescription() : "A fine card").append("\n\n")
                 .append(goodRapport ? "**" + rapportText + "**" : rapportText).append("\n")
                 .append(!rapport.getDescription().equals("") ? rapport.getDescription() : "A nice little gift")
-                .append("\n\n\n").append("Expires: **<t:").append(until).append(":R>**");
+                .append("\n\n").append("Expires: **<t:").append(until).append(":R>**");
 
         if(deluxeCard) {
             builder1 = new StringBuilder();
