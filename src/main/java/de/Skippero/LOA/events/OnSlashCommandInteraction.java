@@ -188,6 +188,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 return;
             }
 
+            if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
+                event.reply("Missing arguments").setEphemeral(true).queue();
+                return;
+            }
+
             String action = event.getOption("action").getAsString();
             int cardid = event.getOption("cardid").getAsInt();
 
