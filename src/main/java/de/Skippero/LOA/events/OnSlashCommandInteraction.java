@@ -188,11 +188,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
 
             String action = event.getOption("action").getAsString();
-            int cardid = event.getOption("cardid").getAsInt();
 
             List<Integer> userSelection = LOABot.getQueryHandler().getSelectedCardsForUser(event.getUser().getId());
 
             if(event.getOptions().size() == 2 && action.equalsIgnoreCase("server")) {
+                int cardid = event.getOption("cardid").getAsInt();
                 switch (cardid) {
                     case 0:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-1);
@@ -251,6 +251,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 if (!action.equalsIgnoreCase("add") && !action.equalsIgnoreCase("remove")) {
                     event.reply("Please provide one of the given actions: add/remove").setEphemeral(true).queue();
                 }else {
+                    int cardid = event.getOption("cardid").getAsInt();
                     String userId = event.getUser().getId();
                     int server = LOABot.getQueryHandler().getServerForCardUser(userId);
                     if(action.equalsIgnoreCase("add")) {
