@@ -105,7 +105,7 @@ public class QueryHandler {
 
     public int getServerForCardUser(String userId) {
         ResultSet set = executeQuerySync("SELECT * FROM userVendorData WHERE userId = '" + userId + "' AND cardId < 0");
-        int i = 0;
+        int i = -3;
         try {
             while (set.next()) {
                 i = set.getInt("cardId");

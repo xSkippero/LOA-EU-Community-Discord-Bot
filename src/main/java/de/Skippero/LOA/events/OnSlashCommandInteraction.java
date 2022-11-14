@@ -208,9 +208,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 return;
             }
 
-            if(!userSelection.contains(-1) && !userSelection.contains(-2)) {
+            if(LOABot.getQueryHandler().getServerForCardUser(event.getUser().getId()) == -3) {
                 event.reply("You did not register your Server yet, please provide this command with the correct Id ⮕ '/vendor server 0/1'\n"+"0 ⮕ Ealyn\n" + "1 ⮕ Nia").setEphemeral(true).queue();
-                event.reply("").setEphemeral(true).queue();
             }
 
             if (event.getOptions().size() == 1) {
