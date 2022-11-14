@@ -167,13 +167,15 @@ public class MerchantManager {
 
                         int index = IntStream.range(0, allCardItems.size()).filter(i -> new ArrayList<>(allCardItems.values()).get(i).getName().equals(card.getName())).findFirst().orElse(-1);
 
+                        List<MerchantItem> allItemsList = new ArrayList<>(allCardItems.values());
+
                         switch (merchantUpdate.getServer()) {
                             case "Nia":
                                 if(LOABot.neededCardIndexesNia.contains(index)) {
                                     for (String niaUser : LOABot.niaUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(niaUser);
                                         if(required.contains(index)) {
-                                            sendPrivateNotification(cardRarity,activeMerchant,card,niaUser);
+                                            sendPrivateNotification(cardRarity,activeMerchant,allItemsList.get(index),niaUser);
                                         }
                                     }
                                 }
@@ -183,7 +185,7 @@ public class MerchantManager {
                                     for (String ealynUser : LOABot.ealynUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(ealynUser);
                                         if(required.contains(index)) {
-                                            sendPrivateNotification(cardRarity,activeMerchant,card,ealynUser);
+                                            sendPrivateNotification(cardRarity,activeMerchant,allItemsList.get(index),ealynUser);
                                         }
                                     }
                                 }
