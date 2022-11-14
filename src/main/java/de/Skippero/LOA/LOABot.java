@@ -28,6 +28,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class LOABot {
 
@@ -213,6 +214,7 @@ public class LOABot {
         configurations = queryHandler.loadConfiguration(configurations);
 
         for (Guild guild : jda.getGuilds()) {
+            guild.loadMembers(member -> System.out.println(member.getId()));
             String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
