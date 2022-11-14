@@ -194,12 +194,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
 
             String action = event.getOption("action").getAsString();
-            int cardId = event.getOption("cardId").getAsInt();
+            int cardid = event.getOption("cardid").getAsInt();
 
             List<Integer> userSelection = LOABot.getQueryHandler().getSelectedCardsForUser(event.getUser().getId());
 
             if(event.getOptions().size() == 2 && action.equalsIgnoreCase("server")) {
-                switch (cardId) {
+                switch (cardid) {
                     case 0:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-1);
                         event.reply("Server selected ⮕ Ealyn").setEphemeral(true).queue();
@@ -260,19 +260,19 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     String userId = event.getUser().getId();
                     int server = LOABot.getQueryHandler().getServerForCardUser(userId);
                     if(action.equalsIgnoreCase("add")) {
-                        if(!userSelection.contains(cardId)) {
-                            LOABot.getQueryHandler().insertUserVendorProperty(userId, cardId);
+                        if(!userSelection.contains(cardid)) {
+                            LOABot.getQueryHandler().insertUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
-                            event.reply("Added the card with the id '" + cardId + "' to your notifications").setEphemeral(true).queue();
+                            event.reply("Added the card with the id '" + cardid + "' to your notifications").setEphemeral(true).queue();
                             switch (server) {
                                 case -1:
-                                    if(!LOABot.neededCardIndexesEayln.contains(cardId)) {
-                                        LOABot.neededCardIndexesEayln.add(cardId);
+                                    if(!LOABot.neededCardIndexesEayln.contains(cardid)) {
+                                        LOABot.neededCardIndexesEayln.add(cardid);
                                     }
                                     break;
                                 case -2:
-                                    if(!LOABot.neededCardIndexesNia.contains(cardId)) {
-                                        LOABot.neededCardIndexesNia.add(cardId);
+                                    if(!LOABot.neededCardIndexesNia.contains(cardid)) {
+                                        LOABot.neededCardIndexesNia.add(cardid);
                                     }
                                     break;
                             }
@@ -280,10 +280,10 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                             event.reply("You already have that card selected").setEphemeral(true).queue();
                         }
                     }else if(action.equalsIgnoreCase("remove")) {
-                        if(userSelection.contains(cardId)) {
-                            LOABot.getQueryHandler().removeUserVendorProperty(userId, cardId);
+                        if(userSelection.contains(cardid)) {
+                            LOABot.getQueryHandler().removeUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
-                            event.reply("Removed the card with the id '" + cardId + "' from your notifications").setEphemeral(true).queue();
+                            event.reply("Removed the card with the id '" + cardid + "' from your notifications").setEphemeral(true).queue();
                         }else{
                             event.reply("You do not have that card selected").setEphemeral(true).queue();
                         }

@@ -96,7 +96,7 @@ public class LOABot {
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
         jda.upsertCommand("vendor", "Configure LostMerchants personal notifications")
                 .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list/show)")
-                .addOption(OptionType.INTEGER, "cardId", "The id of the Card you want to add/remove", false).queue();
+                .addOption(OptionType.INTEGER, "cardid", "The id of the Card you want to add/remove", false).queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
