@@ -103,12 +103,15 @@ public class LOABot {
         System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
         System.out.println("[" + new Date().toGMTString() + "] Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
+            guild.loadMembers(member -> {});
             System.out.println("[" + new Date().toGMTString() + "] - " + guild.getName());
             if (!serverExistsInDB(guild.getId())) {
                 queryHandler.createDefaultDataBaseConfiguration(guild.getId());
             }
         });
         System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
+
+        System.out.println("[" + new Date().toGMTString() + "] Loading members into Cache");
 
         pushNotificationChannels = new HashMap<>();
         statusChannels = new HashMap<>();
@@ -198,6 +201,8 @@ public class LOABot {
             }
         };
         timer2.schedule(task2, 5 * 1000, period2);
+
+        System.out.println("[" + new Date().toGMTString() + "] Successfully started the bot");
     }
 
     private static boolean startUp = true;
@@ -213,8 +218,6 @@ public class LOABot {
         merchantChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
         for (Guild guild : jda.getGuilds()) {
-            System.out.println("[" + new Date().toGMTString() + "] Loading members into Cache");
-            guild.loadMembers(member -> {});
             String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-euw-notify";
@@ -261,8 +264,6 @@ public class LOABot {
                 merchantChannels.put(guildName, _merchantChannels.get(0));
             }
         }
-
-        System.out.println("[" + new Date().toGMTString() + "] Successfully started the bot");
 
         Button delButton = Button.danger("del","Delete");
 
