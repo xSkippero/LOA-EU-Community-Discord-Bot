@@ -212,6 +212,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         event.reply("Server selected ⮕ Nia\n*You can always switch the server by using this command*").setEphemeral(true).queue();
                         LOABot.niaUsers.add(event.getUser().getId());
                         break;
+                    default:
+                        event.reply("Invalid command.. usage ⮕ '/vendor server 0/1'\n"+"0 ⮕ Ealyn\n" + "1 ⮕ Nia").setEphemeral(true).queue();
                 }
                 return;
             }
