@@ -183,12 +183,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equalsIgnoreCase("vendor")) {
 
-            if(!event.isGlobalCommand()) {
+            if(event.isFromGuild()) {
                 event.reply("Please use this command only via PM").setEphemeral(true).queue();
                 return;
             }
 
-            if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
+            if(event.getOptions().isEmpty() || event.getOptions().size() < 1 || event.getOption("action") == null) {
                 event.reply("Missing arguments").setEphemeral(true).queue();
                 return;
             }
