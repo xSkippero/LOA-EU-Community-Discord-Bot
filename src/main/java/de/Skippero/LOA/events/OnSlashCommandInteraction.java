@@ -249,6 +249,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                             LOABot.getQueryHandler().insertUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
                             event.reply("Added the card with the id '" + cardid + "' to your notifications").setEphemeral(true).queue();
+                            LOABot.userCardNotifications.put(event.getUser(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
                             switch (server) {
                                 case -1:
                                     if(!LOABot.neededCardIndexesEayln.contains(cardid)) {
@@ -268,6 +269,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         if(userSelection.contains(cardid)) {
                             LOABot.getQueryHandler().removeUserVendorProperty(userId, cardid);
                             updateUserVendorNotifications(event.getUser());
+                            LOABot.userCardNotifications.put(event.getUser(), LOABot.getQueryHandler().getSelectedCardsForUser(userId));
                             event.reply("Removed the card with the id '" + cardid + "' from your notifications").setEphemeral(true).queue();
                         }else{
                             event.reply("You do not have that card selected").setEphemeral(true).queue();

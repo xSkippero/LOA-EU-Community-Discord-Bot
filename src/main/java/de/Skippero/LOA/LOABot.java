@@ -128,11 +128,9 @@ public class LOABot {
     private static void loadUserNotifications() {
         List<String> userIds = getQueryHandler().getAllVendorUserIds();
         for (String userId : userIds) {
-            System.out.println(userId);
             User user = jda.getUserById(userId);
             int server = getQueryHandler().getServerForCardUser(userId);
             List<Integer> selCards = getQueryHandler().getSelectedCardsForUser(userId);
-            System.out.println(selCards.toString());
             switch (server) {
                 case -1:
                     ealynUsers.add(user);
@@ -140,7 +138,6 @@ public class LOABot {
                     break;
                 case -2:
                     niaUsers.add(user);
-                    System.out.println("nia");
                     userCardNotifications.put(user,selCards);
                     break;
             }
@@ -159,7 +156,6 @@ public class LOABot {
                 }
             }
         }
-        System.out.println(neededCardIndexesNia.toString());
     }
 
     private static boolean serverExistsInDB(String name) {
@@ -265,7 +261,7 @@ public class LOABot {
             }
         }
 
-        Button delButton = Button.danger("del","").withEmoji(Emoji.fromUnicode("U+274C"));
+        Button delButton = Button.danger("del","Delete").withEmoji(Emoji.fromUnicode("U+274C"));
 
         updateNotify.forEach((user, s) -> {
             user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the Discord Server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:").setActionRow(delButton)).queue();

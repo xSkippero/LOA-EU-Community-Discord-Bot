@@ -219,7 +219,7 @@ public class MerchantManager {
         builder.setDescription(builder1);
         builder.setTitle(":loudspeaker: Personal notification");
 
-        Button delButton = Button.danger("del","").withEmoji(Emoji.fromUnicode("U+274C"));
+        Button delButton = Button.danger("del","Delete").withEmoji(Emoji.fromUnicode("U+274C"));
 
         user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
     }
