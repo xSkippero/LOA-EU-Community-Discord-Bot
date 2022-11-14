@@ -196,10 +196,7 @@ public class MerchantManager {
                                     for (User niaUser : LOABot.niaUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(niaUser);
                                         if(required.contains(index)) {
-                                            niaUser.openPrivateChannel().flatMap(channel -> {
-                                                sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,channel);
-                                                return null;
-                                            });
+                                            sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,niaUser);
                                         }
                                     }
                                 }
@@ -209,10 +206,7 @@ public class MerchantManager {
                                     for (User ealynUser : LOABot.ealynUsers) {
                                         List<Integer> required = LOABot.userCardNotifications.get(ealynUser);
                                         if(required.contains(index)) {
-                                            ealynUser.openPrivateChannel().flatMap(channel -> {
-                                                sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,channel);
-                                                return null;
-                                            });
+                                            sendPrivateNotification(cardRarity,activeMerchant,card,merchantUpdate,ealynUser);
                                         }
                                     }
                                 }
@@ -233,7 +227,7 @@ public class MerchantManager {
         timer.schedule(task, 1000, period);
     }
 
-    private static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, RawMerchantUpdate merchantUpdate, PrivateChannel channel) {
+    private static void sendPrivateNotification(MerchantItemRarity cardRarity, RawActiveMerchant activeMerchant, MerchantItem card, RawMerchantUpdate merchantUpdate, User user) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(getColorByRarity(cardRarity).getColor());
         builder.setImage("http://Skippero.de/zones/" + activeMerchant.getZone().replaceAll("_","%20") + ".jpg");
@@ -247,16 +241,7 @@ public class MerchantManager {
         long add = (25-difference) * 60;
         long until = (System.currentTimeMillis()/1000 + add);
         builder.setTitle(":loudspeaker: Personal Card Notification | <t:" + until + ":R>");
-        MessageCreateAction msg = channel.sendMessageEmbeds(builder.build());
-        msg.queue(message -> {
-            Timer timer2 = new Timer(activeMerchant.getName()+merchantUpdate.getServer()+UUID.randomUUID());
-            TimerTask task2 = new TimerTask() {
-                public void run() {
-                    channel.deleteMessageById(message.getId()).queue();
-                }
-            };
-            timer2.schedule(task2, difference * 60 * 1000);
-        });
+        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build())).queue();
     }
 
     private static MessageColor getColorByRarity(MerchantItemRarity rarity) {
