@@ -200,15 +200,16 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
             if(event.getOptions().size() == 2 && action.equalsIgnoreCase("server")) {
                 int cardid = event.getOption("cardid").getAsInt();
+                LOABot.getQueryHandler().deleteOldServer(event.getUser().getId());
                 switch (cardid) {
                     case 0:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-1);
-                        event.reply("Server selected ⮕ Ealyn").setEphemeral(true).queue();
+                        event.reply("Server selected ⮕ Ealyn\n*You can always switch the server by using this command*").setEphemeral(true).queue();
                         LOABot.ealynUsers.add(event.getUser().getId());
                         break;
                     case 1:
                         LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-2);
-                        event.reply("Server selected ⮕ Nia").setEphemeral(true).queue();
+                        event.reply("Server selected ⮕ Nia\n*You can always switch the server by using this command*").setEphemeral(true).queue();
                         LOABot.niaUsers.add(event.getUser().getId());
                         break;
                 }

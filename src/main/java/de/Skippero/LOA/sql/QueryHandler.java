@@ -108,6 +108,10 @@ public class QueryHandler {
         executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId >= '0'");
     }
 
+    public void deleteOldServer(String userId) {
+        executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId < 0");
+    }
+
     public int getServerForCardUser(String userId) {
         ResultSet set = executeQuerySync("SELECT * FROM userVendorData WHERE userId = '" + userId + "' AND cardId < 0");
         int i = -3;
