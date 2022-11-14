@@ -299,7 +299,7 @@ public class MerchantManager {
                     channel.deleteMessageById(message.getId()).queue();
                 }
             };
-            timer2.schedule(task2, difference * 60 * 1000);
+            timer2.schedule(task2, until * 60 * 1000);
         });
     }
 }
