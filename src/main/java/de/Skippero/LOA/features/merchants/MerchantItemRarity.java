@@ -11,6 +11,7 @@ on 30.10.2022 , 18:57
 
 public enum MerchantItemRarity {
 
+    UNCOMMON("Uncommon"),
     RARE("Rare"),
     EPIC("Epic"),
     LEGENDARY("Legendary");
@@ -27,12 +28,14 @@ public enum MerchantItemRarity {
 
     public static MerchantItemRarity getByDouble(double rarity) {
         switch ((int)rarity) {
+            case 2:
+                return RARE;
             case 3:
                 return EPIC;
             case 4:
                 return LEGENDARY;
             default:
-                return RARE;
+                return UNCOMMON;
         }
     }
 

@@ -23,7 +23,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -32,15 +31,20 @@ public class LOABot {
 
     public static long nextUpdateTimestamp;
     public static Map<User, String> updateNotify;
+    public static Map<User, List<Integer>> userCardNotifications;
+    public static List<Integer> neededCardIndexesEayln;
+    public static List<Integer> neededCardIndexesNia;
+    public static JDA jda;
+    public static String botVersion;
+    public static Model buildInformation;
+    public static List<User> niaUsers;
+    public static List<User> ealynUsers;
+    public static Map<String, TextChannel> merchantChannels;
     private static ConfigManager configManager;
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
     private static Map<String, TextChannel> statusChannels;
-    public static Map<String, TextChannel> merchantChannels;
     private static Map<String, TextChannel> pushNotificationChannels;
-    public static JDA jda;
-    public static String botVersion;
-    public static Model buildInformation;
     private static int errorCount = 0;
 
     public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
@@ -90,6 +94,9 @@ public class LOABot {
                 .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
                 .addOption(OptionType.USER, "user", "The user you want to affect")
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
+        jda.upsertCommand("vendor", "Configure LostMerchants personal notifications")
+                .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list/show)")
+                .addOption(OptionType.INTEGER, "cardId", "The id of the Card you want to add/remove", false).queue();
 
         System.out.println(" ");
         System.out.println("Bot is active on: ");
@@ -106,7 +113,48 @@ public class LOABot {
         updateNotify = new HashMap<>();
         merchantChannels = new HashMap<>();
 
+        ealynUsers = new ArrayList<>();
+        niaUsers = new ArrayList<>();
+        userCardNotifications = new HashMap<>();
+        neededCardIndexesEayln = new ArrayList<>();
+        neededCardIndexesNia = new ArrayList<>();
+
+        loadUserNotifications();
+
         startTimers(jda);
+    }
+
+    private static void loadUserNotifications() {
+        List<String> userIds = getQueryHandler().getAllVendorUserIds();
+        for (String userId : userIds) {
+            User user = jda.getUserById(userId);
+            int server = getQueryHandler().getServerForCardUser(userId);
+            List<Integer> selCards = getQueryHandler().getSelectedCardsForUser(userId);
+            switch (server) {
+                case -1:
+                    ealynUsers.add(user);
+                    userCardNotifications.put(user,selCards);
+                    break;
+                case -2:
+                    niaUsers.add(user);
+                    userCardNotifications.put(user,selCards);
+                    break;
+            }
+            for (Integer selCard : selCards) {
+                switch (server) {
+                    case -1:
+                        if(!neededCardIndexesEayln.contains(selCard)) {
+                            neededCardIndexesEayln.add(selCard);
+                        }
+                        break;
+                    case -2:
+                        if(!neededCardIndexesNia.contains(selCard)) {
+                            neededCardIndexesNia.add(selCard);
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     private static boolean serverExistsInDB(String name) {

@@ -14,8 +14,8 @@ public class Merchant {
     private final String server;
     private final String name;
     private final String zone;
-    private final MerchantItem rapportItem;
-    private final MerchantItem cardItem;
+    private MerchantItem rapportItem;
+    private MerchantItem cardItem;
 
     public Merchant(String name, String server, String zone, MerchantItem rapportItem, MerchantItem cardItem) {
         this.name = name;
@@ -43,6 +43,14 @@ public class Merchant {
 
     public String getZone() {
         return zone;
+    }
+
+    public void setCardItem(MerchantItem item) {
+        this.cardItem = item;
+    }
+
+    public void setRapportItem(MerchantItem item) {
+        this.rapportItem = item;
     }
 }
 

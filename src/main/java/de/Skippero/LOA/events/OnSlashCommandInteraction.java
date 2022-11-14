@@ -5,6 +5,7 @@ import de.Skippero.LOA.features.merchants.*;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -180,7 +181,120 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 event.reply("Please use this command only on a Server").setEphemeral(true).queue();
                 System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/permissions via PM");
             }
+        }else if(event.getName().equalsIgnoreCase("vendor")) {
+
+            if(!event.isGlobalCommand()) {
+                event.reply("Please use this command only via PM").setEphemeral(true).queue();
+                return;
+            }
+
+            if(event.getOptions().isEmpty() || event.getOptions().size() < 2 || event.getOption("action") == null) {
+                event.reply("Missing arguments").setEphemeral(true).queue();
+                return;
+            }
+
+            String action = event.getOption("action").getAsString();
+            int cardId = event.getOption("cardId").getAsInt();
+
+            List<Integer> userSelection = LOABot.getQueryHandler().getSelectedCardsForUser(event.getUser().getId());
+
+            if(event.getOptions().size() == 2 && action.equalsIgnoreCase("server")) {
+                switch (cardId) {
+                    case 0:
+                        LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-1);
+                        event.reply("Server selected ⮕ Ealyn").setEphemeral(true).queue();
+                        LOABot.ealynUsers.add(event.getUser());
+                        break;
+                    case 1:
+                        LOABot.getQueryHandler().insertUserVendorProperty(event.getUser().getId(),-2);
+                        event.reply("Server selected ⮕ Nia").setEphemeral(true).queue();
+                        LOABot.niaUsers.add(event.getUser());
+                        break;
+                }
+                return;
+            }
+
+            if(!userSelection.contains(-1) && !userSelection.contains(-2)) {
+                event.reply("You did not register your Server yet, please provide this command with the correct Id ⮕ '/vendor server 0/1'").setEphemeral(true).queue();
+                event.reply("0 ⮕ Ealyn\n" + "1 ⮕ Nia").setEphemeral(true).queue();
+            }
+
+            if (event.getOptions().size() == 1) {
+                if(!action.equalsIgnoreCase("show") && !action.equalsIgnoreCase("list")) {
+                    event.reply("Please provide either another action with a cardId or use 'show' to show a list of available cards to select").setEphemeral(true).queue();
+                } else {
+                    if(action.equalsIgnoreCase("show")) {
+                        StringBuilder builder = new StringBuilder();
+                        int i = 0;
+                        for (MerchantItem value : MerchantManager.allCardItems.values()) {
+                            builder.append("Id: ").append(i).append(" ⮕ ").append(value.getName()).append(" (").append(value.getRarity().getDisplayName()).append(")").append("\n");
+                            i++;
+                        }
+                        EmbedBuilder embedBuilder = new EmbedBuilder();
+                        embedBuilder.setColor(MessageColor.getRandom().getColor());
+                        embedBuilder.setDescription(builder.toString());
+                        embedBuilder.setTitle("LostMerchants Card-list");
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                    }else if(action.equalsIgnoreCase("list")) {
+                        if(userSelection.isEmpty()) {
+                            event.reply("You don't have any selected Cards").setEphemeral(true).queue();
+                            return;
+                        }
+                        StringBuilder builder = new StringBuilder();
+                        List<MerchantItem> items = new ArrayList<>(MerchantManager.allCardItems.values());
+                        for (Integer integer : userSelection) {
+                            MerchantItem value = items.get(integer);
+                            builder.append("Id: ").append(integer).append(" ⮕ ").append(value.getName()).append(" (").append(value.getRarity().getDisplayName()).append(")").append("\n");
+                        }
+                        EmbedBuilder embedBuilder = new EmbedBuilder();
+                        embedBuilder.setColor(MessageColor.getRandom().getColor());
+                        embedBuilder.setDescription(builder.toString());
+                        embedBuilder.setTitle("LostMerchants Selected-Card-list");
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                    }
+                }
+            }else if(event.getOptions().size() >= 2) {
+                if (!action.equalsIgnoreCase("add") && !action.equalsIgnoreCase("remove")) {
+                    event.reply("Please provide one of the given actions: add/remove").setEphemeral(true).queue();
+                }else {
+                    String userId = event.getUser().getId();
+                    int server = LOABot.getQueryHandler().getServerForCardUser(userId);
+                    if(action.equalsIgnoreCase("add")) {
+                        if(!userSelection.contains(cardId)) {
+                            LOABot.getQueryHandler().insertUserVendorProperty(userId, cardId);
+                            updateUserVendorNotifications(event.getUser());
+                            event.reply("Added the card with the id '" + cardId + "' to your notifications").setEphemeral(true).queue();
+                            switch (server) {
+                                case -1:
+                                    if(!LOABot.neededCardIndexesEayln.contains(cardId)) {
+                                        LOABot.neededCardIndexesEayln.add(cardId);
+                                    }
+                                    break;
+                                case -2:
+                                    if(!LOABot.neededCardIndexesNia.contains(cardId)) {
+                                        LOABot.neededCardIndexesNia.add(cardId);
+                                    }
+                                    break;
+                            }
+                        }else{
+                            event.reply("You already have that card selected").setEphemeral(true).queue();
+                        }
+                    }else if(action.equalsIgnoreCase("remove")) {
+                        if(userSelection.contains(cardId)) {
+                            LOABot.getQueryHandler().removeUserVendorProperty(userId, cardId);
+                            updateUserVendorNotifications(event.getUser());
+                            event.reply("Removed the card with the id '" + cardId + "' from your notifications").setEphemeral(true).queue();
+                        }else{
+                            event.reply("You do not have that card selected").setEphemeral(true).queue();
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private void updateUserVendorNotifications(User user) {
+        LOABot.userCardNotifications.put(user,LOABot.getQueryHandler().getSelectedCardsForUser(user.getId()));
     }
 
     public void sendConfirm(SlashCommandInteractionEvent e) {
