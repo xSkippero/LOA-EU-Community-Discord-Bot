@@ -162,7 +162,7 @@ public class MerchantManager {
                             if (goodCard)
                                 merchant.setCardItem(requiredItems.get(card.getName()));
                             if (goodRapport)
-                                merchant.setCardItem(requiredItems.get(rapport.getName()));
+                                merchant.setRapportItem(requiredItems.get(rapport.getName()));
                         }
 
                         int index = IntStream.range(0, allCardItems.size()).filter(i -> new ArrayList<>(allCardItems.values()).get(i).getName().equals(card.getName())).findFirst().orElse(-1);
