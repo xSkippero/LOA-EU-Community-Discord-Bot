@@ -1,4 +1,4 @@
-# LOA-EUW-Status-Discord-Bot
+# LOA-EUW-Community-Discord-Bot
 
 This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel
 In the newer versions the Bot also check the website LostMerchants.com for rare Items on both Servers (Nia, Ealyn) and prints
