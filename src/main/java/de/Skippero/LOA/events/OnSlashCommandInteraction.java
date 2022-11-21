@@ -297,6 +297,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                         embedBuilder.setDescription(builder.toString());
                         embedBuilder.setTitle("LostMerchants Card-list");
                         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                        break;
                 case "btn-list":
                     if(userSelection.isEmpty()) {
                         event.reply("You don't have any selected Cards").setEphemeral(true).queue();
