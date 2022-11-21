@@ -199,7 +199,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
 
             if (event.getOptions().size() != 2) {
-                event.reply("Usage:\n" + "Show all available Cards ⮕ [All Cards]\n" + "Show your selected Cards ⮕ [Your Cards]\n" +"Clear your selected Cards ⮕ [Clear Cards]\n").setEphemeral(true).addActionRow(showButton,listButton,clearButton).queue();
+                event.reply("Usage:\n" +
+                        "Show all available Cards ⮕ [All Cards]\n" +
+                        "Show your selected Cards ⮕ [Your Cards]\n" +
+                        "Clear your selected Cards ⮕ [Clear Cards]\n" +
+                        "Add or remove selected Cards ⮕ /vendor <add/remove> <cardId>\n").setEphemeral(true).addActionRow(showButton,listButton,clearButton).queue();
             }else if(event.getOptions().size() >= 2) {
                 if (!action.equalsIgnoreCase("add") && !action.equalsIgnoreCase("remove")) {
                     event.reply("Please provide one of the given actions: add/remove").setEphemeral(true).queue();
@@ -207,7 +211,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     int cardId = -999;
                     OptionMapping idPayLoad = event.getOption("cardid");
                     if(idPayLoad != null) {
-                        cardId = actionPayLoad.getAsInt();
+                        cardId = idPayLoad.getAsInt();
                     }
 
                     if(cardId == -999) {
