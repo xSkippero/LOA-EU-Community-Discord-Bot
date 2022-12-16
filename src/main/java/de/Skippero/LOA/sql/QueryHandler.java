@@ -67,7 +67,12 @@ public class QueryHandler {
         executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
         executeUpdateSync("CREATE TABLE IF NOT EXISTS userVendorData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), cardId int)");
-        executeUpdateSync("ALTER TABLE `serverData` ADD UNIQUE `fieldServer`( `field`, `server`)");
+        try {
+            executeUpdateSync("ALTER TABLE `serverData` ADD UNIQUE `fieldServer`( `field`, `server`)");
+        }catch(Exception e) {
+            System.out.println("[" + new Date().toGMTString() + "] Ignoring UNIQUE creation");
+        }
+
     }
 
     public void updateProperty(String server, String property, String value) {
