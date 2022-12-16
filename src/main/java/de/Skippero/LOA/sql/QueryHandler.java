@@ -64,9 +64,14 @@ public class QueryHandler {
 
     private void createTables() {
         System.out.println("[" + new Date().toGMTString() + "] Creating Tables if not exits");
-        executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
-        executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
-        executeUpdateSync("CREATE TABLE IF NOT EXISTS userVendorData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), cardId int)");
+        try {
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS userVendorData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), cardId int)");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         try {
             executeUpdateSync("ALTER TABLE `serverData` ADD UNIQUE `fieldServer`( `field`, `server`)");
         }catch(Exception e) {
@@ -76,23 +81,43 @@ public class QueryHandler {
     }
 
     public void updateProperty(String server, String property, String value) {
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + server + "','" + property + "','" + value + "') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        try {
+            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + server + "','" + property + "','" + value + "') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void insertUserProperty(String server, String userId, String permission) {
-        executeUpdateSync("INSERT INTO userData (server, userId, permission) VALUES ('" + server + "','" + userId + "','" + permission + "')");
+        try {
+            executeUpdateSync("INSERT INTO userData (server, userId, permission) VALUES ('" + server + "','" + userId + "','" + permission + "')");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeUserProperty(String server, String userId, String permission) {
-        executeUpdateSync("DELETE FROM userData WHERE server = '" + server + "' AND userId = '" + userId + "' AND permission = '" + permission + "'");
+        try {
+            executeUpdateSync("DELETE FROM userData WHERE server = '" + server + "' AND userId = '" + userId + "' AND permission = '" + permission + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void insertUserVendorProperty(String userId, int cardId) {
-        executeUpdateSync("INSERT INTO userVendorData (userId, cardId) VALUES ('" + userId + "','" + cardId + "')");
+        try {
+            executeUpdateSync("INSERT INTO userVendorData (userId, cardId) VALUES ('" + userId + "','" + cardId + "')");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeUserVendorProperty(String userId, int cardId) {
-        executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId = '" + cardId + "'");
+        try {
+            executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId = '" + cardId + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<String> getAllVendorUserIds() {
@@ -110,11 +135,11 @@ public class QueryHandler {
     }
 
     public void clearUserVendorCards(String userId) {
-        executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId >= '0'");
-    }
-
-    public void deleteOldServer(String userId) {
-        executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId < 0");
+        try {
+            executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId >= '0'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getServerForCardUser(String userId) {
@@ -192,20 +217,15 @@ public class QueryHandler {
         return null;
     }
 
-    public int executeUpdateSync(String statement) {
-        try {
-            Connection con = getConnection();
-            if (con == null) {
-                return 1;
-            }
-            Statement stm = con.createStatement();
-            connections.add(con);
-            autoClose(con);
-            return stm.executeUpdate(statement);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public int executeUpdateSync(String statement) throws SQLException {
+        Connection con = getConnection();
+        if (con == null) {
+            return 1;
         }
-        return 0;
+        Statement stm = con.createStatement();
+        connections.add(con);
+        autoClose(con);
+        return stm.executeUpdate(statement);
     }
 
     private void autoClose(Connection con) {
@@ -237,9 +257,13 @@ public class QueryHandler {
     }
 
     public void createDefaultDataBaseConfiguration(String name) {
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushChannelName','loa-euw-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','statusChannelName','loa-euw-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-        executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','merchantChannelName','loa-euw-merchants') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        try {
+            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushChannelName','loa-euw-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','statusChannelName','loa-euw-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','merchantChannelName','loa-euw-merchants') ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
