@@ -271,6 +271,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             builder.setColor(MessageColor.getRandom().getColor());
             builder.setTitle(title);
             builder.setDescription(description);
+            builder.setFooter("There are no players joining");
 
             Button joinButton = Button.success("join","Join");
             Button leaveButton = Button.danger("leave","Leave");
@@ -332,11 +333,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             switch (event.getButton().getId()) {
                 case "leave":
                     joinOrLeaveSurvey(message,event,false);
-                    event.reply("Left the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
+                    event.reply("Left the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(1, TimeUnit.SECONDS));
                     break;
                 case "join":
                     joinOrLeaveSurvey(message,event,true);
-                    event.reply("Joined the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
+                    event.reply("Joined the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(1, TimeUnit.SECONDS));
                     break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
