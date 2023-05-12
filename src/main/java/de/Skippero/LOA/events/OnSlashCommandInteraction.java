@@ -270,7 +270,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equalsIgnoreCase("survey")) {
 
-            event.deferReply().queue();
+            event.deferReply(true).queue();
 
             String title = event.getOption("title").getAsString();
             String description = event.getOption("description").getAsString();
@@ -317,8 +317,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         }
         List<User> userList = surveys.get(message.getIdLong());
         MessageEmbed messageEmbed = message.getEmbeds().get(0);
-        System.out.println(Arrays.toString(message.getEmbeds().toArray()));
-        System.out.println(Arrays.toString(messageEmbed.toData().toJson()));
         EmbedBuilder embedBuilder = new EmbedBuilder(messageEmbed);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Players joining: ");
@@ -327,7 +325,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         }
         String joiningPlayers = stringBuilder.toString();
         embedBuilder.setFooter(joiningPlayers.substring(joiningPlayers.length()-2));
-        message.editMessageEmbeds().queue();
+        message.editMessageEmbeds(embedBuilder.build()).queue();
     }
 
     public void onButtonInteraction(ButtonInteractionEvent event) {
@@ -339,9 +337,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             switch (event.getButton().getId()) {
                 case "leave":
                     joinOrLeaveSurvey(message,event,false);
+                    event.deferReply(true).queue();
                     break;
                 case "join":
                     joinOrLeaveSurvey(message,event,true);
+                    event.deferReply(true).queue();
                     break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
