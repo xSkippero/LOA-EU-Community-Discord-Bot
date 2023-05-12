@@ -361,15 +361,12 @@ public class LOABot {
     }
 
     public static void restartBot() {
-        System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot in 5 seconds...");
         try {
-            if(jda.awaitShutdown(Duration.ofSeconds(5))) {
-                jda.shutdown();
-                System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot now...");
-                queryHandler.closeConnection();
-                Runtime.getRuntime().exec("./restart.sh");
-            }
-        } catch (InterruptedException | IOException e) {
+            jda.shutdown();
+            System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot...");
+            queryHandler.closeConnection();
+            Runtime.getRuntime().exec("./restart.sh");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

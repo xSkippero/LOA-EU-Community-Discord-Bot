@@ -91,16 +91,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot now...");
                 LOABot.getQueryHandler().closeConnection();
                 LOABot.jda.shutdown();
-                try {
-                    if(LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
-                        System.out.println("Bot stopped!");
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } {
-
-                }
-                //System.exit(0);
+                System.exit(0);
             }
         } else if (event.getName().equalsIgnoreCase("about")) {
             event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. " + LOABot.botVersion + "\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
@@ -433,12 +424,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
     public void runUpdateScriptAsync() {
         try {
-            if(LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
-                LOABot.jda.shutdown();
-                LOABot.getQueryHandler().closeConnection();
-                Runtime.getRuntime().exec("./updateInScreen.sh");
-            }
-        } catch (InterruptedException | IOException e) {
+            LOABot.jda.shutdown();
+            LOABot.getQueryHandler().closeConnection();
+            Runtime.getRuntime().exec("./updateInScreen.sh");
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
