@@ -99,6 +99,8 @@ public class LOABot {
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
         jda.upsertCommand("vendor", "Configure LostMerchants personal notifications").addOption(OptionType.STRING, "action", "What you want to do (add/remove)")
                 .addOption(OptionType.INTEGER, "cardid", "The id of the Card you want to add/remove", false).queue();
+        jda.upsertCommand("survey", "Send a custom embed message").addOption(OptionType.STRING, "title", "Title of the embed message", true)
+                .addOption(OptionType.STRING, "description", "description of the embed message", true).queue();
 
         System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
         System.out.println("[" + new Date().toGMTString() + "] Bot is active on: ");

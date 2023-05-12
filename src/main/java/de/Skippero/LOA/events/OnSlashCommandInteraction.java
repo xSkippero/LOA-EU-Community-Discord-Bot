@@ -6,6 +6,8 @@ import de.Skippero.LOA.features.merchants.receiver.RawActiveMerchant;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -17,6 +19,8 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
@@ -254,8 +258,25 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     }
                 }
             }
+        }else if(event.getName().equalsIgnoreCase("survey")) {
+            String title = event.getOption("title").getAsString();
+            String description = event.getOption("description").getAsString();
+
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setColor(MessageColor.getRandom().getColor());
+            builder.setTitle(title);
+            builder.setDescription(description);
+            builder.setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis()));
+
+            Button joinButton = Button.success("join","Join");
+            Button leaveButton = Button.danger("leave","Leave");
+            Button delButton = Button.danger("del","Delete");
+
+            event.getChannel().sendMessageEmbeds(builder.build()).setActionRow(joinButton,leaveButton,delButton).queue();
         }
     }
+
+    private final Map<Long, List<User>> surveys = new HashMap<>();
 
     Button niaButton = Button.primary("server-nia","Nia");
     Button ealynButton = Button.primary("server-ealyn","Ealyn");
@@ -264,12 +285,50 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
     Button listButton = Button.primary("btn-list","Your Cards");
     Button clearButton = Button.danger("btn-clear","Clear Cards");
 
+    private void joinOrLeaveSurvey(Message message, ButtonInteractionEvent event, boolean joining) {
+        if(!surveys.containsKey(message.getIdLong())) {
+            List<User> userList = new ArrayList<User>();
+            if(joining) {
+                userList.add(event.getUser());
+            }
+            surveys.put(message.getIdLong(),userList);
+        }else{
+            List<User> userList = surveys.get(message.getIdLong());
+            if(joining) {
+                if(!userList.contains(event.getUser())) {
+                    userList.add(event.getUser());
+                }
+            }else{
+                userList.remove(event.getUser());
+            }
+            surveys.put(message.getIdLong(),userList);
+        }
+        List<User> userList = surveys.get(message.getIdLong());
+        MessageEmbed messageEmbed = message.getEmbeds().get(0);
+        EmbedBuilder embedBuilder = new EmbedBuilder(messageEmbed);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Players joining: ");
+        for (User user : userList) {
+            stringBuilder.append(user.getName()).append(", ");
+        }
+        String joiningPlayers = stringBuilder.toString();
+        embedBuilder.setFooter(joiningPlayers.substring(joiningPlayers.length()-2));
+        message.editMessageEmbeds().queue();
+    }
+
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
         List<Integer> userSelection = LOABot.getQueryHandler().getSelectedCardsForUser(event.getUser().getId());
 
         if(event.getButton().getId() != null) {
+            Message message = event.getMessage();
             switch (event.getButton().getId()) {
+                case "leave":
+                    joinOrLeaveSurvey(message,event,false);
+                    break;
+                case "join":
+                    joinOrLeaveSurvey(message,event,true);
+                    break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
                     break;
