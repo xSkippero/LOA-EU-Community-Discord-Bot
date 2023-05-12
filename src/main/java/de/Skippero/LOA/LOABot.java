@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -28,7 +27,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class LOABot {
 
@@ -73,10 +71,10 @@ public class LOABot {
         configurations = queryHandler.loadConfiguration(configurations);
 
         JDABuilder builder = JDABuilder.createDefault(args[0]);
-        builder.setStatus(OnlineStatus.ONLINE);
+        builder.setStatus(OnlineStatus.IDLE);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
-        builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
+        builder.setActivity(Activity.of(Activity.ActivityType.CUSTOM_STATUS,"Booting up..."));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
         builder.addEventListeners(new OnSlashCommandInteraction());
 
@@ -129,6 +127,9 @@ public class LOABot {
         loadUserNotifications();
 
         startTimers(jda);
+
+        builder.setStatus(OnlineStatus.ONLINE);
+        builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
     }
 
     private static void loadUserNotifications() {
@@ -362,13 +363,25 @@ public class LOABot {
     }
 
     public static void restartBot() {
+        System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot in 5 seconds...");
         try {
-            System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot...");
-            queryHandler.closeConnection();
-            Runtime.getRuntime().exec("./restart.sh");
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            jda.awaitShutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        Timer timer = new Timer("restartTimer");
+        TimerTask task = new TimerTask() {
+            public void run() {
+                try {
+                    System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot now...");
+                    queryHandler.closeConnection();
+                    Runtime.getRuntime().exec("./restart.sh");
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        };
+        timer.schedule(task, 5 * 1000);
     }
 
     private static void getStatus() {
