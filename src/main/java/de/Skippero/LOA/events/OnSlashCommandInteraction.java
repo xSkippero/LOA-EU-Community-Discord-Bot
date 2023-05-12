@@ -87,18 +87,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " tried to execute " + "/stop");
             } else {
                 System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " stopped the bot via /stop");
-                System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot in 5 seconds...");
                 event.reply("Shutting down...").setEphemeral(true).queue();
-                try {
-                    if (LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
-                        LOABot.jda.shutdown();
-                        System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot now...");
-                        LOABot.getQueryHandler().closeConnection();
-                        System.exit(0);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot now...");
+                LOABot.getQueryHandler().closeConnection();
+                LOABot.jda.shutdown();
+                //System.exit(0);
             }
         } else if (event.getName().equalsIgnoreCase("about")) {
             event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. " + LOABot.botVersion + "\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
