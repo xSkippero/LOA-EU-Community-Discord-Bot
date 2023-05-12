@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -88,22 +89,16 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.out.println("[" + new Date().toGMTString() + "]" + " " + event.getUser().getName() + " stopped the bot via /stop");
                 System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot in 5 seconds...");
                 event.reply("Shutting down...").setEphemeral(true).queue();
-
                 try {
-                    LOABot.jda.awaitShutdown();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                Timer timer = new Timer("shutDownTimer");
-                TimerTask task = new TimerTask() {
-                    public void run() {
+                    if (LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
+                        LOABot.jda.shutdown();
                         System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot now...");
                         LOABot.getQueryHandler().closeConnection();
                         System.exit(0);
                     }
-                };
-                timer.schedule(task, 5 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (event.getName().equalsIgnoreCase("about")) {
             event.reply("This bot checks the status page of LostARK (EU) at predefined intervals and displays any changes in a Discord channel\n" + "Bot by Skippero, v. " + LOABot.botVersion + "\n" + "https://github.com/xSkippero/LOA-EUW-Status-Discord-Bot-").setEphemeral(true).queue();
@@ -431,10 +426,13 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
     public void runUpdateScriptAsync() {
         try {
-            LOABot.getQueryHandler().closeConnection();
-            Runtime.getRuntime().exec("./updateInScreen.sh");
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            if(LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
+                LOABot.jda.shutdown();
+                LOABot.getQueryHandler().closeConnection();
+                Runtime.getRuntime().exec("./updateInScreen.sh");
+            }
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
         }
     }
 

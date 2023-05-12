@@ -26,6 +26,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 public class LOABot {
@@ -71,10 +72,10 @@ public class LOABot {
         configurations = queryHandler.loadConfiguration(configurations);
 
         JDABuilder builder = JDABuilder.createDefault(args[0]);
-        builder.setStatus(OnlineStatus.IDLE);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
-        builder.setActivity(Activity.watching("Booting up..."));
+        builder.setStatus(OnlineStatus.ONLINE);
+        builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
         builder.addEventListeners(new OnSlashCommandInteraction());
 
@@ -127,9 +128,6 @@ public class LOABot {
         loadUserNotifications();
 
         startTimers(jda);
-
-        builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
     }
 
     private static void loadUserNotifications() {
@@ -365,23 +363,15 @@ public class LOABot {
     public static void restartBot() {
         System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot in 5 seconds...");
         try {
-            jda.awaitShutdown();
-        } catch (InterruptedException e) {
+            if(jda.awaitShutdown(Duration.ofSeconds(5))) {
+                jda.shutdown();
+                System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot now...");
+                queryHandler.closeConnection();
+                Runtime.getRuntime().exec("./restart.sh");
+            }
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
-        Timer timer = new Timer("restartTimer");
-        TimerTask task = new TimerTask() {
-            public void run() {
-                try {
-                    System.out.println("[" + new Date().toGMTString() + "]" + " Restarting Bot now...");
-                    queryHandler.closeConnection();
-                    Runtime.getRuntime().exec("./restart.sh");
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
-        };
-        timer.schedule(task, 5 * 1000);
     }
 
     private static void getStatus() {
