@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -20,7 +19,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
@@ -281,7 +279,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             builder.setColor(MessageColor.getRandom().getColor());
             builder.setTitle(title);
             builder.setDescription(description);
-            builder.setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis()));
 
             Button joinButton = Button.success("join","Join");
             Button leaveButton = Button.danger("leave","Leave");
