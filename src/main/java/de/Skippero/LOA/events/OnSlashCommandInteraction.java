@@ -312,6 +312,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Players joining: ");
         for (User user : userList) {
+            System.out.println(user.getName());
             stringBuilder.append(user.getName()).append(", ");
         }
         String joiningPlayers = stringBuilder.toString();
@@ -328,11 +329,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             switch (event.getButton().getId()) {
                 case "leave":
                     joinOrLeaveSurvey(message,event,false);
-                    event.deferReply(true).queue();
+                    event.reply("").setEphemeral(true).deadline(System.currentTimeMillis()).queue();
                     break;
                 case "join":
                     joinOrLeaveSurvey(message,event,true);
-                    event.deferReply(true).queue();
+                    event.reply("").setEphemeral(true).deadline(System.currentTimeMillis()).queue();
                     break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
