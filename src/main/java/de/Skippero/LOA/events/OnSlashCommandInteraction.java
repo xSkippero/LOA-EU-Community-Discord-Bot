@@ -313,11 +313,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Players joining: ");
         for (User user : userList) {
-            stringBuilder.append("**").append(user.getName()).append("**").append(", ");
+            stringBuilder.append(user.getName()).append(", ");
         }
         String joiningPlayers = stringBuilder.toString();
         if(userList.isEmpty()) {
-            joiningPlayers = "No one joining";
+            joiningPlayers = "There are no players joining--";
         }
         embedBuilder.setFooter(joiningPlayers.substring(0,joiningPlayers.length()-2));
         message.editMessageEmbeds(embedBuilder.build()).queue();
