@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
@@ -261,7 +262,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equalsIgnoreCase("survey")) {
 
-            event.deferReply(true).queue();
+            event.reply("Survey created").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
 
             String title = event.getOption("title").getAsString();
             String description = event.getOption("description").getAsString();
@@ -312,9 +313,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Players joining: ");
         for (User user : userList) {
-            stringBuilder.append(user.getName()).append(", ");
+            stringBuilder.append("**").append(user.getName()).append("**").append(", ");
         }
         String joiningPlayers = stringBuilder.toString();
+        if(userList.isEmpty()) {
+            joiningPlayers = "No one joining";
+        }
         embedBuilder.setFooter(joiningPlayers.substring(0,joiningPlayers.length()-2));
         message.editMessageEmbeds(embedBuilder.build()).queue();
     }
@@ -328,11 +332,11 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             switch (event.getButton().getId()) {
                 case "leave":
                     joinOrLeaveSurvey(message,event,false);
-                    event.reply("").setEphemeral(true).queue(m->m.deleteOriginal().queue());
+                    event.reply("Left the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
                     break;
                 case "join":
                     joinOrLeaveSurvey(message,event,true);
-                    event.reply("").setEphemeral(true).queue(m->m.deleteOriginal().queue());
+                    event.reply("Joined the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
                     break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
