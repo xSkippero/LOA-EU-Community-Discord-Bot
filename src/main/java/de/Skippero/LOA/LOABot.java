@@ -74,7 +74,7 @@ public class LOABot {
         builder.setStatus(OnlineStatus.IDLE);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
-        builder.setActivity(Activity.of(Activity.ActivityType.CUSTOM_STATUS,"Booting up...up"));
+        builder.setActivity(Activity.watching("Booting up..."));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
         builder.addEventListeners(new OnSlashCommandInteraction());
 
