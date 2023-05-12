@@ -91,6 +91,15 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 System.out.println("[" + new Date().toGMTString() + "]" + " Stopping Bot now...");
                 LOABot.getQueryHandler().closeConnection();
                 LOABot.jda.shutdown();
+                try {
+                    if(LOABot.jda.awaitShutdown(Duration.ofSeconds(5))) {
+                        System.out.println("Bot stopped!");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } {
+
+                }
                 //System.exit(0);
             }
         } else if (event.getName().equalsIgnoreCase("about")) {
@@ -261,7 +270,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equalsIgnoreCase("survey")) {
 
-            event.reply("Messages send").setEphemeral(true).queue();
+            event.deferReply().queue();
 
             String title = event.getOption("title").getAsString();
             String description = event.getOption("description").getAsString();
@@ -308,8 +317,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         }
         List<User> userList = surveys.get(message.getIdLong());
         MessageEmbed messageEmbed = message.getEmbeds().get(0);
-        System.out.println(message.getEmbeds());
-        System.out.println(messageEmbed);
+        System.out.println(Arrays.toString(message.getEmbeds().toArray()));
+        System.out.println(Arrays.toString(messageEmbed.toData().toJson()));
         EmbedBuilder embedBuilder = new EmbedBuilder(messageEmbed);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Players joining: ");
