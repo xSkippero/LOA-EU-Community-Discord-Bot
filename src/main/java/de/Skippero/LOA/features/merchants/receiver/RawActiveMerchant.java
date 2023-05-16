@@ -17,6 +17,7 @@ public class RawActiveMerchant {
     private RawItem card;
     private RawItem rapport;
     private double votes;
+    private String tradeskill;
 
     public String getZone() {
         return zone;
@@ -64,5 +65,9 @@ public class RawActiveMerchant {
 
     public void setZone(String zone) {
         this.zone = zone;
+    }
+
+    public void setTradeskill(String tradeskill) {
+        this.tradeskill = tradeskill;
     }
 }
