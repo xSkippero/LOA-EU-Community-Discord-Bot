@@ -49,11 +49,23 @@ public class LOABot {
     private static Map<String, TextChannel> pushNotificationChannels;
     private static int errorCount = 0;
 
+    public static boolean DEVELOP = false;
+
     public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
 
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
+        }
+
+        if(args.length >= 2) {
+            if(args[1].equalsIgnoreCase("--develop")) {
+                DEVELOP = true;
+                System.out.println(" ");
+                System.out.println("!!!RUNNING DEVELOPER MODE!!!");
+                System.out.println("- Getting LostMerchants Info from Testserver");
+                System.out.println(" ");
+            }
         }
 
         MavenXpp3Reader reader = new MavenXpp3Reader();

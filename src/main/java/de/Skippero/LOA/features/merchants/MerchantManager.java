@@ -115,7 +115,13 @@ public class MerchantManager {
     private static HubConnection hubConnection;
 
     public static void openConnection() {
-        hubConnection = HubConnectionBuilder.create("https://lostmerchants.com/MerchantHub").build();
+
+        String url = "https://lostmerchants.com/MerchantHub";
+
+        if(LOABot.DEVELOP)
+            url = "https://test.lostmerchants.com/MerchantHub";
+
+        hubConnection = HubConnectionBuilder.create(url).build();
         hubConnection.setKeepAliveInterval(60 * 1000);
         hubConnection.setServerTimeout(8 * 60 * 1000);
         hubConnection.onClosed((ex) -> {
@@ -141,6 +147,10 @@ public class MerchantManager {
                     hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
                         String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+", "_");
+
+                        if(LOABot.DEVELOP)
+                            System.out.println(result);
+
                         RawMerchantUpdate merchantUpdate = new Gson().fromJson(result, RawMerchantUpdate.class);
                         RawActiveMerchant activeMerchant = merchantUpdate.getActiveMerchants()[0];
                         MerchantItemRarity cardRarity = MerchantItemRarity.getByDouble(activeMerchant.getCard().getRarity());
