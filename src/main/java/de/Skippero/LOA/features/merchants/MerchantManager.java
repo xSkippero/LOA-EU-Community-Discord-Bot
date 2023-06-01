@@ -146,7 +146,7 @@ public class MerchantManager {
 
                     hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
-                        String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+", "_");
+                        String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+", "_").replaceAll(":","");
 
                         if(LOABot.DEVELOP)
                             System.out.println(result);
