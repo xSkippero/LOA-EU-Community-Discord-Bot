@@ -387,6 +387,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 return ":purple_square:";
             case LEGENDARY:
                 return ":yellow_square:";
+            case COMMON:
+                return ":white_large_square:";
         }
         return ":question:";
     }
