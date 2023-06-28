@@ -275,7 +275,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
             event.getChannel().sendMessageEmbeds(builder.build()).setActionRow(delButton).queue();
         } else if (event.getName().equalsIgnoreCase("updatenotify")) {
-            if (event.getUser().getIdLong() != 397006908424454147L) {
+            if (event.getUser().getIdLong() == 397006908424454147L) {
 
                 List<String> users = LOABot.getQueryHandler().getAllVendorUserIds();
 
