@@ -262,7 +262,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             }
         }else if(event.getName().equalsIgnoreCase("survey")) {
 
-            event.reply("Survey created").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(3, TimeUnit.SECONDS));
+            event.reply("Send the custom message").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(1, TimeUnit.SECONDS));
 
             String title = event.getOption("title").getAsString();
             String description = event.getOption("description").getAsString();
@@ -271,17 +271,39 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             builder.setColor(MessageColor.getRandom().getColor());
             builder.setTitle(title);
             builder.setDescription(description);
-            builder.setFooter("There are no players joining");
-
-            Button joinButton = Button.success("join","Join");
-            Button leaveButton = Button.danger("leave","Leave");
             Button delButton = Button.danger("del","Delete");
 
-            event.getChannel().sendMessageEmbeds(builder.build()).setActionRow(joinButton,leaveButton,delButton).queue();
+            event.getChannel().sendMessageEmbeds(builder.build()).setActionRow(delButton).queue();
+        } else if (event.getName().equalsIgnoreCase("updatenotify")) {
+            if (event.getMember() != null && event.getMember().getIdLong() == 397006908424454147L) {
+
+                List<String> users = LOABot.getQueryHandler().getAllVendorUserIds();
+
+                event.reply("Send the custom message to " + users.size() + " users.").setEphemeral(true).queue();
+
+                String title = event.getOption("title").getAsString();
+                String description = event.getOption("description").getAsString();
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(MessageColor.getRandom().getColor());
+                builder.setTitle(title);
+                builder.setDescription(description);
+                Button delButton = Button.danger("del","Delete");
+
+                for (String suser : users) {
+                    User user = LOABot.jda.getUserById(suser);
+
+                    if(user != null) {
+                        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(builder.build()).setActionRow(delButton)).queue();
+                    }
+                }
+
+                event.getChannel().sendMessageEmbeds(builder.build()).setActionRow(delButton).queue();
+            }else{
+                event.reply("You do not have enough permissions to execute this command!").setEphemeral(true).queue();
+            }
         }
     }
-
-    private final Map<Long, List<User>> surveys = new HashMap<>();
 
     Button niaButton = Button.primary("server-nia","Nia");
     Button ealynButton = Button.primary("server-ealyn","Ealyn");
@@ -290,39 +312,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
     Button listButton = Button.primary("btn-list","Your Cards");
     Button clearButton = Button.danger("btn-clear","Clear Cards");
 
-    private void joinOrLeaveSurvey(Message message, ButtonInteractionEvent event, boolean joining) {
-        if(!surveys.containsKey(message.getIdLong())) {
-            List<User> userList = new ArrayList<User>();
-            if(joining) {
-                userList.add(event.getUser());
-            }
-            surveys.put(message.getIdLong(),userList);
-        }else{
-            List<User> userList = surveys.get(message.getIdLong());
-            if(joining) {
-                if(!userList.contains(event.getUser())) {
-                    userList.add(event.getUser());
-                }
-            }else{
-                userList.remove(event.getUser());
-            }
-            surveys.put(message.getIdLong(),userList);
-        }
-        List<User> userList = surveys.get(message.getIdLong());
-        MessageEmbed messageEmbed = message.getEmbeds().get(0);
-        EmbedBuilder embedBuilder = new EmbedBuilder(messageEmbed);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Players joining: ");
-        for (User user : userList) {
-            stringBuilder.append(user.getName()).append(", ");
-        }
-        String joiningPlayers = stringBuilder.toString();
-        if(userList.isEmpty()) {
-            joiningPlayers = "There are no players joining--";
-        }
-        embedBuilder.setFooter(joiningPlayers.substring(0,joiningPlayers.length()-2));
-        message.editMessageEmbeds(embedBuilder.build()).queue();
-    }
 
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
@@ -331,14 +320,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         if(event.getButton().getId() != null) {
             Message message = event.getMessage();
             switch (event.getButton().getId()) {
-                case "leave":
-                    joinOrLeaveSurvey(message,event,false);
-                    event.reply("Left the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(1, TimeUnit.SECONDS));
-                    break;
-                case "join":
-                    joinOrLeaveSurvey(message,event,true);
-                    event.reply("Joined the raid").setEphemeral(true).queue(m->m.deleteOriginal().queueAfter(1, TimeUnit.SECONDS));
-                    break;
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
                     break;

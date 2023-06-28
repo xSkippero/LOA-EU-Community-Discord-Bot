@@ -4,7 +4,7 @@ import java.awt.*;
 
 public enum MessageColor {
 
-    CYAN(Color.CYAN), MAGENTA(Color.MAGENTA), ORANGE(Color.ORANGE), BLUE(Color.BLUE), RED(Color.red), GREEN(Color.GREEN);
+    CYAN(Color.CYAN), MAGENTA(Color.MAGENTA), ORANGE(Color.ORANGE), BLUE(Color.BLUE), RED(Color.red), GREEN(Color.GREEN), WHITE(Color.WHITE);
 
     private Color color;
 

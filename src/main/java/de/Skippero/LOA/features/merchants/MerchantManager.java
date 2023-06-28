@@ -16,9 +16,7 @@ import de.Skippero.LOA.features.merchants.receiver.RawActiveMerchant;
 import de.Skippero.LOA.features.merchants.receiver.RawMerchantUpdate;
 import de.Skippero.LOA.utils.MessageColor;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
@@ -34,11 +32,21 @@ public class MerchantManager {
 
     static {
         //Cards
-        requiredItems.put("Wei",new MerchantItem("Wei", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for the 'Light of Salvation' set (+15% DMG in total)"));
-        requiredItems.put("Seria",new MerchantItem("Seria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'Lostwind Cliff' set (+7% Crit)"));
-        requiredItems.put("Sian",new MerchantItem("Sian", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'We’ll Meet Again' set (Reduced DMG and Heal on Low HP)"));
-        requiredItems.put("Madnick",new MerchantItem("Madnick", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for the 'We’ll Meet Again' set (Reduced DMG and Heal on Low HP)"));
-        requiredItems.put("Mokamoka",new MerchantItem("Mokamoka", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for the 'Forest Of Giants' set (+15% Health Recovery, better Armor)"));
+        requiredItems.put("Wei",new MerchantItem("Wei", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for 'Light of Salvation'"));
+        requiredItems.put("Balthorr",new MerchantItem("Balthorr", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for 'Light of Salvation'"));
+        requiredItems.put("Delain_Armen",new MerchantItem("Delain Armen", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "Card for 'Lostwind Cliff'"));
+        requiredItems.put("Seria",new MerchantItem("Seria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'Lostwind Cliff'"));
+        requiredItems.put("Sian",new MerchantItem("Sian", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for the 'We’ll Meet Again' and 'You Have A Plan' Set"));
+        requiredItems.put("Madnick",new MerchantItem("Madnick", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for 'We’ll Meet Again'"));
+        requiredItems.put("Mokamoka",new MerchantItem("Mokamoka", MerchantItemType.CARD, MerchantItemRarity.EPIC,"Card for 'Forest Of Giants'"));
+        requiredItems.put("Bergstrom",new MerchantItem("Bergstrom", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'You Have A Plan'"));
+        requiredItems.put("Piyer",new MerchantItem("Piyer", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'You Have A Plan'"));
+        requiredItems.put("Krause",new MerchantItem("Krause", MerchantItemType.CARD, MerchantItemRarity.EPIC, "Card for the 'Deep Dive' and 'You Have A Plan' Set"));
+        requiredItems.put("Thunder",new MerchantItem("Thunder", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'Deep Dive'"));
+        requiredItems.put("Varut",new MerchantItem("Varut", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'Deep Dive'"));
+        requiredItems.put("Meehan",new MerchantItem("Meehan", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'Deep Dive'"));
+        requiredItems.put("Prideholme_Neria",new MerchantItem("Prideholme Neria", MerchantItemType.CARD, MerchantItemRarity.RARE, "Card for 'Deep Dive'"));
+
 
         //General Legendary Rapport
         requiredItems.put("Surprise_Chest",new MerchantItem("Surprise Chest", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
@@ -54,9 +62,13 @@ public class MerchantManager {
         requiredItems.put("Red_Moon_Tears",new MerchantItem("Red Moon Tears", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
         requiredItems.put("Oreha_Viewing_Stone",new MerchantItem("Oreha Viewing Stone", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
         requiredItems.put("Necromancer's_Records",new MerchantItem("Necromancer's Records", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
+        requiredItems.put("Warm_Earmuffs",new MerchantItem("Warm Earmuffs", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
+        requiredItems.put("Lucky_Starflower",new MerchantItem("Lucky Starflower", MerchantItemType.RAPPORT, MerchantItemRarity.LEGENDARY, "A common gift which gives 2000 points"));
     } //Cards for public
 
     static  {
+        allCardItems.put("Cahni",new MerchantItem("Cahni",MerchantItemType.CARD,MerchantItemRarity.COMMON, "Vendor in Elgacia"));
+
         allCardItems.put("Siera",new MerchantItem("Siera",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Rethramis"));
         allCardItems.put("Giant_Worm",new MerchantItem("Giant Worm",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
         allCardItems.put("Morina",new MerchantItem("Morina",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Yudia"));
@@ -71,6 +83,15 @@ public class MerchantManager {
         allCardItems.put("Sir_Druden",new MerchantItem("Sir Druden",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Anikka"));
         allCardItems.put("Sir_Valleylead",new MerchantItem("Sir Valleylead",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Anikka"));
         allCardItems.put("Javern",new MerchantItem("Javern",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Shushire"));
+
+        allCardItems.put("Revellos",new MerchantItem("Revellos",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Rowen"));
+        allCardItems.put("Rowen_Zenlord",new MerchantItem("Rowen Zenlord",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Rowen"));
+        allCardItems.put("Euclid",new MerchantItem("Euclid",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
+        allCardItems.put("Great_Celestial_Serpent",new MerchantItem("Great Celestial Serpent",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
+        allCardItems.put("Kirke",new MerchantItem("Kirke",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
+        allCardItems.put("Prunya",new MerchantItem("Prunya",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
+        allCardItems.put("Sky_Whale",new MerchantItem("Sky Whale",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
+        allCardItems.put("Tienis",new MerchantItem("Tienis",MerchantItemType.CARD,MerchantItemRarity.UNCOMMON, "Vendor in Elgacia"));
 
         allCardItems.put("Cassleford",new MerchantItem("Cassleford",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in West Luterra"));
         allCardItems.put("Thunder",new MerchantItem("Thunder",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Yudia"));
@@ -98,6 +119,19 @@ public class MerchantManager {
         allCardItems.put("Vern_Zenlord",new MerchantItem("Vern Zenlord",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in South Vern"));
         allCardItems.put("Xereon",new MerchantItem("Xereon",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in South Vern"));
 
+        allCardItems.put("Anke",new MerchantItem("Anke",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Arno",new MerchantItem("Arno",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Baskia",new MerchantItem("Baskia",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Hanun",new MerchantItem("Hanun",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Marinna",new MerchantItem("Marinna",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Piela",new MerchantItem("Piela",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Sylus",new MerchantItem("Sylus",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Wilhelm",new MerchantItem("Wilhelm",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Rowen"));
+        allCardItems.put("Azakiel",new MerchantItem("Azakiel",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Elgacia"));
+        allCardItems.put("Belomet",new MerchantItem("Belomet",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Elgacia"));
+        allCardItems.put("Diogenes",new MerchantItem("Diogenes",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Elgacia"));
+        allCardItems.put("Dyna",new MerchantItem("Dyna",MerchantItemType.CARD,MerchantItemRarity.RARE, "Vendor in Elgacia"));
+
         allCardItems.put("Thunderwings",new MerchantItem("Thunderwings",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in East Luterra"));
         allCardItems.put("Mokamoka",new MerchantItem("Mokamoka",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Tortoyk"));
         allCardItems.put("Krause",new MerchantItem("Krause",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Arthetine"));
@@ -108,8 +142,16 @@ public class MerchantManager {
         allCardItems.put("Kaldor",new MerchantItem("Kaldor",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Feiton"));
         allCardItems.put("Albion",new MerchantItem("Albion",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Punika"));
 
+        allCardItems.put("Danika",new MerchantItem("Danika",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Rowen"));
+        allCardItems.put("Myun_Hidaka",new MerchantItem("Myun Hidaka",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Rowen"));
+        allCardItems.put("Osphere",new MerchantItem("Osphere",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Rowen"));
+        allCardItems.put("Ark_of_Eternity_Kayangel",new MerchantItem("Ark of Eternity Kayangel",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Elgacia"));
+        allCardItems.put("Lauriel",new MerchantItem("Lauriel",MerchantItemType.CARD,MerchantItemRarity.EPIC, "Vendor in Elgacia"));
 
+        allCardItems.put("Balthorr",new MerchantItem("Balthorr", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "TBA"));
+        allCardItems.put("Delain_Armen",new MerchantItem("Delain Armen", MerchantItemType.CARD, MerchantItemRarity.LEGENDARY, "TBA"));
         allCardItems.put("Wei",new MerchantItem("Wei",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY, "Vendor in Anikka"));
+        allCardItems.put("Vairgrys",new MerchantItem("Vairgrys",MerchantItemType.CARD,MerchantItemRarity.LEGENDARY, "Vendor in Elgacia"));
     } //Cards for users
 
     private static HubConnection hubConnection;
@@ -244,8 +286,10 @@ public class MerchantManager {
                 return MessageColor.MAGENTA;
             case LEGENDARY:
                 return MessageColor.ORANGE;
+            case UNCOMMON:
+                return MessageColor.GREEN;
         }
-        return MessageColor.GREEN;
+        return MessageColor.WHITE;
     }
 
     public static void sendMerchantUpdate(Merchant merchant, boolean goodCard, boolean goodRapport, TextChannel channel) {

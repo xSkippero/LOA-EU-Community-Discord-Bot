@@ -112,6 +112,8 @@ public class LOABot {
                 .addOption(OptionType.INTEGER, "cardid", "The id of the Card you want to add/remove", false).queue();
         jda.upsertCommand("survey", "Send a custom embed message").addOption(OptionType.STRING, "title", "Title of the embed message", true)
                 .addOption(OptionType.STRING, "description", "description of the embed message", true).queue();
+        jda.upsertCommand("updatenotify", "Send a custom embed message to all vendor users").addOption(OptionType.STRING, "title", "Title of the embed message", true)
+                .addOption(OptionType.STRING, "description", "description of the embed message", true).queue();
 
         System.out.println("[" + new Date().toGMTString() + "] ------------------------------------------------");
         System.out.println("[" + new Date().toGMTString() + "] Bot is active on: ");

@@ -11,6 +11,7 @@ on 30.10.2022 , 18:57
 
 public enum MerchantItemRarity {
 
+    COMMON("Common"),
     UNCOMMON("Uncommon"),
     RARE("Rare"),
     EPIC("Epic"),
@@ -34,8 +35,10 @@ public enum MerchantItemRarity {
                 return EPIC;
             case 4:
                 return LEGENDARY;
-            default:
+            case 1:
                 return UNCOMMON;
+            default:
+                return COMMON;
         }
     }
 
