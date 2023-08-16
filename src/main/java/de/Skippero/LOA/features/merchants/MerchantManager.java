@@ -188,6 +188,10 @@ public class MerchantManager {
 
                     hubConnection.on("UpdateMerchantGroup", (server, merchants) -> {
 
+                        if(true) {
+                            return;
+                        }
+
                         String result = String.valueOf(merchants).replaceAll("(?<!,)\\s+", "_").replaceAll(":","");
 
                         if(LOABot.DEVELOP)
@@ -309,7 +313,6 @@ public class MerchantManager {
         MerchantItem rapport = merchant.getRapportItem();
 
         boolean deluxeCard = card.getName().equals("Wei");
-//|
         if(!deluxeCard) {
             builder.setTitle(":loudspeaker: **"+merchant.getServer()+ "** ⮕ **Valueable Item**");
         }else{

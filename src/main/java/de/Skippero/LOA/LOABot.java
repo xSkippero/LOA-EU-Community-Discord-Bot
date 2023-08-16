@@ -139,7 +139,7 @@ public class LOABot {
         neededCardIndexesEayln = new ArrayList<>();
         neededCardIndexesNia = new ArrayList<>();
 
-        loadUserNotifications();
+        //loadUserNotifications();
 
         startTimers(jda);
     }
