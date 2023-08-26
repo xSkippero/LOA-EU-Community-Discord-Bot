@@ -52,6 +52,10 @@ public class ServerManager {
             }
         }
 
+        servers.add(new Server("Nia",State.MAINTENANCE));
+        servers.add(new Server("Ealyn",State.BUSY));
+        servers.add(new Server("Sasha",State.FULL));
+
         stateChanged = true;
 
         if(stateChanged) {
