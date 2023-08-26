@@ -52,8 +52,6 @@ public class ServerManager {
             }
         }
 
-        stateChanged = true;
-
         if(stateChanged) {
             pushStateUpdateNotify();
         }
@@ -77,11 +75,10 @@ public class ServerManager {
     public static void pushStateUpdateNotify() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(":loudspeaker: LostARK EU Server Status Update :loudspeaker:");
-        //eb.setColor(getStateMajorityColor().getColor());
-        eb.setColor(MessageColor.CYAN.getColor());
+        eb.setColor(getStateMajorityColor().getColor());
         eb.setTimestamp(new Date().toInstant());
         for (Server server : ServerManager.servers) {
-           eb.addField(server.getName(),getEmoteForState(State.MAINTENANCE),true);
+           eb.addField(server.getName(),getEmoteForState(server.getState()),true);
         }
 
         LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
