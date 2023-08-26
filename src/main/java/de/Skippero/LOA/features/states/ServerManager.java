@@ -77,9 +77,9 @@ public class ServerManager {
     public static void pushStateUpdateNotify() {
         EmbedBuilder eb = new EmbedBuilder();
         long time = System.currentTimeMillis()/1000;
-        eb.setTitle("LostARK Europe Server Status Update <t:" + time + ">");
+        eb.setTitle(":loudspeaker: LostARK EU Server Status :loudspeaker:");
         eb.setColor(getStateMajorityColor().getColor());
-
+        eb.setFooter("<t:" + time + ">");
         for (Server server : ServerManager.servers) {
            eb.addField(server.getName(),getEmoteForState(server.getState()),true);
         }
