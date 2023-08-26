@@ -6,6 +6,7 @@ import de.Skippero.LOA.utils.Website;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jsoup.nodes.Element;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 public class ServerManager {
@@ -76,7 +77,7 @@ public class ServerManager {
     public static void pushStateUpdateNotify() {
         EmbedBuilder eb = new EmbedBuilder();
         long time = System.currentTimeMillis()/1000;
-        eb.setTitle(getEmoteFromColor(getStateMajorityColor())  + " Status Update <t:" + time + ">");
+        eb.setTitle("LostARK Europe Server Status Update <t:" + time + ">");
         eb.setColor(getStateMajorityColor().getColor());
 
         for (Server server : ServerManager.servers) {
@@ -142,20 +143,6 @@ public class ServerManager {
             color = MessageColor.CYAN;
         }
         return color;
-    }
-
-    private static String getEmoteFromColor(MessageColor color) {
-        switch (color) {
-            case RED:
-                return ":x:";
-            case ORANGE:
-                return ":warning:";
-            case GREEN:
-                return ":white_check_mark:";
-            case CYAN:
-                return ":gear:";
-        }
-        return ":question:";
     }
 
     public static void init() {
