@@ -71,7 +71,7 @@ public class LOABot {
         buildInformation = model;
         botVersion = model.getVersion();
 
-        System.out.println("[" + new Date().toGMTString() + "] Starting LOA-EUW-Status-Bot v. " + botVersion + " by Skippero");
+        System.out.println("[" + new Date().toGMTString() + "] Starting LOA-EU-Status-Bot v. " + botVersion + " by Skippero");
 
         MerchantManager.openConnection();
 
@@ -85,7 +85,7 @@ public class LOABot {
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setAutoReconnect(true);
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.watching("LOA-EUW Server-Status"));
+        builder.setActivity(Activity.watching("LOA-EU Server-Status"));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
         builder.addEventListeners(new OnSlashCommandInteraction());
 
@@ -225,9 +225,9 @@ public class LOABot {
         for (Guild guild : jda.getGuilds()) {
             String guildName = guild.getId();
             boolean pushNotifications = false;
-            String pushNotificationChannelName = "loa-euw-notify";
-            String statusChannelName = "loa-euw-status";
-            String merchantChannelName = "loa-euw-merchants";
+            String pushNotificationChannelName = "loa-eu-notify";
+            String statusChannelName = "loa-eu-status";
+            String merchantChannelName = "loa-eu-merchants";
             for (String[] strings : configurations.get(guildName)) {
                 switch (strings[0]) {
                     case "pushNotifications":
