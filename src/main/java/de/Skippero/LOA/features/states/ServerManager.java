@@ -3,11 +3,10 @@ package de.Skippero.LOA.features.states;
 import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.utils.MessageColor;
 import de.Skippero.LOA.utils.Website;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.jsoup.nodes.Element;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ServerManager {
     private static final HashMap<String, State> lastStates = new HashMap<>();
@@ -17,7 +16,6 @@ public class ServerManager {
     public static int fullAmount;
     public static int maintenanceAmount;
 
-
     public static void loadServers() {
         servers.clear();
 
@@ -26,9 +24,11 @@ public class ServerManager {
         fullAmount = 0;
         maintenanceAmount = 0;
 
+        boolean stateChanged = false;
+
         Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
 
-        Element rootElement = website.getDoc().selectFirst("body > main > section > div > div.ags-ServerStatus-content-responses > div:nth-child(4)");
+        Element rootElement = website.getDoc().selectFirst("body > main > section > div > div.ags-ServerStatus-content-responses > div:nth-child(3)");
 
         if (rootElement != null && !rootElement.children().isEmpty()) {
             for (Element child : rootElement.children()) {
@@ -43,14 +43,59 @@ public class ServerManager {
                     } else {
                         State lastState = lastStates.get(server.getName());
                         if (lastState != server.getState()) {
-                            LOABot.pushStateUpdateNotify(server.getName(), server.getState());
                             lastStates.put(server.getName(), server.getState());
+                            stateChanged = true;
                         }
                     }
                 }
             }
         }
 
+        stateChanged = true;
+
+        if(stateChanged) {
+            pushStateUpdateNotify();
+        }
+
+    }
+
+    private static String getEmoteForState(State state) {
+        switch (state) {
+            case FULL:
+                return ":x:";
+            case BUSY:
+                return ":warning:";
+            case GOOD:
+                return ":white_check_mark:";
+            case MAINTENANCE:
+                return ":gear:";
+        }
+        return ":question:";
+    }
+
+    public static void pushStateUpdateNotify() {
+        EmbedBuilder eb = new EmbedBuilder();
+        long time = System.currentTimeMillis()/1000;
+        eb.setTitle(getEmoteFromColor(getStateMajorityColor())  + " Status Update <t:" + time + ">");
+        eb.setColor(getStateMajorityColor().getColor());
+
+        for (Server server : ServerManager.servers) {
+           eb.addField(server.getName(),getEmoteForState(server.getState()),true);
+        }
+
+        LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
+            if (textChannel.getGuild().getId().equals(s)) {
+                textChannel.sendMessageEmbeds(eb.build()).queue();
+            }
+        });
+    }
+
+    private static void getStatus() {
+        Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
+        if (website.getDoc() == null) {
+            return;
+        }
+        ServerManager.loadServers();
     }
 
     private static State getStateFromClassName(String className) {
@@ -97,6 +142,31 @@ public class ServerManager {
             color = MessageColor.CYAN;
         }
         return color;
+    }
+
+    private static String getEmoteFromColor(MessageColor color) {
+        switch (color) {
+            case RED:
+                return ":x:";
+            case ORANGE:
+                return ":warning:";
+            case GREEN:
+                return ":white_check_mark:";
+            case CYAN:
+                return ":gear:";
+        }
+        return ":question:";
+    }
+
+    public static void init() {
+        Timer timer = new Timer("Statustimer");
+        long period = 60 * 1000L;
+        TimerTask task = new TimerTask() {
+            public void run() {
+                getStatus();
+            }
+        };
+        timer.schedule(task, 5 * 1000, period);
     }
 }
 

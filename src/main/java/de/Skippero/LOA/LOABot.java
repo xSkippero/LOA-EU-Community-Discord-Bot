@@ -26,7 +26,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.*;
 
 public class LOABot {
@@ -45,9 +44,8 @@ public class LOABot {
     private static ConfigManager configManager;
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
-    private static Map<String, TextChannel> statusChannels;
-    private static Map<String, TextChannel> pushNotificationChannels;
-    private static int errorCount = 0;
+    public static Map<String, TextChannel> statusChannels;
+    public static Map<String, TextChannel> pushNotificationChannels;
 
     public static boolean DEVELOP = false;
 
@@ -139,6 +137,8 @@ public class LOABot {
         neededCardIndexesEayln = new ArrayList<>();
         neededCardIndexesNia = new ArrayList<>();
 
+        ServerManager.init();
+
         //loadUserNotifications();
 
         startTimers(jda);
@@ -198,16 +198,6 @@ public class LOABot {
         };
         restartTimer.schedule(restartTask, 24 * 60 * 60 * 1000);
 
-
-        Timer timer = new Timer("Statustimer");
-        long period = 60 * 1000L;
-        TimerTask task = new TimerTask() {
-            public void run() {
-                checkServerStatusAndPrintResults();
-            }
-        };
-        timer.schedule(task, 5 * 1000, period);
-
         Timer timer2 = new Timer("Configtimer");
         long period2 = 2 * 60 * 60 * 1000L;
         TimerTask task2 = new TimerTask() {
@@ -226,7 +216,7 @@ public class LOABot {
 
         nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
 
-        errorCount = 0;
+        int errorCount = 0;
 
         pushNotificationChannels.clear();
         statusChannels.clear();
@@ -292,88 +282,6 @@ public class LOABot {
         startUp = false;
     }
 
-    private static String getEmoteForState(State state) {
-        switch (state) {
-            case FULL:
-                return ":x:";
-            case BUSY:
-                return ":warning:";
-            case GOOD:
-                return ":white_check_mark:";
-            case MAINTENANCE:
-                return ":gear:";
-        }
-        return ":question:";
-    }
-
-    public static void pushStateUpdateNotify(String server, State newState) {
-        EmbedBuilder eb = new EmbedBuilder();
-        switch (newState) {
-            case GOOD:
-                eb.setColor(MessageColor.GREEN.getColor());
-                eb.setDescription(server + " is now online");
-                break;
-            case BUSY:
-                eb.setColor(MessageColor.ORANGE.getColor());
-                eb.setDescription(server + " is currently a little bit busy");
-                break;
-            case FULL:
-                eb.setColor(MessageColor.RED.getColor());
-                eb.setDescription(server + " is completely full");
-                break;
-            case MAINTENANCE:
-                eb.setColor(MessageColor.CYAN.getColor());
-                eb.setDescription(server + " is now in maintenance");
-                break;
-        }
-        long time = System.currentTimeMillis()/1000;
-        eb.setTitle(getEmoteForState(newState)  + " Status Update <t:" + time + ">");
-        pushNotificationChannels.forEach((s, textChannel) -> {
-            if (textChannel.getGuild().getId().equals(s)) {
-                textChannel.sendMessageEmbeds(eb.build()).queue();
-            }
-        });
-    }
-
-    private static void checkServerStatusAndPrintResults() {
-        getStatus();
-        MessageColor majorityStateColor = ServerManager.getStateMajorityColor();
-        StringBuilder builder = new StringBuilder();
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(majorityStateColor.getColor());
-        eb.setTitle("LostARK EUW - Server Status");
-        for (Server server : ServerManager.servers) {
-            builder.append(server.getName()).append(" ⮕ ").append(getEmoteForState(server.getState())).append(" (").append(server.getStateName()).append(")").append("\n");
-        }
-        if (ServerManager.servers.isEmpty()) {
-            builder.append("All servers are offline");
-        }
-        eb.setDescription(builder.toString());
-        statusChannels.forEach((s, textChannel) -> {
-            try {
-                if (textChannel.getGuild().getId().equals(s)) {
-                    MessageHistory history = new MessageHistory(textChannel);
-                    List<Message> messageList = history.retrievePast(20).complete();
-                    if (!messageList.isEmpty()) {
-                        for (Message message : messageList) {
-                            if (message.getAuthor().getIdLong() == jda.getSelfUser().getIdLong()) {
-                                textChannel.deleteMessageById(message.getId()).queue();
-                            }
-                        }
-                    }
-                    textChannel.sendMessageEmbeds(eb.build()).queue();
-                }
-            } catch (Exception ignored) {
-                errorCount++;
-                System.out.println("[" + new Date().toGMTString() + "]" + " Discord was not responding (x" + errorCount + ")");
-                if (errorCount >= 10) {
-                    System.out.println("[" + new Date().toGMTString() + "]" + " Discord error-count was too high, restarting now");
-                    restartBot();
-                }
-            }
-        });
-    }
-
     public static void restartBot() {
         try {
             jda.shutdown();
@@ -383,14 +291,6 @@ public class LOABot {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void getStatus() {
-        Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
-        if (website.getDoc() == null) {
-            return;
-        }
-        ServerManager.loadServers();
     }
 
     public static void manualReload() {
