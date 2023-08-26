@@ -52,10 +52,6 @@ public class ServerManager {
             }
         }
 
-        servers.add(new Server("Nia",State.MAINTENANCE));
-        servers.add(new Server("Ealyn",State.BUSY));
-        servers.add(new Server("Sasha",State.FULL));
-
         stateChanged = true;
 
         if(stateChanged) {
@@ -81,10 +77,11 @@ public class ServerManager {
     public static void pushStateUpdateNotify() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(":loudspeaker: LostARK EU Server Status Update :loudspeaker:");
-        eb.setColor(getStateMajorityColor().getColor());
+        //eb.setColor(getStateMajorityColor().getColor());
+        eb.setColor(MessageColor.CYAN.getColor());
         eb.setTimestamp(new Date().toInstant());
         for (Server server : ServerManager.servers) {
-           eb.addField(server.getName(),getEmoteForState(server.getState()),true);
+           eb.addField(server.getName(),getEmoteForState(State.MAINTENANCE),true);
         }
 
         LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
