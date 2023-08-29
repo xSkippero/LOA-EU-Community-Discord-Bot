@@ -73,7 +73,7 @@ public class LOABot {
 
         System.out.println("[" + new Date().toGMTString() + "] Starting LOA-EU-Status-Bot v. " + botVersion + " by Skippero");
 
-        MerchantManager.openConnection();
+        //MerchantManager.openConnection();
 
         configManager = new ConfigManager();
         queryHandler = new QueryHandler();
