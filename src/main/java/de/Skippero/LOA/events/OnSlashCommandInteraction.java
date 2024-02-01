@@ -77,7 +77,6 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     event.reply("[Experienced] Please select your class").setEphemeral(true).addActionRow(menu).queue();
                     break;
                 case "leaveRaid":
-                    event.reply("Your termination request was submitted").setEphemeral(true).queue();
                     manageRaidMemberTermination(event);
                     break;
             }
@@ -119,7 +118,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         long raidId = Long.parseLong(footerText);
         Raid raid = RaidManager.getById(raidId);
         if(raid.isMember(member.getIdLong())) {
-            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queueAfter(2,TimeUnit.SECONDS, success -> raid.removeMember(member.getIdLong()));
+            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queueAfter(1,TimeUnit.SECONDS, success -> raid.removeMember(member.getIdLong()));
+        }else{
+            event.reply("You are not member of this raid").setEphemeral(true).queue();
         }
     }
 
