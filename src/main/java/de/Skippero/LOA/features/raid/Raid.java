@@ -136,7 +136,7 @@ public class Raid {
 
             for (RaidMember activeMember : activeMembers) {
                 String badge = activeMember.isExp() ? ":military_medal:" : ":sunflower:";
-                contentBuilder.append("-").append(badge).append(activeMember.getUserName()).append(" ").append("[").append(activeMember.getUserClass()).append("]").append("\n");
+                contentBuilder.append("- ").append(badge).append(activeMember.getUserName()).append(" ").append("[").append(activeMember.getUserClass()).append("]").append("\n");
             }
         }
 
