@@ -72,6 +72,7 @@ public class LOABot {
 
         jda = builder.build();
         jda.awaitReady();
+
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
         jda.upsertCommand("reload", "Reload all server-configurations").queue();
@@ -99,6 +100,8 @@ public class LOABot {
                 .setGuildOnly(true)
                 .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
                 .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
+
+        jda.updateCommands().queue();
 
 
         log("------------------------------------------------");
