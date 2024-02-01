@@ -71,7 +71,7 @@ public class QueryHandler {
         try {
             executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
             executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
-            executeUpdateSync("CREATE TABLE IF NOT EXISTS plannedRaidsMeta(id bigint PRIMARY KEY AUTO_INCREMENT, raidId bigint, name VARCHAR(128), description VARCHAR(512), duration VARCHAR(64), startDate VARCHAR(64), startDateStamp VARCHAR(64), autoDeletionStamp bigint)");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS plannedRaidsMeta(id bigint PRIMARY KEY AUTO_INCREMENT, raidId bigint, name VARCHAR(128), description VARCHAR(2048), duration VARCHAR(64), startDate VARCHAR(64), startDateStamp VARCHAR(64), autoDeletionStamp bigint)");
             executeUpdateSync("CREATE TABLE IF NOT EXISTS plannedRaids(id bigint PRIMARY KEY AUTO_INCREMENT, serverId bigint, channelId bigint, messageId bigint, dpsCount int, supportCount int)");
             executeUpdateSync("CREATE TABLE IF NOT EXISTS raidMembers(id bigint PRIMARY KEY AUTO_INCREMENT, raidId bigint, userId bigint, isBenched tinyint, isExp tinyint, userClass VARCHAR(64), userName varCHAR(64))");
         } catch (SQLException e) {
