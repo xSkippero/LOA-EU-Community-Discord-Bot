@@ -3,12 +3,16 @@ package de.Skippero.LOA.sql;
 import com.google.common.collect.Multimap;
 import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.config.ConfigManager;
-import net.dv8tion.jda.api.entities.User;
+import de.Skippero.LOA.features.raid.Raid;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+@Getter
+@Setter
 public class QueryHandler {
 
     private final String host;
@@ -67,6 +71,9 @@ public class QueryHandler {
         try {
             executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
             executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS plannedRaidsMeta(id bigint PRIMARY KEY AUTO_INCREMENT, raidId bigint, name VARCHAR(128), description VARCHAR(512), duration VARCHAR(64), startDate VARCHAR(64), startDateStamp VARCHAR(64), autoDeletionStamp bigint)");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS plannedRaids(id bigint PRIMARY KEY AUTO_INCREMENT, serverId bigint, channelId bigint, messageId bigint, dpsCount int, supportCount int)");
+            executeUpdateSync("CREATE TABLE IF NOT EXISTS raidMembers(id bigint PRIMARY KEY AUTO_INCREMENT, raidId bigint, isBenched bit, isExp bit, userClass VARCHAR(64), userName varCHAR(64))");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,6 +84,38 @@ public class QueryHandler {
             System.out.println("[" + new Date().toGMTString() + "] Ignoring UNIQUE creation");
         }
 
+    }
+
+    public void saveOrUpdateRaid(Raid raid) {
+        try {
+            executeUpdateSync("INSERT INTO plannedRaids (serverId, channelId, messageId, dpsCount, supportCount) VALUES ('"
+                    + raid.getServerId()
+                    + "','" + raid.getChannelId()
+                    + "','" + raid.getMessageId()
+                    + "','" + raid.getDpsCount()
+                    + "','" + raid.getSupportCount() + "') ON DUPLICATE KEY UPDATE serverId = VALUES(serverId), channelId = VALUES(channelId), messageId = VALUES(messageId)");
+
+            executeUpdateSync("INSERT INTO plannedRaidsMeta (raidId, name, description, duration, startDate, startDateStamp, autoDeletionStamp) VALUES ('"
+                    + raid.getId() + "','"
+                    + raid.getMeta().getName() + "','"
+                    + raid.getMeta().getDescription() + "','"
+                    + raid.getMeta().getDurationText() + "','"
+                    + raid.getMeta().getStartDate() + "','"
+                    + raid.getMeta().getStartDiscordTimeStamp() + "','"
+                    + raid.getMeta().getAutoDeletionTimeStamp() + "',");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteRaid(long id) {
+        try {
+            executeUpdateSync("DELETE FROM plannedRaidsMeta WHERE raidId = " + id);
+            executeUpdateSync("DELETE FROM plannedRaids WHERE id = " + id);
+            executeUpdateSync("DELETE FROM raidMembers WHERE raidId = " + id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void updateProperty(String server, String property, String value) {
@@ -196,5 +235,10 @@ public class QueryHandler {
         }catch(SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getNewRaidId() throws SQLException {
+        ResultSet set = executeQuerySync("SELECT MAX(id) FROM plannedRaids");
+        return set.getInt("max(id)")+1;
     }
 }

@@ -1,22 +1,40 @@
 package de.Skippero.LOA.events;
 
 import de.Skippero.LOA.LOABot;
+import de.Skippero.LOA.features.raid.Raid;
+import de.Skippero.LOA.features.raid.RaidMeta;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
     public void onButtonInteraction(ButtonInteractionEvent event) {
+
+        StringSelectMenu.Builder builder = StringSelectMenu.create("menu:id");
+        builder.addOption("Hello World", "hello_world");
+        StringSelectMenu menu = builder.build();
+
         if(event.getButton().getId() != null) {
             switch (event.getButton().getId()) {
                 case "del":
                     event.getInteraction().getMessage().delete().queue();
+                    break;
+                case "joinRaidMokoko":
+                    event.reply("todo join as mokoko").setEphemeral(true).addActionRow(menu).queue();
+                    break;
+                case "joinRaidExp":
+                    event.reply("todo join as mokoko").setEphemeral(true).addActionRow(menu).queue();
+                    break;
+                case "leaveRaid":
+                    event.reply("leave raid").setEphemeral(true).queue();
                     break;
             }
         }
@@ -45,6 +63,12 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 break;
             case "permissions":
                 onCommandPermissions(event);
+                break;
+            case "raid":
+                onCommandRaid(event);
+                break;
+            case "movemembers":
+                onCommandMoveMembers(event);
                 break;
         }
         log(event.getUser().getName() + " entered /" + event.getName());
@@ -207,6 +231,48 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         } else {
             event.reply("Please use this command only on a server").setEphemeral(true).queue();
         }
+    }
+
+    private void onCommandRaid(SlashCommandInteractionEvent event) {
+        if(event.getGuild() == null) {
+            return;
+        }
+
+        if(!LOABot.getQueryHandler().hasPermission(event.getUser().getId(), "loabot.raid",event.getGuild().getName())) {
+            event.reply("You do not have the required permissions to use this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        OptionMapping nameObj = event.getOption("name");
+        OptionMapping descObj = event.getOption("desc");
+        OptionMapping dpsCountObj = event.getOption("dpsCount");
+        OptionMapping suppCountObj = event.getOption("suppCount");
+        OptionMapping startDateObj = event.getOption("startDate");
+        OptionMapping durationObj = event.getOption("duration");
+
+        String name = nameObj != null ? nameObj.getAsString() : "";
+        String desc = descObj != null ? descObj.getAsString() : "";
+        int dpsCount = dpsCountObj != null ? dpsCountObj.getAsInt() : 0;
+        int suppCount = suppCountObj != null ? suppCountObj.getAsInt() : 0;
+        String startDate = startDateObj != null ? startDateObj.getAsString() : "";
+        String duration = durationObj != null ? durationObj.getAsString() : "";
+
+        if(event.getOptions().size() != 6) {
+            event.reply("Please put a value into each parameter").setEphemeral(true).queue();
+            return;
+        }
+
+        RaidMeta meta = new RaidMeta(name,desc,duration,startDate);
+        try {
+            Raid raid = new Raid(meta, dpsCount, suppCount);
+            event.reply("Created Raid with ID + #" + raid.getId()).setEphemeral(true).queue();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void onCommandMoveMembers(SlashCommandInteractionEvent event) {
+        event.reply("Not implemented yet").setEphemeral(true).queue();
     }
 
     private void log(String message) {

@@ -6,6 +6,8 @@ import de.Skippero.LOA.config.ConfigManager;
 import de.Skippero.LOA.events.OnSlashCommandInteraction;
 import de.Skippero.LOA.features.states.ServerManager;
 import de.Skippero.LOA.sql.QueryHandler;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -21,8 +23,11 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
+@Getter
+@Setter
 public class LOABot {
 
     public static long nextUpdateTimestamp;
@@ -30,14 +35,15 @@ public class LOABot {
     public static JDA jda;
     public static String botVersion;
     public static Model buildInformation;
+    @Getter
     private static ConfigManager configManager;
+    @Getter
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
     public static Map<String, TextChannel> statusChannels;
     public static Map<String, TextChannel> pushNotificationChannels;
 
-    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
-
+    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException, ParseException {
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
@@ -77,9 +83,23 @@ public class LOABot {
                 .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
                 .setGuildOnly(true).queue();
         jda.upsertCommand("permissions", "Configure Guild permissions for the bot usage")
-                .setGuildOnly(true).addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
+                .setGuildOnly(true)
+                .addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
                 .addOption(OptionType.USER, "user", "The user you want to affect")
                 .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
+        jda.upsertCommand("raid", "Create a raid event where users can join to meetup for a lostark raid")
+                .setGuildOnly(true)
+                .addOption(OptionType.STRING, "name", "Title of the raid event", true)
+                .addOption(OptionType.STRING, "desc", "Description of the raid event", true)
+                .addOption(OptionType.INTEGER, "dpsCount","Amount of planned DPS",true)
+                .addOption(OptionType.INTEGER, "suppCount", "Amount of planned Supports", true)
+                .addOption(OptionType.STRING, "startDate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
+                .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
+        jda.upsertCommand("movemembers","Mov members from raid a to b")
+                .setGuildOnly(true)
+                .addOption(OptionType.INTEGER, "raidA", "raid to move from", true)
+                .addOption(OptionType.INTEGER, "raidB", "raid to move to", true).queue();
+
 
         log("------------------------------------------------");
         log("Bot is active on: ");
@@ -102,14 +122,6 @@ public class LOABot {
 
     private static boolean serverExistsInDB(String name) {
         return configurations.containsKey(name);
-    }
-
-    public static ConfigManager getConfigManager() {
-        return configManager;
-    }
-
-    public static QueryHandler getQueryHandler() {
-        return queryHandler;
     }
 
     private static void startTimers(JDA jda) {
