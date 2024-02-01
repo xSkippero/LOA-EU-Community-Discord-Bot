@@ -120,7 +120,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         long raidId = Long.parseLong(footerText);
         Raid raid = RaidManager.getById(raidId);
         if(raid.isMember(member.getIdLong())) {
-            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queueAfter(1,TimeUnit.SECONDS, success -> raid.removeMember(member.getIdLong()));
+            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queue();
+            raid.removeMember(member.getIdLong());
         }else{
             event.reply("You are not member of this raid").setEphemeral(true).queue();
         }
