@@ -240,7 +240,7 @@ public class QueryHandler {
     public int getNewRaidId() throws SQLException {
         ResultSet set = executeQuerySync("SELECT MAX(id) FROM plannedRaids");
         if(set.next()) {
-            return set.getInt(0)+1;
+            return set.getInt(1)+1;
         }
         return 1;
     }
