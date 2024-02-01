@@ -252,9 +252,10 @@ public class QueryHandler {
     }
 
     public int getNewRaidId() throws SQLException {
-        ResultSet set = executeQuerySync("SELECT MAX(id) FROM plannedRaids");
+        ResultSet set = executeQuerySync("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES\n" +
+                "WHERE table_name = 'plannedRaids'");
         if(set.next()) {
-            return set.getInt(1)+1;
+            return set.getInt(1);
         }
         return 1;
     }
