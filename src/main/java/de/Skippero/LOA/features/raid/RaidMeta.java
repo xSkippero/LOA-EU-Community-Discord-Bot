@@ -43,7 +43,7 @@ public class RaidMeta {
             Date d = dateFormat.parse(startDate);
             long startTimeStamp = d.getTime();
             startDiscordTimeStamp = "<t:" + startTimeStamp/1000 + ":R>";
-            startDateDiscordTimeStamp = "<t: " + startTimeStamp/1000 + ":f>";
+            startDateDiscordTimeStamp = "<t:" + startTimeStamp/1000 + ":f>";
             autoDeletionTimeStamp = startTimeStamp + (7 * 24 * 60 * 60 * 1000 /*1 Week*/);
         } catch (ParseException e) {
             throw new RuntimeException(e);
