@@ -58,6 +58,10 @@ public class Raid {
         activeMembers = new ArrayList<>();
         benchedMembers = new ArrayList<>();
         sendOrUpdateMessage(null);
+
+        if(System.currentTimeMillis() > meta.getAutoDeletionTimeStamp()) {
+            deleteRaid();
+        }
     }
 
     public void deleteRaid() {
@@ -76,14 +80,11 @@ public class Raid {
             if(channel != null) {
                 channel.retrieveMessageById(messageId).queue((message) -> {
                     message.editMessageEmbeds(buildMessage()).queue();
-                    System.out.println("found message for id -> " + messageId);
                 }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                     sendMessage(channel);
-                    System.out.println("nope new one for id -> " + messageId);
                 }));
             }
         }
-        deleteRaid();
     }
 
     private MessageEmbed buildMessage() {
@@ -111,8 +112,8 @@ public class Raid {
                     .append("\n");
 
             for (RaidMember activeMember : activeMembers) {
-                String badge = activeMember.isExp() ? ":loaLick: " : ":loaLetsPlay: ";
-                contentBuilder.append("- ").append(badge).append(activeMember.getUserName()).append(" ").append("(").append(activeMember.getUserClass()).append(")").append("\n");
+                String badge = activeMember.isExp() ? "- :loaLick:" : "- :loaLetsPlay:";
+                contentBuilder.append(badge).append(activeMember.getUserName()).append(" ").append("(").append(activeMember.getUserClass()).append(")").append("\n");
             }
         }
 
