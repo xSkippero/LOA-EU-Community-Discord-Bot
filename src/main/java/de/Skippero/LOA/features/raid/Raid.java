@@ -18,7 +18,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -72,13 +74,13 @@ public class Raid {
         if(guild != null) {
             TextChannel channel = guild.getTextChannelById(channelId);
             if(channel != null) {
-                Message message = channel.getHistory().getMessageById(messageId);
-                if(message == null) {
+                channel.retrieveMessageById(messageId).queue((message) -> {
+                    message.editMessageEmbeds(buildMessage()).queue();
+                    System.out.println("found message for id -> " + messageId);
+                }, new ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
                     sendMessage(channel);
-                    return;
-                }
-                System.out.println("found message and edited it");
-                message.editMessageEmbeds(buildMessage()).queue();
+                    System.out.println("nope new one for id -> " + messageId);
+                }));
             }
         }
         deleteRaid();
@@ -109,7 +111,7 @@ public class Raid {
                     .append("\n");
 
             for (RaidMember activeMember : activeMembers) {
-                String badge = activeMember.isExp() ? ":loaLick:" : ":loaLetsPlay:";
+                String badge = activeMember.isExp() ? ":loaLick: " : ":loaLetsPlay: ";
                 contentBuilder.append("- ").append(badge).append(activeMember.getUserName()).append(" ").append("(").append(activeMember.getUserClass()).append(")").append("\n");
             }
         }
@@ -187,6 +189,7 @@ public class Raid {
         activeMembers.removeIf(m->m.getUserId() == userId);
         benchedMembers.removeIf(m->m.getUserId() == userId);
         LOABot.getQueryHandler().deleteMemberFromRaid(id, userId);
+        sendOrUpdateMessage(null);
     }
 
 }
