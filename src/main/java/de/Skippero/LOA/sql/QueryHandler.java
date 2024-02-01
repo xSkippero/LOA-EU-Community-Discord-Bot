@@ -66,7 +66,6 @@ public class QueryHandler {
         System.out.println("[" + new Date().toGMTString() + "] Creating Tables if not exits");
         try {
             executeUpdateSync("CREATE TABLE IF NOT EXISTS userData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), permission VARCHAR(64), server VARCHAR(64))");
-            executeUpdateSync("CREATE TABLE IF NOT EXISTS userVendorData(id bigint PRIMARY KEY AUTO_INCREMENT, userId VARCHAR(64), cardId int)");
             executeUpdateSync("CREATE TABLE IF NOT EXISTS serverData(id bigint PRIMARY KEY AUTO_INCREMENT, field VARCHAR(64), value VARCHAR(64), server VARCHAR(64))");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,73 +101,6 @@ public class QueryHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public void insertUserVendorProperty(String userId, int cardId) {
-        try {
-            executeUpdateSync("INSERT INTO userVendorData (userId, cardId) VALUES ('" + userId + "','" + cardId + "')");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void removeUserVendorProperty(String userId, int cardId) {
-        try {
-            executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId = '" + cardId + "'");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<String> getAllVendorUserIds() {
-        List<String> vendorUserIds = new ArrayList<>();
-        ResultSet set = executeQuerySync("SELECT DISTINCT(userId) FROM userVendorData");
-        try {
-            while (set.next()) {
-                String userId = set.getString("userId");
-                vendorUserIds.add(userId);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return vendorUserIds;
-    }
-
-    public void clearUserVendorCards(String userId) {
-        try {
-            executeUpdateSync("DELETE FROM userVendorData WHERE userId = '" + userId + "' AND cardId >= '0'");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int getServerForCardUser(String userId) {
-        ResultSet set = executeQuerySync("SELECT * FROM userVendorData WHERE userId = '" + userId + "' AND cardId < 0");
-        int i = -3;
-        try {
-            while (set.next()) {
-                i = set.getInt("cardId");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    public List<Integer> getSelectedCardsForUser(String userId) {
-        List<Integer> selectedCards = new ArrayList<>();
-        ResultSet set = executeQuerySync("SELECT * FROM userVendorData WHERE userId = '" + userId + "'");
-        try {
-            while (set.next()) {
-                int cardId = set.getInt("cardId");
-                if(cardId >= 0) {
-                    selectedCards.add(cardId);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return selectedCards;
     }
 
     public boolean hasPermission(String userId, String permission, String server) {
@@ -261,7 +193,6 @@ public class QueryHandler {
             executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushNotifications','true') ON DUPLICATE KEY UPDATE value = VALUES(value)");
             executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','pushChannelName','loa-eu-notify') ON DUPLICATE KEY UPDATE value = VALUES(value)");
             executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','statusChannelName','loa-eu-status') ON DUPLICATE KEY UPDATE value = VALUES(value)");
-            executeUpdateSync("INSERT INTO serverData (server, field, value) VALUES ('" + name + "','merchantChannelName','loa-eu-merchants') ON DUPLICATE KEY UPDATE value = VALUES(value)");
         }catch(SQLException e) {
             e.printStackTrace();
         }
