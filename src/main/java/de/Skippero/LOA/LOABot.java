@@ -72,36 +72,37 @@ public class LOABot {
 
         jda = builder.build();
         jda.awaitReady();
-
-        jda.updateCommands().queue((success->{
-            jda.upsertCommand("ping", "Calculate ping of the bot").queue();
-            jda.upsertCommand("about", "Prints out information about the bot").queue();
-            jda.upsertCommand("reload", "Reload all server-configurations").queue();
-            jda.upsertCommand("restart", "Restart the bot").queue();
-            jda.upsertCommand("stop", "Stop the bot").queue();
-            jda.upsertCommand("config", "Configure the Bot")
-                    .addOption(OptionType.STRING, "property", "The field you want to change", false)
-                    .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
-                    .setGuildOnly(true).queue();
-            jda.upsertCommand("permissions", "Configure Guild permissions for the bot usage")
-                    .setGuildOnly(true)
-                    .addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
-                    .addOption(OptionType.USER, "user", "The user you want to affect")
-                    .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
-            jda.upsertCommand("raid", "Create a raid event where users can join to meetup for a lostark raid")
-                    .setGuildOnly(true)
-                    .addOption(OptionType.STRING, "name", "Title of the raid event", true)
-                    .addOption(OptionType.STRING, "desc", "Description of the raid event", true)
-                    .addOption(OptionType.INTEGER, "dpscount","Amount of planned DPS",true)
-                    .addOption(OptionType.INTEGER, "suppcount", "Amount of planned Supports", true)
-                    .addOption(OptionType.STRING, "startdate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
-                    .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
-            jda.upsertCommand("movemembers","Mov members from raid a to b")
-                    .setGuildOnly(true)
-                    .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
-                    .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
-        }));
         
+        jda.upsertCommand("ping", "Calculate ping of the bot").queue();
+        jda.upsertCommand("about", "Prints out information about the bot").queue();
+        jda.upsertCommand("reload", "Reload all server-configurations").queue();
+        jda.upsertCommand("restart", "Restart the bot").queue();
+        jda.upsertCommand("stop", "Stop the bot").queue();
+        jda.upsertCommand("config", "Configure the Bot")
+                .addOption(OptionType.STRING, "property", "The field you want to change", false)
+                .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
+                .setGuildOnly(true).queue();
+        jda.upsertCommand("permissions", "Configure Guild permissions for the bot usage")
+                .setGuildOnly(true)
+                .addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
+                .addOption(OptionType.USER, "user", "The user you want to affect")
+                .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
+        jda.upsertCommand("raid", "Create a raid event where users can join to meetup for a lostark raid")
+                .setGuildOnly(true)
+                .addOption(OptionType.STRING, "name", "Title of the raid event", true)
+                .addOption(OptionType.STRING, "desc", "Description of the raid event", true)
+                .addOption(OptionType.INTEGER, "dpscount","Amount of planned DPS",true)
+                .addOption(OptionType.INTEGER, "suppcount", "Amount of planned Supports", true)
+                .addOption(OptionType.STRING, "startdate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
+                .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
+        jda.upsertCommand("movemembers","Mov members from raid a to b")
+                .setGuildOnly(true)
+                .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
+                .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
+
+
+
+
         log("------------------------------------------------");
         log("Bot is active on: ");
         jda.getGuilds().forEach(guild -> {
