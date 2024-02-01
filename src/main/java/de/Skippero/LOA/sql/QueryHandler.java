@@ -203,6 +203,7 @@ public class QueryHandler {
     }
 
     public int executeUpdateSync(String statement) throws SQLException {
+        System.out.println(statement);
         Connection con = getConnection();
         if (con == null) {
             return 1;
