@@ -99,7 +99,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         if (event.isFromGuild() && event.getGuild() != null) {
             if (event.getMember() != null && event.getMember().isOwner() || LOABot.getQueryHandler().hasPermission(event.getMember().getId(), "loabot.config", event.getGuild().getId())) {
                 if (event.getOptions().isEmpty()) {
-                    event.reply("You entered the configuration menu\n" + "Usage:\n" + "/config <property> <value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>\n" + "merchantChannelName: <'value'>").setEphemeral(true).queue();
+                    event.reply("You entered the configuration menu\n" + "Usage:\n" + "/config <property> <value>\n\n" + "Properties:\n" + "pushNotifications: <'true','false'>\n" + "pushChannelName: <'value'>\n" + "statusChannelName: <'value'>").setEphemeral(true).queue();
                 } else if (event.getOptions().size() == 1) {
                     event.reply("You are missing an argument").setEphemeral(true).queue();
                 } else if (event.getOptions().size() == 2) {
