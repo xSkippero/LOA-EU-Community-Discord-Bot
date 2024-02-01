@@ -91,8 +91,8 @@ public class QueryHandler {
             executeUpdateSync("INSERT INTO raidMembers (raidId, userId, isBenched, isExp, userClass, userName) VALUES ('"
                     + id + "','"
                     + userId + "','"
-                    + isBenched + "','"
-                    + asExp + "','"
+                    + (isBenched ? 1 : 0) + "','"
+                    + (asExp ? 1 : 0) + "','"
                     + userClass + "','"
                     + userName + "')");
         } catch (SQLException e) {
