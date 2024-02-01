@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -134,21 +135,57 @@ public class Raid {
     }
 
     public void sendMessage(TextChannel channel) {
-        Button joinRaidMokoko = Button.primary("joinRaidMokoko","Join as Mokoko");
-        Button joinRaidExp = Button.secondary("joinRaidExp","Join as experienced");
+        Button joinRaidMokoko = Button.secondary("joinRaidMokoko","Join as Mokoko");
+        Button joinRaidExp = Button.primary("joinRaidExp","Join as experienced");
         Button leaveRaid = Button.danger("leaveRaid","Leave");
 
-        Button delButton = Button.danger("del","Delete");
-
-        channel.sendMessageEmbeds(buildMessage()).setActionRow(joinRaidExp,joinRaidMokoko,leaveRaid, delButton).queue((message -> {
+        channel.sendMessageEmbeds(buildMessage()).setActionRow(joinRaidExp,joinRaidMokoko,leaveRaid).queue((message -> {
             this.messageId = message.getIdLong();
             this.channelId = channel.getIdLong();
             this.serverId = channel.getGuild().getIdLong();
-            //saveOrUpdateRaid();
+            saveOrUpdateRaid();
         }));
     }
 
     private void saveOrUpdateRaid() {
         LOABot.getQueryHandler().saveOrUpdateRaid(this);
     }
+
+    public boolean isMember(long userId) {
+        boolean found = activeMembers.stream().anyMatch(o -> o.getUserId() == (userId));
+        if(!found)
+            found = benchedMembers.stream().anyMatch(o -> o.getUserId() == (userId));
+        return found;
+    }
+
+    public void addMember(long userId, boolean asExp, String userClass, String userName) {
+        long currentDPS = activeMembers.stream().filter(m->!m.getUserClass().contains("(S)")).count();
+        long currentSupp = activeMembers.stream().filter(m->m.getUserClass().contains("(S)")).count();
+        boolean isBenched = false;
+
+        if(userClass.contains("(S)")) {
+            if(currentSupp < supportCount) {
+                activeMembers.add(new RaidMember(id,userId,userName,userClass,asExp, false));
+            }else{
+                benchedMembers.add(new RaidMember(id,userId,userName,userClass,asExp, true));
+                isBenched = true;
+            }
+        }else{
+            if(currentDPS < dpsCount) {
+                activeMembers.add(new RaidMember(id,userId,userName,userClass,asExp, false));
+            }else{
+                benchedMembers.add(new RaidMember(id,userId,userName,userClass,asExp, true));
+                isBenched = true;
+            }
+        }
+        LOABot.getQueryHandler().addMemberToRaid(id, userId, userName, userClass, asExp, isBenched);
+        sendOrUpdateMessage(null);
+    }
+
+    public void removeMember(long userId) {
+        activeMembers.removeIf(m->m.getUserId() == userId);
+        benchedMembers.removeIf(m->m.getUserId() == userId);
+        LOABot.getQueryHandler().deleteMemberFromRaid(id, userId);
+    }
+
 }

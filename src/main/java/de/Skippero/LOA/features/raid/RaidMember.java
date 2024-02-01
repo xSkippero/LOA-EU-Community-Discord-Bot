@@ -17,13 +17,15 @@ public class RaidMember {
 
     private long id;
     private long raidId;
+    private long userId;
     private boolean isBenched;
     private boolean isExp;
     private String userClass;
     private String userName;
 
-    public RaidMember(int raidId, String userName, String userClass, boolean isExp, boolean isBenched) {
+    public RaidMember(long raidId, long userId, String userName, String userClass, boolean isExp, boolean isBenched) {
         this.raidId = raidId;
+        this.userId = userId;
         this.userName = userName;
         this.userClass = userClass;
         this.isExp = isExp;

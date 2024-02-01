@@ -2,24 +2,65 @@ package de.Skippero.LOA.events;
 
 import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.features.raid.Raid;
+import de.Skippero.LOA.features.raid.RaidManager;
 import de.Skippero.LOA.features.raid.RaidMeta;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
+    public class ApplyProcess {
+        public long userId;
+        public long raidId;
+        public boolean asExp;
+    }
+
+    public Map<Long, ApplyProcess> applicants = new HashMap<>();
+
+    @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
-        StringSelectMenu.Builder builder = StringSelectMenu.create("menu:id");
-        builder.addOption("Hello World", "hello_world");
+        StringSelectMenu.Builder builder = StringSelectMenu.create("raid:apply");
+        builder.addOption("Berserker", "Berserker");
+        builder.addOption("Paladin", "Paladin(S)");
+        builder.addOption("Destroyer", "Destroyer");
+        builder.addOption("Gunlancer", "Gunlancer");
+        builder.addOption("Slayer", "Slayer");
+        builder.addOption("Striker", "Striker");
+        builder.addOption("Scrapper", "Scrapper");
+        builder.addOption("Wardancer", "Wardancer");
+        builder.addOption("Glaivier", "Glaivier");
+        builder.addOption("Soulfist", "Soulfist");
+        builder.addOption("Sorceress", "Sorceress");
+        builder.addOption("Arcana", "Arcana");
+        builder.addOption("Summoner", "Summoner");
+        builder.addOption("Bard", "Bard(S)");
+        builder.addOption("Deathblade", "Deathblade");
+        builder.addOption("Shadowhunter", "Shadowhunter");
+        builder.addOption("Reaper", "Reaper");
+        builder.addOption("Souleater", "Souleater");
+        builder.addOption("Deadeye", "Deadeye");
+        builder.addOption("Artillerist", "Artillerist");
+        builder.addOption("Machinist", "Machinist");
+        builder.addOption("Sharpshooter", "Sharpshooter");
+        builder.addOption("Gunslinger", "Gunslinger");
+        builder.addOption("Artist", "Artist(S)");
+        builder.addOption("Aeromancer", "Aeromancer");
         StringSelectMenu menu = builder.build();
 
         if(event.getButton().getId() != null) {
@@ -28,16 +69,85 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     event.getInteraction().getMessage().delete().queue();
                     break;
                 case "joinRaidMokoko":
-                    event.reply("todo join as mokoko").setEphemeral(true).addActionRow(menu).queue();
+                    startRaidAppliance(event, false);
+                    event.reply("[Mokoko] Please select your class").setEphemeral(true).addActionRow(menu).queue();
                     break;
                 case "joinRaidExp":
-                    event.reply("todo join as mokoko").setEphemeral(true).addActionRow(menu).queue();
+                    startRaidAppliance(event, true);
+                    event.reply("[Experienced] Please select your class").setEphemeral(true).addActionRow(menu).queue();
                     break;
                 case "leaveRaid":
-                    event.reply("leave raid").setEphemeral(true).queue();
+                    event.reply("Your termination request was submitted").setEphemeral(true).queue();
+                    manageRaidMemberTermination(event);
                     break;
             }
         }
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        if (event.getComponentId().equals("raid:apply")) {
+            if(event.getMember() == null) {
+                return;
+            }
+            long memberId = event.getMember().getIdLong();
+            if(applicants.containsKey(memberId)) {
+                ApplyProcess apply = applicants.get(memberId);
+                SelectOption selection = event.getInteraction().getSelectedOptions().get(0);
+                Raid r = RaidManager.getById(apply.raidId);
+                if(r != null) {
+                    r.addMember(memberId,apply.asExp,selection.getValue(),event.getMember().getEffectiveName());
+                }
+                applicants.remove(memberId);
+            }
+            event.getMessage().delete().queue();
+            event.reply("Successfully applied to the raid").setEphemeral(true).queue();
+        }
+    }
+
+    private void manageRaidMemberTermination(ButtonInteractionEvent event) {
+        Member member = event.getMember();
+        MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+        MessageEmbed.Footer footer = embed.getFooter();
+        if(member == null)
+            return;
+        if(footer == null)
+            return;
+        String footerText = footer.getText();
+        if(footerText == null)
+            return;
+        long raidId = Long.parseLong(footerText);
+        Raid raid = RaidManager.getById(raidId);
+        if(raid.isMember(member.getIdLong())) {
+            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queueAfter(2,TimeUnit.SECONDS, success -> raid.removeMember(member.getIdLong()));
+        }
+    }
+
+    private void startRaidAppliance(ButtonInteractionEvent event, boolean asExp) {
+        Member member = event.getMember();
+        MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+        MessageEmbed.Footer footer = embed.getFooter();
+        if(member == null)
+            return;
+        if(footer == null)
+            return;
+        String footerText = footer.getText();
+        if(footerText == null)
+            return;
+        long raidId = Long.parseLong(footerText);
+        Raid raid = RaidManager.getById(raidId);
+
+        if(raid.isMember(member.getIdLong())) {
+            event.reply("You already applied for this raid").setEphemeral(true).queue();
+            return;
+        }
+
+        ApplyProcess apply = new ApplyProcess();
+        apply.asExp = asExp;
+        apply.raidId = raidId;
+        apply.userId = member.getIdLong();
+
+        applicants.put(member.getIdLong(), apply);
     }
 
     @Override
@@ -266,6 +376,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         try {
             Raid raid = new Raid(event.getChannel().asTextChannel(), meta, dpsCount, suppCount);
             event.reply("Created Raid with ID #" + raid.getId()).setEphemeral(true).queue();
+            RaidManager.raids.add(raid);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
