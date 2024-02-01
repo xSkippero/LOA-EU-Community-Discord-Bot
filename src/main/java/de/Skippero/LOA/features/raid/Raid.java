@@ -112,8 +112,8 @@ public class Raid {
                     .append("\n");
 
             for (RaidMember activeMember : activeMembers) {
-                String badge = activeMember.isExp() ? "- :loaLick:" : "- :loaLetsPlay:";
-                contentBuilder.append(badge).append(activeMember.getUserName()).append(" ").append("(").append(activeMember.getUserClass()).append(")").append("\n");
+                String badge = activeMember.isExp() ? ":loaLick: " : ":loaLetsPlay: ";
+                contentBuilder.append(badge).append(activeMember.getUserName()).append(" :loaLick: ").append("(").append(activeMember.getUserClass()).append(")").append("\n");
             }
         }
 
