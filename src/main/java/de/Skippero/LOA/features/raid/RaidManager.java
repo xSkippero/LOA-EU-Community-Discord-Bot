@@ -25,7 +25,7 @@ public class RaidManager {
     }
 
     public static void loadRaids() {
-        ResultSet set = LOABot.getQueryHandler().executeQuerySync("SELECT * FROM plannedRaids pr INNER JOIN plannedRaidsMeta prm ON prm.raidId = pr.raidId INNER JOIN raidMembers rm ON rm.raidId = pr.id");
+        ResultSet set = LOABot.getQueryHandler().executeQuerySync("SELECT * FROM plannedRaids pr INNER JOIN plannedRaidsMeta prm ON prm.raidId = pr.id INNER JOIN raidMembers rm ON rm.raidId = pr.id");
         try{
             while(set.next()) {
                 long raidId = set.getLong("raidId");
