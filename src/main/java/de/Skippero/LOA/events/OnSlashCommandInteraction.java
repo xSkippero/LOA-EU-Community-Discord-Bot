@@ -69,12 +69,14 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                     event.getInteraction().getMessage().delete().queue();
                     break;
                 case "joinRaidMokoko":
-                    startRaidAppliance(event, false);
-                    event.reply("[Mokoko] Please select your class").setEphemeral(true).addActionRow(menu).queue();
+                    if(startRaidAppliance(event, false)) {
+                        event.reply("[Mokoko] Please select your class").setEphemeral(true).addActionRow(menu).queue();
+                    }
                     break;
                 case "joinRaidExp":
-                    startRaidAppliance(event, true);
-                    event.reply("[Experienced] Please select your class").setEphemeral(true).addActionRow(menu).queue();
+                    if(startRaidAppliance(event, true)) {
+                        event.reply("[Experienced] Please select your class").setEphemeral(true).addActionRow(menu).queue();
+                    }
                     break;
                 case "leaveRaid":
                     manageRaidMemberTermination(event);
@@ -124,23 +126,23 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         }
     }
 
-    private void startRaidAppliance(ButtonInteractionEvent event, boolean asExp) {
+    private boolean startRaidAppliance(ButtonInteractionEvent event, boolean asExp) {
         Member member = event.getMember();
         MessageEmbed embed = event.getMessage().getEmbeds().get(0);
         MessageEmbed.Footer footer = embed.getFooter();
         if(member == null)
-            return;
+            return false;
         if(footer == null)
-            return;
+            return false;
         String footerText = footer.getText();
         if(footerText == null)
-            return;
+            return false;
         long raidId = Long.parseLong(footerText);
         Raid raid = RaidManager.getById(raidId);
 
         if(raid.isMember(member.getIdLong())) {
             event.reply("You already applied for this raid").setEphemeral(true).queue();
-            return;
+            return false;
         }
 
         ApplyProcess apply = new ApplyProcess();
@@ -149,6 +151,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         apply.userId = member.getIdLong();
 
         applicants.put(member.getIdLong(), apply);
+        return true;
     }
 
     @Override

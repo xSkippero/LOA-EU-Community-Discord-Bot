@@ -77,7 +77,8 @@ public class Raid {
                     sendMessage(channel);
                     return;
                 }
-                channel.editMessageEmbedsById(messageId,buildMessage()).queue();
+                System.out.println("found message and edited it");
+                message.editMessageEmbeds(buildMessage()).queue();
             }
         }
         deleteRaid();
