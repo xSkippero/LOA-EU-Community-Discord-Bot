@@ -116,7 +116,7 @@ public class QueryHandler {
                     + raid.getMeta().getDurationText() + "','"
                     + raid.getMeta().getStartDate() + "','"
                     + raid.getMeta().getStartDiscordTimeStamp() + "','"
-                    + raid.getMeta().getAutoDeletionTimeStamp() + "',");
+                    + raid.getMeta().getAutoDeletionTimeStamp() + "'");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
