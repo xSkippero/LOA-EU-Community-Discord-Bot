@@ -37,14 +37,14 @@ public class Raid {
     private ArrayList<RaidMember> activeMembers;
     private ArrayList<RaidMember> benchedMembers;
 
-    public Raid(RaidMeta meta, int dpsCount, int supportCount) throws SQLException {
+    public Raid(TextChannel channel, RaidMeta meta, int dpsCount, int supportCount) throws SQLException {
         this.id = LOABot.getQueryHandler().getNewRaidId();
         this.meta = meta;
         this.dpsCount = dpsCount;
         this.supportCount = supportCount;
         activeMembers = new ArrayList<>();
         benchedMembers = new ArrayList<>();
-        sendOrUpdateMessage();
+        sendOrUpdateMessage(channel);
     }
 
     public Raid(long id, RaidMeta meta, int dpsCount, int supportCount) {
@@ -54,14 +54,19 @@ public class Raid {
         this.supportCount = supportCount;
         activeMembers = new ArrayList<>();
         benchedMembers = new ArrayList<>();
-        sendOrUpdateMessage();
+        sendOrUpdateMessage(null);
     }
 
     public void deleteRaid() {
         LOABot.getQueryHandler().deleteRaid(id);
     }
 
-    private void sendOrUpdateMessage() {
+    private void sendOrUpdateMessage(TextChannel text) {
+
+        if(text != null) {
+            sendMessage(text);
+        }
+
         Guild guild = LOABot.jda.getGuildById(serverId);
         if(guild != null) {
             TextChannel channel = guild.getTextChannelById(channelId);
@@ -128,7 +133,7 @@ public class Raid {
         return embed.build();
     }
 
-    private void sendMessage(TextChannel channel) {
+    public void sendMessage(TextChannel channel) {
         Button joinRaidMokoko = Button.primary("joinRaidMokoko","Join as Mokoko");
         Button joinRaidExp = Button.secondary("joinRaidExp","Join as experienced");
         Button leaveRaid = Button.danger("leaveRaid","Leave");

@@ -264,8 +264,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
         RaidMeta meta = new RaidMeta(name,desc,duration,startDate);
         try {
-            Raid raid = new Raid(meta, dpsCount, suppCount);
-            event.reply("Created Raid with ID + #" + raid.getId()).setEphemeral(true).queue();
+            Raid raid = new Raid(event.getChannel().asTextChannel(), meta, dpsCount, suppCount);
+            event.reply("Created Raid with ID #" + raid.getId()).setEphemeral(true).queue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
