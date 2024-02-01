@@ -245,9 +245,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
 
         OptionMapping nameObj = event.getOption("name");
         OptionMapping descObj = event.getOption("desc");
-        OptionMapping dpsCountObj = event.getOption("dpsCount");
-        OptionMapping suppCountObj = event.getOption("suppCount");
-        OptionMapping startDateObj = event.getOption("startDate");
+        OptionMapping dpsCountObj = event.getOption("dpscount");
+        OptionMapping suppCountObj = event.getOption("suppcount");
+        OptionMapping startDateObj = event.getOption("startdate");
         OptionMapping durationObj = event.getOption("duration");
 
         String name = nameObj != null ? nameObj.getAsString() : "";

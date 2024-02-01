@@ -91,14 +91,14 @@ public class LOABot {
                 .setGuildOnly(true)
                 .addOption(OptionType.STRING, "name", "Title of the raid event", true)
                 .addOption(OptionType.STRING, "desc", "Description of the raid event", true)
-                .addOption(OptionType.INTEGER, "dpsCount","Amount of planned DPS",true)
-                .addOption(OptionType.INTEGER, "suppCount", "Amount of planned Supports", true)
-                .addOption(OptionType.STRING, "startDate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
+                .addOption(OptionType.INTEGER, "dpscount","Amount of planned DPS",true)
+                .addOption(OptionType.INTEGER, "suppcount", "Amount of planned Supports", true)
+                .addOption(OptionType.STRING, "startdate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
                 .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
         jda.upsertCommand("movemembers","Mov members from raid a to b")
                 .setGuildOnly(true)
-                .addOption(OptionType.INTEGER, "raidA", "raid to move from", true)
-                .addOption(OptionType.INTEGER, "raidB", "raid to move to", true).queue();
+                .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
+                .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
 
 
         log("------------------------------------------------");
