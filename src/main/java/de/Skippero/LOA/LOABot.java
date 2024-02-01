@@ -4,6 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import de.Skippero.LOA.config.ConfigManager;
 import de.Skippero.LOA.events.OnSlashCommandInteraction;
+import de.Skippero.LOA.features.raid.RaidManager;
+import de.Skippero.LOA.features.raid.RaidMember;
 import de.Skippero.LOA.features.states.ServerManager;
 import de.Skippero.LOA.sql.QueryHandler;
 import lombok.Getter;
@@ -95,10 +97,13 @@ public class LOABot {
                 .addOption(OptionType.INTEGER, "suppcount", "Amount of planned Supports", true)
                 .addOption(OptionType.STRING, "startdate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
                 .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
-        jda.upsertCommand("movemembers","Mov members from raid a to b")
+        jda.upsertCommand("movemembers","Move members from raid a to b")
                 .setGuildOnly(true)
                 .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
                 .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
+        jda.upsertCommand("deleteraid","Delete a raid")
+                .setGuildOnly(true)
+                .addOption(OptionType.INTEGER, "raidid", "raid to delete", true).queue();
 
 
 
@@ -117,6 +122,8 @@ public class LOABot {
         pushNotificationChannels = new HashMap<>();
         statusChannels = new HashMap<>();
         updateNotify = new HashMap<>();
+
+        RaidManager.loadRaids();
 
         ServerManager.init();
         startTimers(jda);

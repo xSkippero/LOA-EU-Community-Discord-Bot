@@ -35,6 +35,15 @@ public class RaidMeta {
         setupDate(startDate);
     }
 
+    public RaidMeta(String name, String description, String durationText, String startDate, String startDiscordTimeStamp, long autoDeletionTimeStamp) {
+        this.name = name;
+        this.description = description;
+        this.durationText = durationText;
+        this.startDate = startDate;
+        this.startDiscordTimeStamp = startDiscordTimeStamp;
+        this.autoDeletionTimeStamp = autoDeletionTimeStamp;
+    }
+
     private void setupDate(String startDate) {
         String pattern = "dd.MM.yyyy HH:mm";
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);

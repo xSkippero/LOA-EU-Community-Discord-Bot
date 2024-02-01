@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -57,15 +55,31 @@ public class Raid {
         this.supportCount = supportCount;
         activeMembers = new ArrayList<>();
         benchedMembers = new ArrayList<>();
-        sendOrUpdateMessage(null);
 
         if(System.currentTimeMillis() > meta.getAutoDeletionTimeStamp()) {
             deleteRaid();
+            deleteMessage();
         }
+    }
+
+    public void update() {
+        sendOrUpdateMessage(null);
     }
 
     public void deleteRaid() {
         LOABot.getQueryHandler().deleteRaid(id);
+    }
+
+    public void deleteMessage() {
+        Guild guild = LOABot.jda.getGuildById(serverId);
+        if(guild != null) {
+            TextChannel channel = guild.getTextChannelById(channelId);
+            if(channel != null) {
+                channel.retrieveMessageById(messageId).queue((message) -> {
+                    message.delete().queue();
+                });
+            }
+        }
     }
 
     private void sendOrUpdateMessage(TextChannel text) {
@@ -85,6 +99,14 @@ public class Raid {
                 }));
             }
         }
+    }
+
+    public void addMemberToList(RaidMember member) {
+        if(member.isBenched()) {
+            benchedMembers.add(member);
+            return;
+        }
+        activeMembers.add(member);
     }
 
     private MessageEmbed buildMessage() {

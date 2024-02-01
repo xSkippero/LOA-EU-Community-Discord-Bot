@@ -3,6 +3,7 @@ package de.Skippero.LOA.events;
 import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.features.raid.Raid;
 import de.Skippero.LOA.features.raid.RaidManager;
+import de.Skippero.LOA.features.raid.RaidMember;
 import de.Skippero.LOA.features.raid.RaidMeta;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import jdk.nashorn.internal.objects.annotations.Setter;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class OnSlashCommandInteraction extends ListenerAdapter {
 
-    public class ApplyProcess {
+    public static class ApplyProcess {
         public long userId;
         public long raidId;
         public boolean asExp;
@@ -97,7 +98,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 SelectOption selection = event.getInteraction().getSelectedOptions().get(0);
                 Raid r = RaidManager.getById(apply.raidId);
                 if(r != null) {
-                    r.addMember(memberId,apply.asExp,selection.getValue(),event.getMember().getEffectiveName());
+                    r.addMember(memberId,apply.asExp,selection.getValue(),event.getMember().getAsMention());
                 }
                 applicants.remove(memberId);
             }
@@ -120,7 +121,7 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         long raidId = Long.parseLong(footerText);
         Raid raid = RaidManager.getById(raidId);
         if(raid.isMember(member.getIdLong())) {
-            event.reply("You successfully terminated your raid appliance").setEphemeral(true).queue();
+            event.reply("You successfully terminated your raid application").setEphemeral(true).queue();
             raid.removeMember(member.getIdLong());
         }else{
             event.reply("You are not member of this raid").setEphemeral(true).queue();
@@ -184,6 +185,9 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
                 break;
             case "movemembers":
                 onCommandMoveMembers(event);
+                break;
+            case "deleteraid":
+                onCommandDeleteRaid(event);
                 break;
         }
         log(event.getUser().getName() + " entered /" + event.getName());
@@ -388,7 +392,70 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
     }
 
     private void onCommandMoveMembers(SlashCommandInteractionEvent event) {
-        event.reply("Not implemented yet").setEphemeral(true).queue();
+        if(event.getGuild() == null) {
+            return;
+        }
+
+        if(!LOABot.getQueryHandler().hasPermission(event.getUser().getId(), "loabot.movemembers",event.getGuild().getName())) {
+            event.reply("You do not have the required permissions to use this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        OptionMapping raidAObj = event.getOption("raida");
+        OptionMapping raidBObj = event.getOption("raidb");
+        long raidAId = raidAObj != null ? raidAObj.getAsInt() : 0;
+        long raidBId = raidBObj != null ? raidBObj.getAsInt() : 0;
+
+        if(event.getOptions().size() != 2) {
+            event.reply("Please put a value into each parameter").setEphemeral(true).queue();
+            return;
+        }
+
+        Raid raidA = RaidManager.getById(raidAId);
+        Raid raidB = RaidManager.getById(raidBId);
+
+        if(raidA == null || raidB == null) {
+            event.reply("Please input raidIds which exist").setEphemeral(true).queue();
+            return;
+        }
+
+        raidB.getActiveMembers().stream().mapToLong(RaidMember::getId).forEach(raidB::removeMember);
+        raidB.getBenchedMembers().stream().mapToLong(RaidMember::getId).forEach(raidB::removeMember);
+        raidA.getActiveMembers().forEach(activeMember -> raidB.addMember(activeMember.getUserId(), activeMember.isExp(), activeMember.getUserClass(), activeMember.getUserName()));
+        raidA.getBenchedMembers().forEach(activeMember -> raidB.addMember(activeMember.getUserId(), activeMember.isExp(), activeMember.getUserClass(), activeMember.getUserName()));
+
+        event.reply("Copied all members from raid #" + raidAId + " to raid #"+raidBId).setEphemeral(true).queue();
+    }
+
+    private void onCommandDeleteRaid(SlashCommandInteractionEvent event) {
+        if(event.getGuild() == null) {
+            return;
+        }
+
+        if(!LOABot.getQueryHandler().hasPermission(event.getUser().getId(), "loabot.deleteraid",event.getGuild().getName())) {
+            event.reply("You do not have the required permissions to use this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        OptionMapping raidIdObj = event.getOption("raidid");
+        long raidId = raidIdObj != null ? raidIdObj.getAsInt() : 0;
+
+        if(event.getOptions().size() != 1) {
+            event.reply("Please put a value into each parameter").setEphemeral(true).queue();
+            return;
+        }
+
+        Raid raid = RaidManager.getById(raidId);
+
+        if(raid == null) {
+            event.reply("Please input raidIds which exist").setEphemeral(true).queue();
+            return;
+        }
+
+        raid.deleteRaid();
+        raid.deleteMessage();
+
+        event.reply("Successfully deleted the raid").setEphemeral(true).queue();
     }
 
     private void log(String message) {
