@@ -94,7 +94,7 @@ public class QueryHandler {
                     + isBenched + "','"
                     + asExp + "','"
                     + userClass + "','"
-                    + userName + "'");
+                    + userName + "')");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -116,7 +116,7 @@ public class QueryHandler {
                     + raid.getMeta().getDurationText() + "','"
                     + raid.getMeta().getStartDate() + "','"
                     + raid.getMeta().getStartDiscordTimeStamp() + "','"
-                    + raid.getMeta().getAutoDeletionTimeStamp() + "'");
+                    + raid.getMeta().getAutoDeletionTimeStamp() + "')");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -203,7 +203,6 @@ public class QueryHandler {
     }
 
     public int executeUpdateSync(String statement) throws SQLException {
-        System.out.println(statement);
         Connection con = getConnection();
         if (con == null) {
             return 1;
