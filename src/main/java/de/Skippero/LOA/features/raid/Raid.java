@@ -68,6 +68,7 @@ public class Raid {
 
     public void deleteRaid() {
         LOABot.getQueryHandler().deleteRaid(id);
+        RaidManager.raids.remove(this);
     }
 
     public void deleteMessage() {
