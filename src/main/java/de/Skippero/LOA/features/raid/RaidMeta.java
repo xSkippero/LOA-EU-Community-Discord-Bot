@@ -24,6 +24,7 @@ public class RaidMeta {
     private String description;
     private String durationText;
     private String startDate;
+    private String startDateDiscordTimeStamp;
     private String startDiscordTimeStamp;
     private long autoDeletionTimeStamp;
 
@@ -35,15 +36,6 @@ public class RaidMeta {
         setupDate(startDate);
     }
 
-    public RaidMeta(String name, String description, String durationText, String startDate, String startDiscordTimeStamp, long autoDeletionTimeStamp) {
-        this.name = name;
-        this.description = description;
-        this.durationText = durationText;
-        this.startDate = startDate;
-        this.startDiscordTimeStamp = startDiscordTimeStamp;
-        this.autoDeletionTimeStamp = autoDeletionTimeStamp;
-    }
-
     private void setupDate(String startDate) {
         String pattern = "dd.MM.yyyy HH:mm";
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
@@ -51,6 +43,7 @@ public class RaidMeta {
             Date d = dateFormat.parse(startDate);
             long startTimeStamp = d.getTime();
             startDiscordTimeStamp = "<t:" + startTimeStamp/1000 + ":R>";
+            startDateDiscordTimeStamp = "<t: " + startTimeStamp/1000 + ":f>";
             autoDeletionTimeStamp = startTimeStamp + (7 * 24 * 60 * 60 * 1000 /*1 Week*/);
         } catch (ParseException e) {
             throw new RuntimeException(e);

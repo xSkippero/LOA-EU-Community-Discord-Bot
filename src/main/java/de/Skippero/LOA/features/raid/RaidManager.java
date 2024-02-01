@@ -35,9 +35,7 @@ public class RaidManager {
                             set.getString("name"),
                             set.getString("description"),
                             set.getString("duration"),
-                            set.getString("startDate"),
-                            set.getString("startDateStamp"),
-                            set.getLong("autoDeletionStamp")
+                            set.getString("startDate")
                     );
                     raid = new Raid(raidId,meta,set.getInt("dpsCount"),set.getInt("supportCount"));
 

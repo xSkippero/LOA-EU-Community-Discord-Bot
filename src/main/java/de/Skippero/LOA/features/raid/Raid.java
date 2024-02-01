@@ -120,7 +120,7 @@ public class Raid {
                 .append(meta.getDescription())
                 .append("\n")
                 .append("\n")
-                .append(":calendar_spiral: Date: **").append(meta.getStartDate()).append("**").append("\n")
+                .append(":calendar_spiral: Date: **").append(meta.getStartDateDiscordTimeStamp()).append("**").append("\n")
                 .append(":alarm_clock: Start: **").append(meta.getStartDiscordTimeStamp()).append("**").append("\n")
                 .append(":clock3: Duration: **").append(meta.getDurationText()).append("**").append("\n")
                 .append("\n")
