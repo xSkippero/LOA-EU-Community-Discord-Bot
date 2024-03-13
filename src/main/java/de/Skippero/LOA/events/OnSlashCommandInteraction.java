@@ -241,7 +241,8 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
         log("Merging " + membersA.size() + " members into " + roleB.getName());
 
         for (Member member : membersA) {
-            g.addRoleToMember(member,roleB).queue(done->log("Added " + member.getNickname() + " to role " + roleB.getName()));
+            g.addRoleToMember(member,roleB).queue(done->log("Added " + member.getEffectiveName() + " to role " + roleB.getName()));
+            g.removeRoleFromMember(member,roleA).queue(done->log("Removed " + member.getEffectiveName() + " from role " + roleA.getName()));
         }
 
         log("Done starting addRoleToMember requests");
