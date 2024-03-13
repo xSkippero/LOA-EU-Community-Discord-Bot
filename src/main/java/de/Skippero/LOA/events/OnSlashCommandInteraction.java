@@ -7,8 +7,10 @@ import de.Skippero.LOA.features.raid.RaidMember;
 import de.Skippero.LOA.features.raid.RaidMeta;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import jdk.nashorn.internal.objects.annotations.Setter;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -189,8 +191,62 @@ public class OnSlashCommandInteraction extends ListenerAdapter {
             case "deleteraid":
                 onCommandDeleteRaid(event);
                 break;
+            case "mergerole":
+                onCommandMergeRole(event);
         }
         log(event.getUser().getName() + " entered /" + event.getName());
+    }
+
+    private void onCommandMergeRole(SlashCommandInteractionEvent event) {
+        if(event.getGuild() == null) {
+            return;
+        }
+
+        if(!LOABot.getQueryHandler().hasPermission(event.getUser().getId(), "loabot.merge",event.getGuild().getName())) {
+            event.reply("You do not have the required permissions to use this command.").setEphemeral(true).queue();
+            return;
+        }
+
+        OptionMapping roleAObj = event.getOption("rolea");
+        OptionMapping roleBObj = event.getOption("roleb");
+
+        String roleAs = roleAObj != null ? roleAObj.getAsString() : "";
+        String roleBs = roleBObj != null ? roleBObj.getAsString() : "";
+
+        if(event.getOptions().size() != 2) {
+            event.reply("Please put a value into each parameter").setEphemeral(true).queue();
+            return;
+        }
+
+        Guild g = event.getGuild();
+
+        List<Role> rolesA = g.getRolesByName(roleAs,false);
+        List<Role> rolesB = g.getRolesByName(roleBs,false);
+
+        if(rolesA.isEmpty()) {
+            event.reply("Role A -> '" + roleAs + "' does not exist!").setEphemeral(true).queue();
+            return;
+        }
+
+        if(rolesB.isEmpty()) {
+            event.reply("Role B -> '" + roleBs + "' does not exist!").setEphemeral(true).queue();
+            return;
+        }
+
+        Role roleA = rolesA.get(0);
+        Role roleB = rolesB.get(0);
+
+        List<Member> membersA = g.getMembersWithRoles(roleA);
+
+        log("Merging " + membersA.size() + " members into " + roleB.getName());
+
+        for (Member member : membersA) {
+            g.addRoleToMember(member,roleB).queue(done->log("Added " + member.getNickname() + " to role " + roleB.getName()));
+        }
+
+        log("Done starting addRoleToMember requests");
+
+        event.reply("All merge requests started").setEphemeral(true).queue();
     }
 
     private void onCommandPing(SlashCommandInteractionEvent event) {

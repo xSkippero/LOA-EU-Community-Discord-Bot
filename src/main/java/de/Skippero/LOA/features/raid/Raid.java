@@ -57,8 +57,8 @@ public class Raid {
         benchedMembers = new ArrayList<>();
 
         if(System.currentTimeMillis() > meta.getAutoDeletionTimeStamp()) {
-            deleteRaid();
             deleteMessage();
+            deleteRaid();
         }
     }
 

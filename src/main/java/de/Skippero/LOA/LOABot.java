@@ -104,9 +104,10 @@ public class LOABot {
         jda.upsertCommand("deleteraid","Delete a raid")
                 .setGuildOnly(true)
                 .addOption(OptionType.INTEGER, "raidid", "raid to delete", true).queue();
-
-
-
+        jda.upsertCommand("mergerole","Merge roleA into roleB")
+                .setGuildOnly(true)
+                .addOption(OptionType.STRING, "rolea", "role to merge", true)
+                .addOption(OptionType.STRING, "roleb", "role to merge into", true).queue();
 
         log("------------------------------------------------");
         log("Bot is active on: ");
