@@ -20,7 +20,7 @@ public class OnGuildCreateInviteEvent extends ListenerAdapter {
 
     Button delButton = Button.danger("del","Delete");
 
-    public void OnGuildCreateInvite(GuildInviteCreateEvent event) {
+    public void onGuildCreateInvite(GuildInviteCreateEvent event) {
         if(event.getInvite().getMaxAge() != 0) {
             return;
         }
