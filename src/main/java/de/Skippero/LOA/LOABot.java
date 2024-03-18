@@ -29,6 +29,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Getter
 @Setter
@@ -199,7 +200,12 @@ public class LOABot {
         Button delButton = Button.danger("del","Delete");
 
         updateNotify.forEach((user, s) -> {
-            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the discord server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:").setActionRow(delButton)).queue();
+            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the discord server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:").setActionRow(delButton)).queue(null, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) {
+                    LOABot.log(user.getEffectiveName() + " blocked PM's, cannot send message");
+                }
+            });
         });
         if (!updateNotify.isEmpty()) {
             log("updated configurations on " + updateNotify.size() + " servers");
