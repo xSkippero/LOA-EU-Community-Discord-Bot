@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class OnGuildCreateInviteEvent extends ListenerAdapter {
 
@@ -28,8 +29,13 @@ public class OnGuildCreateInviteEvent extends ListenerAdapter {
         long userId = event.getInvite().getInviter().getIdLong();
         List<Role> userRoles = event.getGuild().getMemberById(userId).getRoles();
         if(userRoles.stream().noneMatch(r->r.getName().equalsIgnoreCase("Permanent Invites"))) {
-            event.getInvite().getInviter().openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] You do not have the required role to create permanent invites, please use a temporary one.")).queue();
-            event.getInvite().delete().queue();
+            try{
+                event.getInvite().getInviter().openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] You do not have the required role to create permanent invites, your link will be auto-deleted in 30 Minutes")).queue();
+            }catch (Exception ignore) {
+                //blocked pm
+            }
+            LOABot.log(event.getInvite().getInviter().getEffectiveName() + " tried to create a perma-invite, deleting the invite in 30 minutes");
+            event.getInvite().delete().queueAfter(1, TimeUnit.MINUTES);
         }
 
     }
