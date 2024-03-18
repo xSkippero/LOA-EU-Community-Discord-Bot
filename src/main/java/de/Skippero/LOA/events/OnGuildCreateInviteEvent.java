@@ -38,7 +38,12 @@ public class OnGuildCreateInviteEvent extends ListenerAdapter {
                         }
                     });
             LOABot.log(event.getInvite().getInviter().getEffectiveName() + " tried to create a perma-invite, deleting the invite in 30 minutes");
-            event.getInvite().delete().queueAfter(1, TimeUnit.MINUTES);
+            event.getInvite().delete().queueAfter(30, TimeUnit.MINUTES, null, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) {
+                    LOABot.log("Invite " + event.getInvite().getCode() + " was already deleted");
+                }
+            });
         }
 
     }
