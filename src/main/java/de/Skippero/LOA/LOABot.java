@@ -3,9 +3,11 @@ package de.Skippero.LOA;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import de.Skippero.LOA.config.ConfigManager;
-import de.Skippero.LOA.events.OnSlashCommandInteraction;
+import de.Skippero.LOA.events.OnButtonInteractionEvent;
+import de.Skippero.LOA.events.OnGuildCreateInviteEvent;
+import de.Skippero.LOA.events.OnSlashCommandEvent;
+import de.Skippero.LOA.events.OnStringSelectionEvent;
 import de.Skippero.LOA.features.raid.RaidManager;
-import de.Skippero.LOA.features.raid.RaidMember;
 import de.Skippero.LOA.features.states.ServerManager;
 import de.Skippero.LOA.sql.QueryHandler;
 import lombok.Getter;
@@ -46,6 +48,7 @@ public class LOABot {
     public static Map<String, TextChannel> pushNotificationChannels;
 
     public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException, ParseException {
+
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
@@ -70,7 +73,10 @@ public class LOABot {
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("LOA-EU Server-Status"));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
-        builder.addEventListeners(new OnSlashCommandInteraction());
+        builder.addEventListeners(new OnSlashCommandEvent());
+        builder.addEventListeners(new OnButtonInteractionEvent());
+        builder.addEventListeners(new OnGuildCreateInviteEvent());
+        builder.addEventListeners(new OnStringSelectionEvent());
 
         jda = builder.build();
         jda.awaitReady();
@@ -216,7 +222,7 @@ public class LOABot {
         reloadConfig(jda);
     }
 
-    private static void log(String message) {
+    public static void log(String message) {
         System.out.println("[" + new Date() + "] " + message);
     }
 }

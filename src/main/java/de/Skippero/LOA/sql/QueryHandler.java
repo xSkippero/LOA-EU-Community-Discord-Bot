@@ -36,10 +36,10 @@ public class QueryHandler {
         Connection con = getConnection();
         if (con != null) {
             connections.add(con);
-            System.out.println("[" + new Date().toGMTString() + "] Successfully established SQL Connection");
+            LOABot.log("Successfully established SQL Connection");
             createTables();
         } else {
-            System.out.println("[" + new Date().toGMTString() + "] Could not established SQL Connection, exiting with Error code 1");
+            LOABot.log("Could not established SQL Connection, exiting with Error code 1");
             System.exit(1);
         }
     }
