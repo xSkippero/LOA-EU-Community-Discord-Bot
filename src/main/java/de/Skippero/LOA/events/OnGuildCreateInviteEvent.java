@@ -21,7 +21,8 @@ public class OnGuildCreateInviteEvent extends ListenerAdapter {
 
     Button delButton = Button.danger("del","Delete");
 
-    public void onGuildCreateInvite(GuildInviteCreateEvent event) {
+    @Override
+    public void onGuildInviteCreate(GuildInviteCreateEvent event) {
 
         LOABot.log("Event triggered");
 
