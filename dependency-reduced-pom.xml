@@ -8,7 +8,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.0</version>
         <configuration>
           <archive>
             <manifest>
@@ -21,8 +21,22 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <source>21</source>
-          <target>21</target>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>de.Skippero.LOA.LOABot</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
         </configuration>
       </plugin>
       <plugin>
@@ -36,32 +50,6 @@
             </goals>
             <configuration>
               <finalName>LOA-EUW-Status-Bot</finalName>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <includes>
-                    <include>META-INF/LICENSE</include>
-                    <include>META-INF/NOTICE</include>
-                  </includes>
-                  <excludes>
-                    <exclude>META-INF/DEPENDENCIES</exclude>
-                    <exclude>META-INF/LICENSE.txt</exclude>
-                    <exclude>META-INF/okio.kotlin_module</exclude>
-                    <exclude>META-INF/MANIFEST.MF</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-              <relocations>
-                <relocation>
-                  <pattern>org.apache.logging</pattern>
-                  <shadedPattern>shade.org.apache.logging</shadedPattern>
-                </relocation>
-              </relocations>
-              <transformers>
-                <transformer>
-                  <mainClass>de.Skippero.LOA.LOABot</mainClass>
-                </transformer>
-              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -80,42 +68,6 @@
       <artifactId>lombok</artifactId>
       <version>1.18.34</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.10.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>opentest4j</artifactId>
-          <groupId>org.opentest4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>junit-platform-commons</artifactId>
-          <groupId>org.junit.platform</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>apiguardian-api</artifactId>
-          <groupId>org.apiguardian</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.10.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>junit-platform-engine</artifactId>
-          <groupId>org.junit.platform</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>apiguardian-api</artifactId>
-          <groupId>org.apiguardian</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 </project>
