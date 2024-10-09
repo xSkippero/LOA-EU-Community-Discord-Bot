@@ -10,25 +10,11 @@ import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 public class ServerManager {
-    private static final HashMap<String, State> lastStates = new HashMap<>();
-    public static List<Server> servers = new LinkedList<Server>();
-    public static int goodAmount;
-    public static int busyAmount;
-    public static int fullAmount;
-    public static int maintenanceAmount;
+
+    private static final Map<String, Server> servers = new HashMap<>();
 
     public static void loadServers() {
-        servers.clear();
-
-        goodAmount = 0;
-        busyAmount = 0;
-        fullAmount = 0;
-        maintenanceAmount = 0;
-
-        boolean stateChanged = false;
-
         Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
-
         Element rootElement = website.getDoc().selectFirst("body > main > section > div > div.ags-ServerStatus-content-responses > div:nth-child(3)");
 
         if (rootElement != null && !rootElement.children().isEmpty()) {
@@ -36,26 +22,18 @@ public class ServerManager {
                 if (child.className().equals("ags-ServerStatus-content-responses-response-server")) {
                     Element stateChild = child.children().first().children().first();
                     Element serverChild = child.children().last();
-                    Server server = new Server(serverChild.text().replaceAll(" ", ""), getStateFromClassName(stateChild.className()));
-                    servers.add(server);
-                    updateStateAmountForServers(server);
-                    if (!lastStates.containsKey(server.getName())) {
-                        lastStates.put(server.getName(), server.getState());
-                    } else {
-                        State lastState = lastStates.get(server.getName());
-                        if (lastState != server.getState()) {
-                            lastStates.put(server.getName(), server.getState());
-                            stateChanged = true;
-                        }
-                    }
+
+                    String serverName = serverChild.text().replaceAll(" ", "");
+                    State serverState = getStateFromClassName(stateChild.className());
+
+                    Server server = servers.getOrDefault(serverName, new Server(serverName, serverState));
+                    server.Update(serverName, serverState);
+                    servers.put(serverName, server);
                 }
             }
         }
 
-        if(stateChanged) {
-            pushStateUpdateNotify();
-        }
-
+        checkForUpdate();
     }
 
     private static String getEmoteForState(State state) {
@@ -72,13 +50,32 @@ public class ServerManager {
         return ":question:";
     }
 
-    public static void pushStateUpdateNotify() {
+    private static void checkForUpdate() {
+        boolean validForUpdate = true;
+
+        System.out.println("-------DEBUG-------");
+        for (Server server : servers.values()) {
+            System.out.println(server.getName() + " / " + server.getState().getDisplayName() + " (" + server.getUpdateThreshold() + ")");
+            if(!server.IsValidStateUpdate()) {
+                validForUpdate = false;
+            }
+        }
+        System.out.println("-------DEBUG-------");
+
+        if(validForUpdate) {
+            System.out.println("VALID FOR UPDATE");
+            //buildAndSendUpdateMessage();
+        }
+    }
+
+    private static void buildAndSendUpdateMessage() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(":loudspeaker: LostARK EU Server Status Update :loudspeaker:");
         eb.setColor(getStateMajorityColor().getColor());
         eb.setTimestamp(new Date().toInstant());
-        for (Server server : ServerManager.servers) {
-           eb.addField(server.getName(),getEmoteForState(server.getState()),true);
+
+        for (Server server : ServerManager.servers.values()) {
+            eb.addField(server.getName(),getEmoteForState(server.getState()),true);
         }
 
         LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
@@ -108,35 +105,21 @@ public class ServerManager {
         }
     }
 
-    private static void updateStateAmountForServers(Server server) {
-        switch (server.getState()) {
-            case FULL:
-                fullAmount++;
-                break;
-            case BUSY:
-                busyAmount++;
-                break;
-            case GOOD:
-                goodAmount++;
-                break;
-            case MAINTENANCE:
-                maintenanceAmount++;
-                break;
-        }
-    }
-
     public static MessageColor getStateMajorityColor() {
-        int max = goodAmount;
+        long goodAmount = servers.values().stream().filter(server -> server.getState().equals(State.GOOD)).count();
+        long busyAmount = servers.values().stream().filter(server -> server.getState().equals(State.BUSY)).count();
+        long fullAmount = servers.values().stream().filter(server -> server.getState().equals(State.FULL)).count();
+        long maintenanceAmount = servers.values().stream().filter(server -> server.getState().equals(State.MAINTENANCE)).count();
         MessageColor color = MessageColor.GREEN;
-        if (busyAmount > max) {
-            max = busyAmount;
+        if (busyAmount > goodAmount) {
+            goodAmount = busyAmount;
             color = MessageColor.ORANGE;
         }
-        if (fullAmount > max) {
-            max = fullAmount;
+        if (fullAmount > goodAmount) {
+            goodAmount = fullAmount;
             color = MessageColor.RED;
         }
-        if (maintenanceAmount > max) {
+        if (maintenanceAmount > goodAmount) {
             color = MessageColor.CYAN;
         }
         return color;
@@ -144,7 +127,7 @@ public class ServerManager {
 
     public static void init() {
         Timer timer = new Timer("Statustimer");
-        long period = 60 * 1000L;
+        long period = 12 * 1000L;
         TimerTask task = new TimerTask() {
             public void run() {
                 getStatus();
