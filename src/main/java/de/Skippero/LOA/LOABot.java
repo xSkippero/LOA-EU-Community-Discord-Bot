@@ -21,13 +21,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -38,8 +33,6 @@ public class LOABot {
     public static long nextUpdateTimestamp;
     public static Map<User, String> updateNotify;
     public static JDA jda;
-    public static String botVersion;
-    public static Model buildInformation;
     @Getter
     private static ConfigManager configManager;
     @Getter
@@ -48,19 +41,14 @@ public class LOABot {
     public static Map<String, TextChannel> statusChannels;
     public static Map<String, TextChannel> pushNotificationChannels;
 
-    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException, ParseException {
+    public static void main(String[] args) throws InterruptedException {
 
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
         }
 
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new FileReader("pom.xml"));
-        buildInformation = model;
-        botVersion = model.getVersion();
-
-        log("Starting LOA-EU-Status-Bot v. " + botVersion + " by Skippero");
+        log("Starting LOA-EU-Status-Bot by Skippero");
 
         configManager = new ConfigManager();
         queryHandler = new QueryHandler();
