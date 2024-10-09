@@ -62,9 +62,9 @@ public class ServerManager {
         }
         LOABot.log("-------DEBUG-------");
 
-        if(validForUpdate) {
+        if(validForUpdate && !servers.isEmpty()) {
             LOABot.log("VALID FOR UPDATE");
-            //buildAndSendUpdateMessage();
+            buildAndSendUpdateMessage();
         }
     }
 
