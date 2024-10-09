@@ -7,11 +7,13 @@ public class Server {
     private String name;
     private State state;
     private int updateThreshold;
+    private State lastState;
 
     public Server(String name, State state) {
         this.name = name;
         this.state = state;
         this.updateThreshold = 5;
+        this.lastState = state;
     }
 
     public void Update(String newName, State newState) {
@@ -24,8 +26,12 @@ public class Server {
         state = newState;
     }
 
+    public void UpdateLastState(State newState) {
+        this.lastState = newState;
+    }
+
     public boolean IsValidStateUpdate() {
-        return updateThreshold <= 0;
+        return updateThreshold <= 0 && lastState != state;
     }
 
 }

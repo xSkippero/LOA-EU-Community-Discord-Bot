@@ -75,6 +75,7 @@ public class ServerManager {
         eb.setTimestamp(new Date().toInstant());
 
         for (Server server : ServerManager.servers.values()) {
+            server.UpdateLastState(server.getState());
             eb.addField(server.getName(),getEmoteForState(server.getState()),true);
         }
 
