@@ -53,17 +53,17 @@ public class ServerManager {
     private static void checkForUpdate() {
         boolean validForUpdate = true;
 
-        System.out.println("-------DEBUG-------");
+        LOABot.log("-------DEBUG-------");
         for (Server server : servers.values()) {
-            System.out.println(server.getName() + " / " + server.getState().getDisplayName() + " (" + server.getUpdateThreshold() + ")");
+            LOABot.log(server.getName() + " / " + server.getState().getDisplayName() + " (" + server.getUpdateThreshold() + ")");
             if(!server.IsValidStateUpdate()) {
                 validForUpdate = false;
             }
         }
-        System.out.println("-------DEBUG-------");
+        LOABot.log("-------DEBUG-------");
 
         if(validForUpdate) {
-            System.out.println("VALID FOR UPDATE");
+            LOABot.log("VALID FOR UPDATE");
             //buildAndSendUpdateMessage();
         }
     }
