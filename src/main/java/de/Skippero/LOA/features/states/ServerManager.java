@@ -53,17 +53,13 @@ public class ServerManager {
     private static void checkForUpdate() {
         boolean validForUpdate = true;
 
-        LOABot.log("-------DEBUG-------");
         for (Server server : servers.values()) {
-            LOABot.log(server.getName() + " / " + server.getState().getDisplayName() + " (" + server.getUpdateThreshold() + ")");
             if(!server.IsValidStateUpdate()) {
                 validForUpdate = false;
             }
         }
-        LOABot.log("-------DEBUG-------");
 
         if(validForUpdate && !servers.isEmpty()) {
-            LOABot.log("VALID FOR UPDATE");
             buildAndSendUpdateMessage();
         }
     }
