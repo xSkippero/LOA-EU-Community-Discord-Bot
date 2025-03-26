@@ -99,12 +99,21 @@ public class ServerManager {
 
         return stateCount.entrySet().stream()
                 .max(Comparator.comparingLong(Map.Entry::getValue))
-                .map(entry -> switch (entry.getKey()) {
-                    case GOOD: MessageColor.GREEN; break;
-                    case BUSY: MessageColor.ORANGE; break;
-                    case FULL: MessageColor.RED; break;
-                    case MAINTENANCE: MessageColor.CYAN; break;
-                }).orElse(MessageColor.GREEN);
+                .map(entry -> {
+                    switch (entry.getKey()) {
+                        case GOOD:
+                            return MessageColor.GREEN;
+                        case BUSY:
+                            return MessageColor.ORANGE;
+                        case FULL:
+                            return MessageColor.RED;
+                        case MAINTENANCE:
+                            return MessageColor.CYAN;
+                        default:
+                            return MessageColor.GREEN;
+                    }
+                })
+                .orElse(MessageColor.GREEN);
     }
 
     public static void init() {
