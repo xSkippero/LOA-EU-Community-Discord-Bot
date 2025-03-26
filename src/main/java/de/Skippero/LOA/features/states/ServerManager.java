@@ -89,6 +89,20 @@ public class ServerManager {
         return State.FULL;
     }
 
+    private static String getEmoteForState(State state) {
+        switch (state) {
+            case FULL:
+                return ":x:";
+            case BUSY:
+                return ":warning:";
+            case GOOD:
+                return ":white_check_mark:";
+            case MAINTENANCE:
+                return ":gear:";
+        }
+        return ":question:";
+    }
+
     public static MessageColor getStateMajorityColor() {
         Map<State, Long> stateCount = new EnumMap<>(State.class);
         Arrays.stream(State.values()).forEach(state -> stateCount.put(state, 0L));
