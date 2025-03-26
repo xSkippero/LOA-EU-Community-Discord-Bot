@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 
 public class LOABot {
 
-    private static JDA jda;
-    private static String botVersion;
+    public static JDA jda;
+    public static String botVersion;
     private static Model buildInformation;
     @Getter
     private static ConfigManager configManager;
@@ -40,9 +40,9 @@ public class LOABot {
     
     private static final Map<String, TextChannel> statusChannels = new HashMap<>();
     private static final Map<String, TextChannel> pushNotificationChannels = new HashMap<>();
-    private static final Map<User, String> updateNotify = new HashMap<>();
+    public static final Map<User, String> updateNotify = new HashMap<>();
     
-    private static long nextUpdateTimestamp;
+    public static long nextUpdateTimestamp;
 
     public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
         if (args.length < 1) {
