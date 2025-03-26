@@ -3,19 +3,13 @@ package de.Skippero.LOA;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import de.Skippero.LOA.config.ConfigManager;
-import de.Skippero.LOA.events.OnButtonInteractionEvent;
-import de.Skippero.LOA.events.OnGuildCreateInviteEvent;
-import de.Skippero.LOA.events.OnSlashCommandEvent;
-import de.Skippero.LOA.events.OnStringSelectionEvent;
+import de.Skippero.LOA.events.*;
 import de.Skippero.LOA.features.raid.RaidManager;
 import de.Skippero.LOA.features.states.ServerManager;
 import de.Skippero.LOA.sql.QueryHandler;
 import lombok.Getter;
-import lombok.Setter;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -27,209 +21,188 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.function.Consumer;
 
 @Getter
-@Setter
 public class LOABot {
 
-    public static long nextUpdateTimestamp;
-    public static Map<User, String> updateNotify;
-    public static JDA jda;
-    public static String botVersion;
-    public static Model buildInformation;
-    @Getter
+    private static JDA jda;
+    private static String botVersion;
+    private static Model buildInformation;
     private static ConfigManager configManager;
-    @Getter
     private static QueryHandler queryHandler;
-    private static Multimap<String, String[]> configurations;
-    public static Map<String, TextChannel> statusChannels;
-    public static Map<String, TextChannel> pushNotificationChannels;
+    private static Multimap<String, String[]> configurations = ArrayListMultimap.create();
+    
+    private static final Map<String, TextChannel> statusChannels = new HashMap<>();
+    private static final Map<String, TextChannel> pushNotificationChannels = new HashMap<>();
+    private static final Map<User, String> updateNotify = new HashMap<>();
+    
+    private static long nextUpdateTimestamp;
 
-    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException, ParseException {
-
+    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");
             System.exit(1);
         }
 
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new FileReader("pom.xml"));
-        buildInformation = model;
-        botVersion = model.getVersion();
-
+        initBotVersion();
         log("Starting LOA-EU-Status-Bot v. " + botVersion + " by Skippero");
 
         configManager = new ConfigManager();
         queryHandler = new QueryHandler();
-        configurations = ArrayListMultimap.create();
-
         configurations = queryHandler.loadConfiguration(configurations);
 
-        JDABuilder builder = JDABuilder.createDefault(args[0]);
-        builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
-        builder.setAutoReconnect(true);
-        builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.watching("LOA-EU Server-Status"));
-        builder.setMemberCachePolicy(MemberCachePolicy.ALL);
-        builder.addEventListeners(new OnSlashCommandEvent());
-        builder.addEventListeners(new OnButtonInteractionEvent());
-        builder.addEventListeners(new OnGuildCreateInviteEvent());
-        builder.addEventListeners(new OnStringSelectionEvent());
+        jda = JDABuilder.createDefault(args[0])
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .setAutoReconnect(true)
+                .setStatus(OnlineStatus.ONLINE)
+                .setActivity(Activity.watching("LOA-EU Server-Status"))
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .addEventListeners(new OnSlashCommandEvent(), new OnButtonInteractionEvent(),
+                        new OnGuildCreateInviteEvent(), new OnStringSelectionEvent())
+                .build()
+                .awaitReady();
 
-        jda = builder.build();
-        jda.awaitReady();
+        registerCommands();
+        initializeServers();
+        startTimers();
         
+        log("Bot is fully operational.");
+    }
+
+    private static void initBotVersion() throws IOException, XmlPullParserException {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        buildInformation = reader.read(new FileReader("pom.xml"));
+        botVersion = buildInformation.getVersion();
+    }
+
+    private static void registerCommands() {
         jda.upsertCommand("ping", "Calculate ping of the bot").queue();
         jda.upsertCommand("about", "Prints out information about the bot").queue();
-        jda.upsertCommand("reload", "Reload all server-configurations").queue();
+        jda.upsertCommand("reload", "Reload all server configurations").queue();
         jda.upsertCommand("restart", "Restart the bot").queue();
         jda.upsertCommand("stop", "Stop the bot").queue();
-        jda.upsertCommand("config", "Configure the Bot")
-                .addOption(OptionType.STRING, "property", "The field you want to change", false)
-                .addOption(OptionType.STRING, "value", "The value for the field you want to change", false)
-                .setGuildOnly(true).queue();
-        jda.upsertCommand("permissions", "Configure Guild permissions for the bot usage")
-                .setGuildOnly(true)
-                .addOption(OptionType.STRING, "action", "What you want to do (add/remove/list)")
-                .addOption(OptionType.USER, "user", "The user you want to affect")
-                .addOption(OptionType.STRING, "permission", "The permission you want to add/remove", false).queue();
-        jda.upsertCommand("raid", "Create a raid event where users can join to meetup for a lostark raid")
-                .setGuildOnly(true)
-                .addOption(OptionType.STRING, "name", "Title of the raid event", true)
-                .addOption(OptionType.STRING, "desc", "Description of the raid event", true)
-                .addOption(OptionType.INTEGER, "dpscount","Amount of planned DPS",true)
-                .addOption(OptionType.INTEGER, "suppcount", "Amount of planned Supports", true)
-                .addOption(OptionType.STRING, "startdate", "Date where the event starts 'DD.MM.YYYY HH:MM'",true)
-                .addOption(OptionType.STRING, "duration","Duration how long the raid lasts",true).queue();
-        jda.upsertCommand("movemembers","Move members from raid a to b")
-                .setGuildOnly(true)
-                .addOption(OptionType.INTEGER, "raida", "raid to move from", true)
-                .addOption(OptionType.INTEGER, "raidb", "raid to move to", true).queue();
-        jda.upsertCommand("deleteraid","Delete a raid")
-                .setGuildOnly(true)
-                .addOption(OptionType.INTEGER, "raidid", "raid to delete", true).queue();
-        jda.upsertCommand("mergerole","Merge roleA into roleB")
-                .setGuildOnly(true)
-                .addOption(OptionType.STRING, "rolea", "role to merge", true)
-                .addOption(OptionType.STRING, "roleb", "role to merge into", true).queue();
+        
+        addConfigurableCommand("config", "Configure the bot",
+                new CommandOption(OptionType.STRING, "property", "Field to change", false),
+                new CommandOption(OptionType.STRING, "value", "New value", false));
 
+        addConfigurableCommand("permissions", "Configure Guild permissions",
+                new CommandOption(OptionType.STRING, "action", "add/remove/list"),
+                new CommandOption(OptionType.USER, "user", "User to affect"),
+                new CommandOption(OptionType.STRING, "permission", "Permission to modify", false));
+
+        addConfigurableCommand("raid", "Create a Lost Ark raid event",
+                new CommandOption(OptionType.STRING, "name", "Title", true),
+                new CommandOption(OptionType.STRING, "desc", "Description", true),
+                new CommandOption(OptionType.INTEGER, "dpscount", "Planned DPS count", true),
+                new CommandOption(OptionType.INTEGER, "suppcount", "Planned Support count", true),
+                new CommandOption(OptionType.STRING, "startdate", "Start date 'DD.MM.YYYY HH:MM'", true),
+                new CommandOption(OptionType.STRING, "duration", "Duration", true));
+
+        addConfigurableCommand("movemembers", "Move members from one raid to another",
+                new CommandOption(OptionType.INTEGER, "raida", "Raid to move from", true),
+                new CommandOption(OptionType.INTEGER, "raidb", "Raid to move to", true));
+
+        addConfigurableCommand("deleteraid", "Delete a raid",
+                new CommandOption(OptionType.INTEGER, "raidid", "Raid ID", true));
+
+        addConfigurableCommand("mergerole", "Merge roles",
+                new CommandOption(OptionType.STRING, "rolea", "Role to merge", true),
+                new CommandOption(OptionType.STRING, "roleb", "Target role", true));
+    }
+
+    private static void addConfigurableCommand(String name, String description, CommandOption... options) {
+        CommandData command = Commands.slash(name, description);
+        for (CommandOption option : options) {
+            command.addOption(option.type(), option.name(), option.description(), option.required());
+        }
+        jda.upsertCommand(command).queue();
+    }
+
+    private static void initializeServers() {
         log("------------------------------------------------");
-        log("Bot is active on: ");
+        log("Bot is active on:");
+
         jda.getGuilds().forEach(guild -> {
             guild.loadMembers(member -> {});
             log("- " + guild.getName());
-            if (!serverExistsInDB(guild.getId())) {
+            if (!configurations.containsKey(guild.getId())) {
                 queryHandler.createDefaultDataBaseConfiguration(guild.getId());
             }
         });
+
         log("------------------------------------------------");
 
-        pushNotificationChannels = new HashMap<>();
-        statusChannels = new HashMap<>();
-        updateNotify = new HashMap<>();
-
         RaidManager.loadRaids();
-
         ServerManager.init();
-        startTimers(jda);
     }
 
-    private static boolean serverExistsInDB(String name) {
-        return configurations.containsKey(name);
-    }
-
-    private static void startTimers(JDA jda) {
-        Timer restartTimer = new Timer("restartTimer");
-        TimerTask restartTask = new TimerTask() {
+    private static void startTimers() {
+        Timer restartTimer = new Timer("RestartTimer");
+        restartTimer.schedule(new TimerTask() {
             public void run() {
                 restartBot();
             }
-        };
-        restartTimer.schedule(restartTask, 24 * 60 * 60 * 1000);
+        }, 24 * 60 * 60 * 1000);
 
-        Timer timer2 = new Timer("Configtimer");
-        long period2 = 2 * 60 * 60 * 1000L;
-        TimerTask task2 = new TimerTask() {
+        Timer configTimer = new Timer("ConfigTimer");
+        configTimer.schedule(new TimerTask() {
             public void run() {
-                reloadConfig(jda);
+                reloadConfig();
             }
-        };
-        timer2.schedule(task2, 5 * 1000, period2);
-
-        log("Successfully started the bot");
+        }, 5 * 1000, 2 * 60 * 60 * 1000);
     }
 
-    private static void reloadConfig(JDA jda) {
+    private static void reloadConfig() {
         nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
         pushNotificationChannels.clear();
         statusChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
-        for (Guild guild : jda.getGuilds()) {
-            String guildName = guild.getId();
-            boolean pushNotifications = false;
-            String pushNotificationChannelName = "loa-eu-notify";
+
+        for (var guild : jda.getGuilds()) {
+            String guildId = guild.getId();
+            List<String[]> configList = new ArrayList<>(configurations.get(guildId));
+
+            String pushChannelName = "loa-eu-notify";
             String statusChannelName = "loa-eu-status";
-            for (String[] strings : configurations.get(guildName)) {
-                switch (strings[0]) {
-                    case "pushNotifications":
-                        pushNotifications = Boolean.parseBoolean(strings[1]);
-                        break;
-                    case "pushChannelName":
-                        pushNotificationChannelName = strings[1];
-                        break;
-                    case "statusChannelName":
-                        statusChannelName = strings[1];
-                        break;
+            boolean pushNotifications = false;
+
+            for (String[] config : configList) {
+                switch (config[0]) {
+                    case "pushNotifications" -> pushNotifications = Boolean.parseBoolean(config[1]);
+                    case "pushChannelName" -> pushChannelName = config[1];
+                    case "statusChannelName" -> statusChannelName = config[1];
                 }
             }
+
             if (pushNotifications) {
-                List<TextChannel> _pushChannels = guild.getTextChannelsByName(pushNotificationChannelName, true);
-                if (!_pushChannels.isEmpty()) {
-                    pushNotificationChannels.put(guildName, _pushChannels.get(0));
-                }
+                guild.getTextChannelsByName(pushChannelName, true)
+                        .stream().findFirst()
+                        .ifPresent(channel -> pushNotificationChannels.put(guildId, channel));
             }
-            List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName, true);
-            if (!_statusChannels.isEmpty()) {
-                statusChannels.put(guildName, _statusChannels.get(0));
-            }
+
+            guild.getTextChannelsByName(statusChannelName, true)
+                    .stream().findFirst()
+                    .ifPresent(channel -> statusChannels.put(guildId, channel));
         }
 
-        Button delButton = Button.danger("del","Delete");
-
-        updateNotify.forEach((user, s) -> {
-            user.openPrivateChannel().flatMap(channel -> channel.sendMessage("[Automated Message] Your configuration update for the discord server '**" + jda.getGuildById(s).getName() + "**' is now active :smile:").setActionRow(delButton)).queue(null, new Consumer<Throwable>() {
-                @Override
-                public void accept(Throwable throwable) {
-                    LOABot.log(user.getEffectiveName() + " blocked PM's, cannot send message");
-                }
-            });
-        });
-        if (!updateNotify.isEmpty()) {
-            log("updated configurations on " + updateNotify.size() + " servers");
-        }
+        log("Updated configurations on " + updateNotify.size() + " servers.");
         updateNotify.clear();
     }
 
-    public static void restartBot() {
+    private static void restartBot() {
         try {
             jda.shutdown();
             log("Restarting bot...");
-            queryHandler.closeConnection();
             Runtime.getRuntime().exec("./restart.sh");
         } catch (IOException e) {
-            e.printStackTrace();
+            log("Failed to restart bot: " + e.getMessage());
         }
     }
 
-    public static void manualReload() {
-        reloadConfig(jda);
-    }
-
-    public static void log(String message) {
+    private static void log(String message) {
         System.out.println("[" + new Date() + "] " + message);
     }
 }
-
