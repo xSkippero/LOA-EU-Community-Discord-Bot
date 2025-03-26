@@ -4,10 +4,6 @@ import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.utils.MessageColor;
 import de.Skippero.LOA.utils.Website;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jsoup.nodes.Element;
 
 import java.time.temporal.TemporalAccessor;
