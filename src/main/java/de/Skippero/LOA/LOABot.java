@@ -27,13 +27,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-@Getter
 public class LOABot {
 
     private static JDA jda;
     private static String botVersion;
     private static Model buildInformation;
+    @Getter
     private static ConfigManager configManager;
+    @Getter
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations = ArrayListMultimap.create();
     
