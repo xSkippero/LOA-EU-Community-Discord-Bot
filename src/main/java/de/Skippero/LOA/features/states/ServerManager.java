@@ -8,58 +8,53 @@ import org.jsoup.nodes.Element;
 
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ServerManager {
 
     private static final Map<String, Server> servers = new HashMap<>();
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static void loadServers() {
-        Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
+        Optional<Website> optionalWebsite = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
+
+        if (optionalWebsite.isEmpty()) {
+            System.err.println("Fehler: Konnte keine Verbindung zur Server-Status-Seite herstellen.");
+            return;
+        }
+
+        Website website = optionalWebsite.get();
         Element rootElement = website.getDoc().selectFirst("body > main > section > div > div.ags-ServerStatus-content-responses > div:nth-child(3)");
 
-        if (rootElement != null && !rootElement.children().isEmpty()) {
-            for (Element child : rootElement.children()) {
-                if (child.className().equals("ags-ServerStatus-content-responses-response-server")) {
-                    Element stateChild = child.children().first().children().first();
-                    Element serverChild = child.children().last();
+        if (rootElement == null || rootElement.children().isEmpty()) {
+            System.err.println("Fehler: Serverstatus-Daten konnten nicht extrahiert werden.");
+            return;
+        }
 
-                    String serverName = serverChild.text().replaceAll(" ", "");
-                    State serverState = getStateFromClassName(stateChild.className());
+        for (Element child : rootElement.children()) {
+            if (child.className().equals("ags-ServerStatus-content-responses-response-server")) {
+                Element stateChild = child.children().first().children().first();
+                Element serverChild = child.children().last();
 
-                    Server server = servers.getOrDefault(serverName, new Server(serverName, serverState));
-                    server.Update(serverName, serverState);
-                    servers.put(serverName, server);
-                }
+                if (stateChild == null || serverChild == null) continue;
+
+                String serverName = serverChild.text().replaceAll(" ", "");
+                State serverState = getStateFromClassName(stateChild.className());
+
+                servers.computeIfAbsent(serverName, k -> new Server(serverName, serverState))
+                       .Update(serverName, serverState);
             }
         }
 
         checkForUpdate();
     }
 
-    private static String getEmoteForState(State state) {
-        switch (state) {
-            case FULL:
-                return ":x:";
-            case BUSY:
-                return ":warning:";
-            case GOOD:
-                return ":white_check_mark:";
-            case MAINTENANCE:
-                return ":gear:";
-        }
-        return ":question:";
-    }
-
     private static void checkForUpdate() {
-        boolean validForUpdate = true;
+        boolean validForUpdate = servers.values().stream().allMatch(Server::IsValidStateUpdate);
 
-        for (Server server : servers.values()) {
-            if(!server.IsValidStateUpdate()) {
-                validForUpdate = false;
-            }
-        }
-
-        if(validForUpdate && !servers.isEmpty()) {
+        if (validForUpdate && !servers.isEmpty()) {
             buildAndSendUpdateMessage();
         }
     }
@@ -70,9 +65,9 @@ public class ServerManager {
         eb.setColor(getStateMajorityColor().getColor());
         eb.setTimestamp(new Date().toInstant());
 
-        for (Server server : ServerManager.servers.values()) {
+        for (Server server : servers.values()) {
             server.UpdateLastState(server.getState());
-            eb.addField(server.getName(),getEmoteForState(server.getState()),true);
+            eb.addField(server.getName(), getEmoteForState(server.getState()), true);
         }
 
         LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
@@ -83,54 +78,36 @@ public class ServerManager {
     }
 
     private static void getStatus() {
-        Website website = Website.getWebsiteByUrl("https://www.playlostark.com/de-de/support/server-status");
-        if (website.getDoc() == null) {
-            return;
-        }
-        ServerManager.loadServers();
+        loadServers();
     }
 
     private static State getStateFromClassName(String className) {
-        if (className.contains("maintenance")) {
-            return State.MAINTENANCE;
-        } else if (className.contains("busy")) {
-            return State.BUSY;
-        } else if (className.contains("good")) {
-            return State.GOOD;
-        } else {
-            return State.FULL;
-        }
+        if (className == null) return State.FULL;
+        if (className.contains("maintenance")) return State.MAINTENANCE;
+        if (className.contains("busy")) return State.BUSY;
+        if (className.contains("good")) return State.GOOD;
+        return State.FULL;
     }
 
     public static MessageColor getStateMajorityColor() {
-        long goodAmount = servers.values().stream().filter(server -> server.getState().equals(State.GOOD)).count();
-        long busyAmount = servers.values().stream().filter(server -> server.getState().equals(State.BUSY)).count();
-        long fullAmount = servers.values().stream().filter(server -> server.getState().equals(State.FULL)).count();
-        long maintenanceAmount = servers.values().stream().filter(server -> server.getState().equals(State.MAINTENANCE)).count();
-        MessageColor color = MessageColor.GREEN;
-        if (busyAmount > goodAmount) {
-            goodAmount = busyAmount;
-            color = MessageColor.ORANGE;
-        }
-        if (fullAmount > goodAmount) {
-            goodAmount = fullAmount;
-            color = MessageColor.RED;
-        }
-        if (maintenanceAmount > goodAmount) {
-            color = MessageColor.CYAN;
-        }
-        return color;
+        Map<State, Long> stateCount = new EnumMap<>(State.class);
+        Arrays.stream(State.values()).forEach(state -> stateCount.put(state, 0L));
+
+        servers.values().forEach(server -> 
+            stateCount.put(server.getState(), stateCount.get(server.getState()) + 1)
+        );
+
+        return stateCount.entrySet().stream()
+                .max(Comparator.comparingLong(Map.Entry::getValue))
+                .map(entry -> switch (entry.getKey()) {
+                    case GOOD -> MessageColor.GREEN;
+                    case BUSY -> MessageColor.ORANGE;
+                    case FULL -> MessageColor.RED;
+                    case MAINTENANCE -> MessageColor.CYAN;
+                }).orElse(MessageColor.GREEN);
     }
 
     public static void init() {
-        Timer timer = new Timer("Statustimer");
-        long period = 12 * 1000L;
-        TimerTask task = new TimerTask() {
-            public void run() {
-                getStatus();
-            }
-        };
-        timer.schedule(task, 5 * 1000, period);
+        scheduler.scheduleAtFixedRate(ServerManager::getStatus, 5, 12, TimeUnit.SECONDS);
     }
 }
-
