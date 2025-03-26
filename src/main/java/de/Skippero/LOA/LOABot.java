@@ -159,7 +159,7 @@ public class LOABot {
         }, 5 * 1000, 2 * 60 * 60 * 1000);
     }
 
-    private static void reloadConfig() {
+    public static void reloadConfig() {
         nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
         pushNotificationChannels.clear();
         statusChannels.clear();
@@ -196,7 +196,7 @@ public class LOABot {
         updateNotify.clear();
     }
 
-    private static void restartBot() {
+    public static void restartBot() {
         try {
             jda.shutdown();
             log("Restarting bot...");
@@ -206,7 +206,7 @@ public class LOABot {
         }
     }
 
-    private static void log(String message) {
+    public static void log(String message) {
         System.out.println("[" + new Date() + "] " + message);
     }
 }
