@@ -171,9 +171,9 @@ public class LOABot {
 
             for (String[] config : configList) {
                 switch (config[0]) {
-                    case "pushNotifications" -> pushNotifications = Boolean.parseBoolean(config[1]);
-                    case "pushChannelName" -> pushChannelName = config[1];
-                    case "statusChannelName" -> statusChannelName = config[1];
+                    case "pushNotifications": pushNotifications = Boolean.parseBoolean(config[1]); break;
+                    case "pushChannelName": pushChannelName = config[1]; break;
+                    case "statusChannelName": statusChannelName = config[1]; break;
                 }
             }
 
