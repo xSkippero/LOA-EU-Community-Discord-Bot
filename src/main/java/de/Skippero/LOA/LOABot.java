@@ -85,41 +85,42 @@ public class LOABot {
         jda.upsertCommand("stop", "Stop the bot").queue();
         
         addConfigurableCommand("config", "Configure the bot",
-                new CommandOption(OptionType.STRING, "property", "Field to change", false),
-                new CommandOption(OptionType.STRING, "value", "New value", false));
-
+                new OptionData(OptionType.STRING, "property", "Field to change").setRequired(false),
+                new OptionData(OptionType.STRING, "value", "New value").setRequired(false));
+    
         addConfigurableCommand("permissions", "Configure Guild permissions",
-                new CommandOption(OptionType.STRING, "action", "add/remove/list"),
-                new CommandOption(OptionType.USER, "user", "User to affect"),
-                new CommandOption(OptionType.STRING, "permission", "Permission to modify", false));
-
+                new OptionData(OptionType.STRING, "action", "add/remove/list").setRequired(true),
+                new OptionData(OptionType.USER, "user", "User to affect").setRequired(true),
+                new OptionData(OptionType.STRING, "permission", "Permission to modify").setRequired(false));
+    
         addConfigurableCommand("raid", "Create a Lost Ark raid event",
-                new CommandOption(OptionType.STRING, "name", "Title", true),
-                new CommandOption(OptionType.STRING, "desc", "Description", true),
-                new CommandOption(OptionType.INTEGER, "dpscount", "Planned DPS count", true),
-                new CommandOption(OptionType.INTEGER, "suppcount", "Planned Support count", true),
-                new CommandOption(OptionType.STRING, "startdate", "Start date 'DD.MM.YYYY HH:MM'", true),
-                new CommandOption(OptionType.STRING, "duration", "Duration", true));
-
+                new OptionData(OptionType.STRING, "name", "Title").setRequired(true),
+                new OptionData(OptionType.STRING, "desc", "Description").setRequired(true),
+                new OptionData(OptionType.INTEGER, "dpscount", "Planned DPS count").setRequired(true),
+                new OptionData(OptionType.INTEGER, "suppcount", "Planned Support count").setRequired(true),
+                new OptionData(OptionType.STRING, "startdate", "Start date 'DD.MM.YYYY HH:MM'").setRequired(true),
+                new OptionData(OptionType.STRING, "duration", "Duration").setRequired(true));
+    
         addConfigurableCommand("movemembers", "Move members from one raid to another",
-                new CommandOption(OptionType.INTEGER, "raida", "Raid to move from", true),
-                new CommandOption(OptionType.INTEGER, "raidb", "Raid to move to", true));
-
+                new OptionData(OptionType.INTEGER, "raida", "Raid to move from").setRequired(true),
+                new OptionData(OptionType.INTEGER, "raidb", "Raid to move to").setRequired(true));
+    
         addConfigurableCommand("deleteraid", "Delete a raid",
-                new CommandOption(OptionType.INTEGER, "raidid", "Raid ID", true));
-
+                new OptionData(OptionType.INTEGER, "raidid", "Raid ID").setRequired(true));
+    
         addConfigurableCommand("mergerole", "Merge roles",
-                new CommandOption(OptionType.STRING, "rolea", "Role to merge", true),
-                new CommandOption(OptionType.STRING, "roleb", "Target role", true));
+                new OptionData(OptionType.STRING, "rolea", "Role to merge").setRequired(true),
+                new OptionData(OptionType.STRING, "roleb", "Target role").setRequired(true));
     }
-
-    private static void addConfigurableCommand(String name, String description, CommandOption... options) {
+    
+    private static void addConfigurableCommand(String name, String description, OptionData... options) {
         CommandData command = Commands.slash(name, description);
-        for (CommandOption option : options) {
-            command.addOption(option.type(), option.name(), option.description(), option.required());
+        for (OptionData option : options) {
+            command.addOptions(option);
         }
         jda.upsertCommand(command).queue();
     }
+
 
     private static void initializeServers() {
         log("------------------------------------------------");
