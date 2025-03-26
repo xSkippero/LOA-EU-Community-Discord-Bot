@@ -100,10 +100,10 @@ public class ServerManager {
         return stateCount.entrySet().stream()
                 .max(Comparator.comparingLong(Map.Entry::getValue))
                 .map(entry -> switch (entry.getKey()) {
-                    case GOOD -> MessageColor.GREEN;
-                    case BUSY -> MessageColor.ORANGE;
-                    case FULL -> MessageColor.RED;
-                    case MAINTENANCE -> MessageColor.CYAN;
+                    case GOOD: MessageColor.GREEN; break;
+                    case BUSY: MessageColor.ORANGE; break;
+                    case FULL: MessageColor.RED; break;
+                    case MAINTENANCE: MessageColor.CYAN; break;
                 }).orElse(MessageColor.GREEN);
     }
 
