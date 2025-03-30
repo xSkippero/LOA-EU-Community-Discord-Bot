@@ -4,6 +4,9 @@ import de.Skippero.LOA.LOABot;
 import de.Skippero.LOA.utils.MessageColor;
 import de.Skippero.LOA.utils.Website;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import org.jsoup.nodes.Element;
 
 import java.time.temporal.TemporalAccessor;
