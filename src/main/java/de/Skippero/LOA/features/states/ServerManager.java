@@ -5,8 +5,8 @@ import de.Skippero.LOA.utils.MessageColor;
 import de.Skippero.LOA.utils.Website;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jsoup.nodes.Element;
 
 import java.time.temporal.TemporalAccessor;
@@ -73,10 +73,11 @@ public class ServerManager {
             eb.addField(server.getName(), getEmoteForState(server.getState()), true);
         }
 
-        LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
-            if (textChannel.getGuild().getId().equals(s)) {
-                textChannel.sendMessageEmbeds(eb.build()).queue(message -> {
-                    if (textChannel.getType().isNews()) { 
+        LOABot.pushNotificationChannels.forEach((s, channel) -> {
+            if (channel.getGuild().getId().equals(s) && channel instanceof GuildMessageChannel) {
+                GuildMessageChannel messageChannel = (GuildMessageChannel) channel;
+                messageChannel.sendMessageEmbeds(eb.build()).queue(message -> {
+                    if (messageChannel instanceof NewsChannel) { 
                         message.crosspost().queue();
                     }
                 });
