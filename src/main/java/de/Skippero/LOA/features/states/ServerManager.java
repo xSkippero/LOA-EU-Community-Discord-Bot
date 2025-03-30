@@ -72,9 +72,14 @@ public class ServerManager {
 
         LOABot.pushNotificationChannels.forEach((s, textChannel) -> {
             if (textChannel.getGuild().getId().equals(s)) {
-                textChannel.sendMessageEmbeds(eb.build()).queue();
+                textChannel.sendMessageEmbeds(eb.build()).queue(message -> {
+                    if (textChannel.getType().isNews()) { 
+                        message.crosspost().queue();
+                    }
+                });
             }
         });
+
     }
 
     private static void getStatus() {
