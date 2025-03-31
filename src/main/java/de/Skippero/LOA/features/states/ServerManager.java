@@ -57,13 +57,7 @@ public class ServerManager {
 
     private static void checkForUpdate() {
         boolean validForUpdate = servers.values().stream().allMatch(Server::IsValidStateUpdate);
-
-        for (Server server : servers.values()) {
-            LOABot.log(server.getName() + " / " + server.getState().getDisplayName() + " (" + server.getUpdateThreshold() + ") LastState: " + server.getLastState().getDisplayName());
-        }
-
         if (validForUpdate && !servers.isEmpty()) {
-            LOABot.log("ServerManager: Sending update message");
             buildAndSendUpdateMessage();
         }
     }
