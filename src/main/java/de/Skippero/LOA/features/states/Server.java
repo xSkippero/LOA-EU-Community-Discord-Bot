@@ -12,7 +12,7 @@ public class Server {
     public Server(String name, State state) {
         this.name = name;
         this.state = state;
-        this.updateThreshold = 5;
+        this.updateThreshold = 0;
         this.lastState = State.UNKNOWN;
     }
 

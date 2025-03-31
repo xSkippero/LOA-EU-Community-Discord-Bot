@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -45,8 +46,7 @@ public class LOABot {
     @Getter
     private static QueryHandler queryHandler;
     private static Multimap<String, String[]> configurations;
-    public static Map<String, TextChannel> statusChannels;
-    public static Map<String, TextChannel> pushNotificationChannels;
+    public static Map<String, NewsChannel> pushNotificationChannels;
 
     public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
 
@@ -128,7 +128,6 @@ public class LOABot {
         log("------------------------------------------------");
 
         pushNotificationChannels = new HashMap<>();
-        statusChannels = new HashMap<>();
         updateNotify = new HashMap<>();
 
         RaidManager.loadRaids();
@@ -165,13 +164,11 @@ public class LOABot {
     private static void reloadConfig(JDA jda) {
         nextUpdateTimestamp = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
         pushNotificationChannels.clear();
-        statusChannels.clear();
         configurations = queryHandler.loadConfiguration(configurations);
         for (Guild guild : jda.getGuilds()) {
             String guildName = guild.getId();
             boolean pushNotifications = false;
             String pushNotificationChannelName = "loa-eu-notify";
-            String statusChannelName = "loa-eu-status";
             for (String[] strings : configurations.get(guildName)) {
                 switch (strings[0]) {
                     case "pushNotifications":
@@ -180,20 +177,13 @@ public class LOABot {
                     case "pushChannelName":
                         pushNotificationChannelName = strings[1];
                         break;
-                    case "statusChannelName":
-                        statusChannelName = strings[1];
-                        break;
                 }
             }
             if (pushNotifications) {
-                List<TextChannel> _pushChannels = guild.getTextChannelsByName(pushNotificationChannelName, true);
+                List<NewsChannel> _pushChannels = guild.getNewsChannelsByName(pushNotificationChannelName, true);
                 if (!_pushChannels.isEmpty()) {
                     pushNotificationChannels.put(guildName, _pushChannels.get(0));
                 }
-            }
-            List<TextChannel> _statusChannels = guild.getTextChannelsByName(statusChannelName, true);
-            if (!_statusChannels.isEmpty()) {
-                statusChannels.put(guildName, _statusChannels.get(0));
             }
         }
 
