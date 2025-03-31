@@ -13,7 +13,7 @@ public class Server {
         this.name = name;
         this.state = state;
         this.updateThreshold = 5;
-        this.lastState = state;
+        this.lastState = State.UNKNOWN;
     }
 
     public void Update(String newName, State newState) {

@@ -5,6 +5,7 @@ import de.Skippero.LOA.utils.MessageColor;
 import de.Skippero.LOA.utils.Website;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jsoup.nodes.Element;
@@ -74,16 +75,14 @@ public class ServerManager {
         }
 
         LOABot.pushNotificationChannels.forEach((s, channel) -> {
-            if (channel.getGuild().getId().equals(s) && channel instanceof GuildMessageChannel) {
-                GuildMessageChannel messageChannel = (GuildMessageChannel) channel;
-                messageChannel.sendMessageEmbeds(eb.build()).queue(message -> {
-                    if (messageChannel instanceof NewsChannel) { 
+            if (channel.getGuild().getId().equals(s)) {
+                channel.sendMessageEmbeds(eb.build()).queue(message -> {
+                    if (channel.getType().equals(ChannelType.NEWS)) {
                         message.crosspost().queue();
                     }
                 });
             }
         });
-
     }
 
     private static void getStatus() {

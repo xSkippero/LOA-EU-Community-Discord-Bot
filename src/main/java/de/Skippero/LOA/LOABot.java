@@ -48,7 +48,7 @@ public class LOABot {
     public static Map<String, TextChannel> statusChannels;
     public static Map<String, TextChannel> pushNotificationChannels;
 
-    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException, ParseException {
+    public static void main(String[] args) throws InterruptedException, IOException, XmlPullParserException {
 
         if (args.length < 1) {
             System.err.println("Missing Token on Parameter 1 (Index 0)");

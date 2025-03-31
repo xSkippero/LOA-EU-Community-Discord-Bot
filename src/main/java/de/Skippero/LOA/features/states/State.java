@@ -5,7 +5,8 @@ public enum State {
     GOOD("Online"),
     BUSY("Busy"),
     FULL("Full"),
-    MAINTENANCE("Maintenance");
+    MAINTENANCE("Maintenance"),
+    UNKNOWN("Unknown");
 
     private final String displayName;
 
