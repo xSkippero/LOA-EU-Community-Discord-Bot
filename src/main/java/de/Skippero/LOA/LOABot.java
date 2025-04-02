@@ -141,14 +141,6 @@ public class LOABot {
     }
 
     private static void startTimers(JDA jda) {
-        Timer restartTimer = new Timer("restartTimer");
-        TimerTask restartTask = new TimerTask() {
-            public void run() {
-                restartBot();
-            }
-        };
-        restartTimer.schedule(restartTask, 24 * 60 * 60 * 1000);
-
         Timer timer2 = new Timer("Configtimer");
         long period2 = 2 * 60 * 60 * 1000L;
         TimerTask task2 = new TimerTask() {
